@@ -1,8 +1,22 @@
 spring:
-  docker:
-    compose:
-      enabled: true
+  # Configuration Supabase Locale
   datasource:
-    url: jdbc:tc:oracle:23.3-free:///databasename # Le préfixe jdbc:tc: active Testcontainers
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-  exemple  application-prod.yml
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: your-local-password
+
+  # Configuration IA Locale (Ollama)
+  ai:
+    openai:
+      base-url: http://localhost:11434/v1
+      api-key: ollama
+      chat:
+        options:
+          model: llama3
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    enabled: true
