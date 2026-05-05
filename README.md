@@ -12,6 +12,7 @@
 In the file `/project/back`, create the file `.env`, and complete it with the information of your local supabase
 
 # Launch docker
+
 ## Development
 Builds an image containing Maven to run the app in watch/debug mode.
 - ```bash
@@ -29,8 +30,10 @@ Builds a slim production image (JRE only) with compiled assets.
 - ```bash
     docker run -p 8080:8080 puericulture:prod
   ```
+
 # Create a modification of the data base
 > Note : This requires the validation of tech leads and CTO before merging a change on the data base
+
 ## 1. Create Migration
 Generate a new timestamped SQL file:
 ```bash
