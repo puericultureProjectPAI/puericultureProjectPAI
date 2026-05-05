@@ -27,7 +27,6 @@ Builds a slim production image (JRE only) with compiled assets.
 - ```bash
     docker build --target prod -t puericulture:prod .
   ```
-
 - ```bash
     docker run -p 8080:8080 puericulture:prod
   ```
