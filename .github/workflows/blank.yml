@@ -1,8 +1,6 @@
 name: CI Backend Platform
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main", "devellopment", "developpmentTeam1" ]
 
@@ -14,22 +12,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
-          cache: 'maven' # Optimising speed by caching the .jar
+          cache: 'maven'
 
-      - name: Build with Maven
-        working-directory: project/back
-        run: mvn -B clean install -DskipTests
+      # 1. Installation de Supabase CLI
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
 
-      - name: Run All Tests
-        working-directory: project/back
-        run: mvn -B test
+      # 2. Démarrage de Supabase (Docker doit être actif, ce qui est le cas par défaut sur le runner)
+      # On utilise --workdir si votre dossier supabase est dans un sous-répertoire
+      - name: Start Supabase Local
+        run: supabase start
 
-      - name: Technical Debt Check (Optional)
+      # 3. Build & Tests avec injection dynamique des secrets
+      - name: Build and Run Tests
         working-directory: project/back
-        # Code quality need to be checked
-        run: echo "Analyse SonarCloud or Checkstyle can be added here"
+        env:
+          # Par défaut, supabase start utilise ces valeurs :
+          DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/postgres
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mvn -B clean install
