@@ -1,0 +1,52 @@
+name: CI Backend Platform
+
+on:
+  pull_request:
+    branches: [ "main", "development", "developmentTeam1" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 1. Installation de Supabase CLI
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # 2. Démarrage de Supabase
+      # L'option --status force la CLI à attendre que les services soient "healthy"
+      - name: Start Supabase Local
+        run: supabase start
+
+      # 3. Build & Tests 
+      - name: Build and Run Tests
+        working-directory: project/back
+        env:
+          DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/postgres
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: mvn -B clean verify
+
+      # 4. Archivage des rapports en cas d'échec
+      - name: Archive Test Results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            project/back/target/surefire-reports/
+            project/back/target/failsafe-reports/
