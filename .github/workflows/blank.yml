@@ -2,7 +2,7 @@ name: CI Backend Platform
 
 on:
   pull_request:
-    branches: [ "main", "devellopment", "developpmentTeam1" ]
+    branches: [ "main", "development", "developmentTeam1" ]
 
 jobs:
   build-and-test:
@@ -25,20 +25,28 @@ jobs:
         with:
           version: latest
 
-      # 2. Démarrage de Supabase (Docker doit être actif, ce qui est le cas par défaut sur le runner)
-      # On utilise --workdir si votre dossier supabase est dans un sous-répertoire
+      # 2. Démarrage de Supabase
+      # L'option --status force la CLI à attendre que les services soient "healthy"
       - name: Start Supabase Local
         run: supabase start
 
-      # 3. Build & Tests avec injection dynamique des secrets
+      # 3. Build & Tests 
       - name: Build and Run Tests
         working-directory: project/back
         env:
-          # Par défaut, supabase start utilise ces valeurs :
           DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/postgres
           DATABASE_USER: postgres
           DATABASE_PASSWORD: postgres
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          mvn -B clean install
+        run: mvn -B clean verify
+
+      # 4. Archivage des rapports en cas d'échec
+      - name: Archive Test Results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            project/back/target/surefire-reports/
+            project/back/target/failsafe-reports/
