@@ -1,8 +1,0 @@
-spring:
-  docker:
-    compose:
-      enabled: true
-  datasource:
-    url: jdbc:tc:oracle:23.3-free:///databasename # Le préfixe jdbc:tc: active Testcontainers
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-  exemple  application-prod.yml
