@@ -1,20 +1,14 @@
 package com.puericulture.config.errormanager;
 
 import com.puericulture.config.errormanager.exception.*;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.io.IOException;
-
 @RestControllerAdvice
-public class CustomGlobalExceptionHandler implements AccessDeniedHandler {
+public class CustomGlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException badRequestException){
@@ -33,7 +27,7 @@ public class CustomGlobalExceptionHandler implements AccessDeniedHandler {
     }
 
     @ExceptionHandler(InternalServorError.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(InternalServorError internalServorError){
+    public ResponseEntity<ErrorResponse> handleInternalServerError(InternalServorError internalServorError){
         return new ResponseEntity<>(ErrorResponse.builder()
                 .message(internalServorError.getMessage())
                 .build(),
@@ -49,15 +43,18 @@ public class CustomGlobalExceptionHandler implements AccessDeniedHandler {
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(UnauthorizedException unauthorizedException){
-        return new ResponseEntity<>(ErrorResponse.builder()
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException unauthorizedException){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_JSON).body(ErrorResponse.builder()
                 .message(unauthorizedException.getMessage())
-                .build(),
-                HttpStatus.UNAUTHORIZED);
+                .build());
     }
 
-    @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        throw new UnauthorizedException("UNAUTHORIZED_ACCESS_DENIED");
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e){
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .message("Une erreur est survenue...")
+                .build(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
