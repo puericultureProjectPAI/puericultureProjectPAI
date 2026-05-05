@@ -1,6 +1,6 @@
 <!-- Name your pull request using this format: 
-Vertical name or Common: Name of the fix/feature 
-(e.g. (Common) fix: log in button style were green instead of blue) -->
+Vertical name or Common - ID US : Name of the fix/feature 
+(e.g. (Common) US 15 : fix log in button style were green instead of blue) -->
 
 ## Ticket: [Link to the issue/Linear]
 
