@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class CustomGlobalExceptionHandler {
@@ -49,7 +50,13 @@ public class CustomGlobalExceptionHandler {
                 .message(unauthorizedException.getMessage())
                 .build());
     }
-
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNoResourceFoundException(NoResourceFoundException noResourceFoundException) {
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .message(noResourceFoundException.getMessage())
+                .build(),
+                HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e){
         return new ResponseEntity<>(ErrorResponse.builder()
