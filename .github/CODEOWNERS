@@ -2,7 +2,7 @@
 # 1. GLOBAL RULE (Fallback)
 # ==========================================
 # By default, all the code is owned by the TechLeads team.
-* @TechLeads
+* @puericultureProjectPAI/TechLeads
 
 # ==========================================
 # 2. SECURITY OF THE CODEOWNER FILE
