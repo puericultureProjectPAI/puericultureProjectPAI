@@ -12,11 +12,12 @@ public class ForwardTradingController {
     @GetMapping()
     public Object testMapping(@RequestParam Integer errorCode){
         switch (errorCode){
-            case 500: throw new InternalServorError("Une erreur est survenue");
-            case 400: throw new BadRequestException("Bad Request");
-            case 401: throw new UnauthorizedException("Unauthorized");
-            case 404: throw new NotFoundException("Not Found");
-            case 501: throw new NotImplementedException("Not implemented");
+            case 500: throw new InternalServorError();
+            case 400: throw new BadRequestException();
+            case 401: throw new UnauthorizedException();
+            case 403: throw new ForbiddenException();
+            case 404: throw new NotFoundException();
+            case 501: throw new NotImplementedException();
             default: return new Object();
         }
     }
