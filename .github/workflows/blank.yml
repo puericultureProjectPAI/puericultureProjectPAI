@@ -3,11 +3,44 @@ name: CI
 on:
   pull_request:
     branches: [ "main", "dev" ]
+    # Globally ignore files that have no impact on the build execution
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
 
 jobs:
-  build-and-test:
+  # ==========================================
+  # JOB 0: THE ROUTER (Diff Analysis)
+  # ==========================================
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      # Lightweight checkout to analyze modifications
+      - uses: actions/checkout@v4
 
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'project/back/**'
+              # Always trigger if the workflow itself is modified to ensure integrity
+              - '.github/workflows/**' 
+            frontend:
+              - 'project/front/**'
+              - '.github/workflows/**'
+
+  # ==========================================
+  # JOB 1: BACKEND PIPELINE
+  # ==========================================
+  backend:
+    needs: detect-changes
+    # Strict execution: run only if the "backend" filter returns true
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,58 +52,74 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Set up Node.js 20.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: 'npm'
-
-      # 1. Launch supabase
       - name: Start Supabase Local
         working-directory: project/back
         run: npx supabase start
 
-      # 2. Quality Control: Backend Formatting
       - name: Check Backend Formatting (Spotless)
         working-directory: project/back
         run: mvn spotless:check
 
-      # 3. Build & Tests backend
       - name: Build and Run Tests backend
         working-directory: project/back
         env:
           DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/postgres
           DATABASE_USER: postgres
           DATABASE_PASSWORD: postgres
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-          SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # SECRETS NOT USED: Using dummy values for CI test execution
+          JWT_SECRET_KEY: dummy_jwt_secret_for_ci_environment_only
+          SPRING_AI_OPENAI_API_KEY: dummy_openai_key_use_mocks_in_tests
         run: mvn -B clean verify
 
-      # 4. Install frontend dependencies
+  # ==========================================
+  # JOB 2: FRONTEND PIPELINE
+  # ==========================================
+  frontend:
+    needs: detect-changes
+    # Strict execution: run only if the "frontend" filter returns true
+    if: needs.detect-changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: project/front/package-lock.json
+
       - name: Install frontend dependencies
         working-directory: project/front
-        run: npm install
+        # Strict requirement: Use 'npm ci' for deterministic builds, NEVER 'npm install'
+        run: npm ci
 
-      # 5. Quality Control: Frontend Linting & Formatting
-      - name: Check Frontend Formatting (Prettier)
+      - name: Check Formatting & Linting
         working-directory: project/front
-        run: npx prettier --check .
+        run: |
+          npx prettier --check .
+          npm run lint
 
-      - name: Check Frontend Linting (ESLint)
-        working-directory: project/front
-        run: npm run lint
-
-      # 6. Build & Tests frontend
       - name: Build and Run Tests frontend
         working-directory: project/front
         run: npm test
 
-      # 7. Archiving reports if failed
-      - name: Archive Test Results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            project/back/target/surefire-reports/
-            project/back/target/failsafe-reports/
+  # ==========================================
+  # JOB 3: CI GATEKEEPER (For Branch Protection Rules)
+  # ==========================================
+  ci-gatekeeper:
+    # Must always execute to report final status, even if dependencies are skipped
+    if: always()
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate Pipeline Status
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" || "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "Error: One or more critical pipeline jobs failed or were cancelled."
+            exit 1
+          else
+            echo "Success: Pipeline passed or jobs were safely skipped."
+            exit 0
+          fi
