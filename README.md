@@ -57,7 +57,16 @@ docker run -p 8080:8080 puericulture:prod
 3. **Local Test:** Run `npx supabase db reset` to apply changes and verify `supabase/seed.sql` integrity.
 4. **Merge:** Open a Pull Request for review.
 
-## 6. Quality Control (Husky)
-A pre-commit hook automatically runs formatting checks and backend compilation. To manually fix frontend issues before attempting a commit, run these commands in `project/front`:
-- Format code: `npm run format`
-- Auto-fix linting: `npm run lint:fix`
+## 6. Quality Control & Auto-formatting
+A pre-commit hook (Husky) is strictly enforced at the root of the repository.
+When you attempt to commit, the pipeline will **automatically**:
+1. Format your frontend code (Prettier) and fix simple linting errors (ESLint).
+2. Format your backend code (Spotless/Google Java Format).
+3. Run a syntax compilation check on the Java backend.
+
+If a logical error prevents formatting or compilation, the commit will be rejected.
+
+**Manual Commands:**
+If you want to run these tools manually before committing:
+- **Frontend:** run `npm run format` and `npm run lint:fix` in `project/front`.
+- **Backend:** run `mvn spotless:apply` in `project/back`.

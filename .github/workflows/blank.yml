@@ -30,7 +30,12 @@ jobs:
         working-directory: project/back
         run: npx supabase start
 
-      # 2. Build & Tests backend
+      # 2. Quality Control: Backend Formatting
+      - name: Check Backend Formatting (Spotless)
+        working-directory: project/back
+        run: mvn spotless:check
+
+      # 3. Build & Tests backend
       - name: Build and Run Tests backend
         working-directory: project/back
         env:
@@ -41,21 +46,26 @@ jobs:
           SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: mvn -B clean verify
 
-      # 3. Build & Tests frontend
+      # 4. Install frontend dependencies
       - name: Install frontend dependencies
         working-directory: project/front
         run: npm install
 
+      # 5. Quality Control: Frontend Linting & Formatting
+      - name: Check Frontend Formatting (Prettier)
+        working-directory: project/front
+        run: npx prettier --check .
+
+      - name: Check Frontend Linting (ESLint)
+        working-directory: project/front
+        run: npm run lint
+
+      # 6. Build & Tests frontend
       - name: Build and Run Tests frontend
         working-directory: project/front
         run: npm test
 
-      # 4. Linting the code
-      - name: Lint frontend
-        working-directory: project/front
-        run: npm run
-
-      # 5. Archiving reports if failed
+      # 7. Archiving reports if failed
       - name: Archive Test Results
         if: failure()
         uses: actions/upload-artifact@v4
