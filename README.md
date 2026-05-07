@@ -1,12 +1,19 @@
 # Puericulture project PAI
 
-# Create your dev environment
-
-## Install dependencies
-- `brew install supabase/tap/supabase`
+# Create/launch your dev environment
 
 ## Launch environment models
-- In the folder `project/back`, launch: `supabase start`
+
+In the folder `project/back`, 
+**At university**
+- ```bash 
+    npx supabase start -x edge-runtime
+    ```
+
+**At home:**
+- ```bash 
+    npx supabase start
+    ```
 
 ## Personalise your environment
 In the file `/project/back`, create the file `.env`, and complete it with the information of your local supabase
