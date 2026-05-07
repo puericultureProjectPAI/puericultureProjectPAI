@@ -1,4 +1,4 @@
-name: CI Backend Platform
+name: CI
 
 on:
   pull_request:
@@ -19,19 +19,19 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # 1. Installation de Supabase CLI
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
         with:
-          version: latest
+          node-version: 20.x
+          cache: 'npm'
 
-      # 2. Démarrage de Supabase
-      # L'option --status force la CLI à attendre que les services soient "healthy"
+      # 1. Launch supabase
       - name: Start Supabase Local
-        run: supabase start
+        working-directory: project/back
+        run: npx supabase start
 
-      # 3. Build & Tests 
-      - name: Build and Run Tests
+      # 2. Build & Tests backend
+      - name: Build and Run Tests backend
         working-directory: project/back
         env:
           DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/postgres
@@ -41,7 +41,21 @@ jobs:
           SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: mvn -B clean verify
 
-      # 4. Archivage des rapports en cas d'échec
+      # 3. Build & Tests frontend
+      - name: Install frontend dependencies
+        working-directory: project/front
+        run: npm install
+
+      - name: Build and Run Tests frontend
+        working-directory: project/front
+        run: npm test
+
+      # 4. Linting the code
+      - name: Lint frontend
+        working-directory: project/front
+        run: npm run
+
+      # 5. Archiving reports if failed
       - name: Archive Test Results
         if: failure()
         uses: actions/upload-artifact@v4

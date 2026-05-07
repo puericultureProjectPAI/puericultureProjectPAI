@@ -1,6 +1,6 @@
 # Puericulture project PAI
 
-# Create/launch your dev environment
+# Set up your dev environment
 
 ## Launch environment models
 
@@ -17,6 +17,17 @@ In the folder `project/back`,
 
 ## Personalise your environment
 In the file `/project/back`, create the file `.env`, and complete it with the information of your local supabase
+
+# Check your tests and lint your code
+## Back
+- ```bash 
+    mvn -B clean verify
+    ```
+  
+## Front
+- - ```bash 
+    npm run lint
+    ```
 
 # Launch docker
 
