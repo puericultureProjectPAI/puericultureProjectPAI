@@ -8,7 +8,7 @@ const InstallPWA = () => {
     () =>
       window.matchMedia("(display-mode: standalone)").matches ||
       !!window.navigator.standalone,
-    []
+    [],
   );
 
   const isIOS = useMemo(() => {
@@ -26,7 +26,7 @@ const InstallPWA = () => {
     return () =>
       window.removeEventListener(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt
+        handleBeforeInstallPrompt,
       );
   }, []);
 
@@ -35,7 +35,9 @@ const InstallPWA = () => {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(outcome === "accepted" ? "PWA setup accepted." : "PWA setup dismissed.");
+    console.log(
+      outcome === "accepted" ? "PWA setup accepted." : "PWA setup dismissed.",
+    );
     setDeferredPrompt(null);
   };
 
@@ -44,7 +46,8 @@ const InstallPWA = () => {
   return (
     <div className="p-4 bg-gray-100 border-b border-gray-300 text-center flex flex-col items-center gap-3 z-50 w-full">
       <p className="font-semibold text-gray-800 text-sm m-0">
-        Install the ecosystem for full access to trading, leasing, and forward markets.
+        Install the ecosystem for full access to trading, leasing, and forward
+        markets.
       </p>
 
       {deferredPrompt && (

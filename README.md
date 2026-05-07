@@ -1,77 +1,63 @@
-# Puericulture project PAI
+# Puericulture Project PAI
 
-# Set up your dev environment
+> **CRITICAL SETUP:** Do not bypass the root initialization. Husky pre-commit hooks are mandatory. Your code will be rejected automatically if quality standards are not met.
 
-## Launch environment models
-
-In the folder `project/back`, 
-- ```bash 
-    npm i
-    ```
-
-**At university**
-- ```bash 
-    npx supabase start -x edge-runtime
-    ```
-
-**At home:**
-- ```bash 
-    npx supabase start
-    ```
-
-## Personalise your environment
-In the file `/project/back`, create the file `.env`, and complete it with the information of your local supabase
-
-# BEFORE COMMITING: Check your tests and apply linters
-## Back
-- ```bash 
-    mvn -B clean verify
-    ```
-  
-## Front
-- ```bash 
-    npm run lint
-    ```
-
-# Launch docker
-
-## Development
-Builds an image containing Maven to run the app in watch/debug mode.
-- ```bash
-  docker build --target dev -t puericulture:dev .
-  ```
-- ```bash
-  docker run -p 8080:8080 puericulture:dev
-  ```
-
-## Production
-Builds a slim production image (JRE only) with compiled assets.
-- ```bash
-    docker build --target prod -t puericulture:prod .
-  ```
-- ```bash
-    docker run -p 8080:8080 puericulture:prod
-  ```
-
-# Create a modification of the data base
-> Note : This requires the validation of tech leads and CTO before merging a change on the data base
-
-## 1. Create Migration
-Generate a new timestamped SQL file:
+## 1. Global Setup (Run Once)
+At the absolute root of the repository (`puericultureProjectPAI`), install the global Git hooks:
 ```bash
-npx supabase migration new your_feature_name
+npm install
 ```
 
-## 2. Implementation
-- Edit the generated file in supabase/migrations/.
-- Use PostgreSQL syntax (DDL).
+## 2. Dependencies Setup
+You must install dependencies for both sides of the monorepo.
 
-## 3. Local Test
-Apply changes and refresh your local environment:
+**Front-end:**
 ```bash
-npx supabase db reset
+cd project/front
+npm install
 ```
-Verify that `supabase/seed.sql` still works and your features aren't broken.
 
-## 4. Review & Merge
-- Once everything is done open a Pull Request and wait for review of Tech Lead/CTO
+**Back-end:**
+```bash
+cd project/back
+npm install
+```
+
+## 3. Environment & Database
+Create your `.env` file in `project/back` with your local Supabase credentials.
+
+**Start Supabase (University network):**
+```bash
+npx supabase start -x edge-runtime
+```
+
+**Start Supabase (Home network):**
+```bash
+npx supabase start
+```
+
+## 4. Docker Deployment
+**Development Mode (Watch/Debug):**
+```bash
+docker build --target dev -t puericulture:dev .
+docker run -p 8080:8080 puericulture:dev
+```
+
+**Production Mode (Slim/JRE only):**
+```bash
+docker build --target prod -t puericulture:prod .
+docker run -p 8080:8080 puericulture:prod
+```
+
+## 5. Database Migrations Workflow
+> Modifications require Tech Lead / CTO validation before merging.
+
+1. **Create Migration:** Run `npx supabase migration new your_feature_name`
+2. **Implementation:** Write PostgreSQL DDL in the generated file under `supabase/migrations/`.
+3. **Local Test:** Run `npx supabase db reset` to apply changes and verify `supabase/seed.sql` integrity.
+4. **Merge:** Open a Pull Request for review.
+
+## 6. Quality Control (Husky)
+A pre-commit hook automatically runs formatting checks and backend compilation. To manually fix frontend issues before attempting a commit, run these commands in `project/front`:
+- Format code: `npm run format`
+- Auto-fix linting: `npm run lint:fix`

@@ -1,0 +1,24 @@
+#!/bin/sh
+echo "=== [STRATEGY] Commencing pre-commit security checks ==="
+
+# --- FRONTEND ---
+echo ">> [1/2] Analyzing Front-end..."
+cd project/front || exit 1
+
+npx lint-staged || {
+  echo "❌ [FRONTEND ERROR] Quality standards not met. Commit aborted."
+  exit 1
+}
+cd ../..
+
+# --- BACKEND ---
+echo ">> [2/2] Analyzing Back-end..."
+cd project/back || exit 1
+
+mvn clean test-compile || { 
+  echo "❌ [BACKEND ERROR] Compilation failed. Commit aborted."
+  exit 1 
+}
+cd ../..
+
+echo "✅ [STRATEGY] Green light. Commit authorized."
