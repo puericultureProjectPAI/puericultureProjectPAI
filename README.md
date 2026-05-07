@@ -44,7 +44,7 @@ Builds a slim production image (JRE only) with compiled assets.
 ## 1. Create Migration
 Generate a new timestamped SQL file:
 ```bash
-supabase migration new your_feature_name
+npx supabase migration new your_feature_name
 ```
 
 ## 2. Implementation
@@ -54,7 +54,7 @@ supabase migration new your_feature_name
 ## 3. Local Test
 Apply changes and refresh your local environment:
 ```bash
-supabase db reset
+npx supabase db reset
 ```
 Verify that `supabase/seed.sql` still works and your features aren't broken.
 
