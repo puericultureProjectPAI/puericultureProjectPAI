@@ -5,6 +5,10 @@
 ## Launch environment models
 
 In the folder `project/back`, 
+- ```bash 
+    npm i
+    ```
+
 **At university**
 - ```bash 
     npx supabase start -x edge-runtime
@@ -18,14 +22,14 @@ In the folder `project/back`,
 ## Personalise your environment
 In the file `/project/back`, create the file `.env`, and complete it with the information of your local supabase
 
-# Check your tests and lint your code
+# BEFORE COMMITING: Check your tests and apply linters
 ## Back
 - ```bash 
     mvn -B clean verify
     ```
   
 ## Front
-- - ```bash 
+- ```bash 
     npm run lint
     ```
 
