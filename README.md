@@ -5,7 +5,7 @@
 ## 1. Global Setup (Run Once)
 At the absolute root of the repository (`puericultureProjectPAI`), install the global Git hooks:
 ```bash
-npm install
+  npm install
 ```
 
 ## 2. Dependencies Setup
@@ -13,41 +13,59 @@ You must install dependencies for both sides of the monorepo.
 
 **Front-end:**
 ```bash
-cd project/front
-npm install
+  cd project/front
+  npm install
 ```
 
 **Back-end:**
 ```bash
-cd project/back
-npm install
+  cd project/back
+  npm install
 ```
 
 ## 3. Environment & Database
-Create your `.env` file in `project/back` with your local Supabase credentials.
 
-**Start Supabase (University network):**
-```bash
-npx supabase start -x edge-runtime
+### Back-end (Spring Boot) & Supabase Auth
+We are using Supabase to handle Authentication. **Spring Boot needs the exact same JWT Secret as Supabase** to validate user tokens.
+
+**1. Set up your `.env` in `project/back`:**
+Copy `.env.example` to `.env`.
+
+**2. Fetch your local JWT Secret:**
+- Start Supabase locally: `npx supabase start`
+- Run `npx supabase status`
+- Copy the `JWT secret` value from the console output.
+- Paste it into your `.env` file under `JWT_SECRET_KEY=...`
+
+*(Note: If you run `npx supabase stop --no-backup` and restart, this local secret will change. You must update your `.env` file).*
+
+### Front-end (Vite)
+Create an `.env.local` file in `project/front` to connect to your local backend:
+```env
+  VITE_API_URL=http://localhost:8080
 ```
 
-**Start Supabase (Home network):**
-```bash
-npx supabase start
-```
+**Mandatory rule for API calls**: Always use import.meta.env.VITE_API_URL to construct your fetch requests. This ensures seamless transition between local development and production.
 
-## 4. Docker Deployment
+## 4. Local Execution & Deployment
+### Run Back-end (Local Dev):
 **Development Mode (Watch/Debug):**
 ```bash
-docker build --target dev -t puericulture:dev .
-docker run -p 8080:8080 puericulture:dev
+  cd project/back
+  mvn spring-boot:run
 ```
 
-**Production Mode (Slim/JRE only):**
+### Run Front-end (Local Dev):
 ```bash
-docker build --target prod -t puericulture:prod .
-docker run -p 8080:8080 puericulture:prod
+  cd project/front
+  npm run dev
 ```
+
+### Deployment Infrastructure:
+
+- Backend: Automatically built via GitHub Actions and deployed to Koyeb as a Docker container.
+
+- Frontend: Automatically built and deployed by Vercel upon pushing to the main branch. No Docker required for the frontend.
 
 ## 5. Database Migrations Workflow
 > Modifications require Tech Lead / CTO validation before merging.
