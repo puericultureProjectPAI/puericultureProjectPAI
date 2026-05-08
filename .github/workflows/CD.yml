@@ -1,0 +1,110 @@
+name: CD Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # ==========================================
+  # JOB 1: VERSIONING & RELEASE
+  # ==========================================
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessary to analyse commit history
+
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ==========================================
+  # JOB 2: DATABASE MIGRATION (Supabase)
+  # ==========================================
+  migrate-database:
+    needs: release
+    # Execute only if there is new migrations
+    if: needs.release.outputs.new_release_published == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link Supabase Project
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID --password $SUPABASE_DB_PASSWORD
+
+      - name: Push Database Migrations
+        working-directory: project/back
+        # Push only new migrations. Fail if migration destroy data without confirmations.
+        run: supabase db push
+
+  # ==========================================
+  # JOB 3: BUILD & PUSH DOCKER IMAGE (Backend)
+  # ==========================================
+  deploy-backend:
+    needs: migrate-database # Make sure the Data base is up to date
+    runs-on: ubuntu-latest
+    # Necessary right to write on GitHub registry  (GHCR)
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Forcer le nom du repo en minuscules pour la conformité Docker
+      - name: Lowercase Repository Name
+        id: repo_name
+        run: echo "name=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # CORRECTION : Utilisation de la variable en minuscules
+          images: ghcr.io/${{ steps.repo_name.outputs.name }}-backend
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./project/back
+          push: true
+          tags: |
+            ghcr.io/${{ steps.repo_name.outputs.name }}-backend:latest
+            ghcr.io/${{ steps.repo_name.outputs.name }}-backend:${{ github.sha }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # ==========================================
+      # ETAPE 4 : DÉCLENCHER RENDER
+      # ==========================================
+      - name: Trigger Render Deployment
+        env:
+          # Le Deploy Hook est une URL secrète fournie par Render
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Déclenchement du redéploiement sur Render..."
+          curl -X GET "$RENDER_DEPLOY_HOOK_URL"
+          echo "Signal envoyé avec succès."
