@@ -38,7 +38,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
                 Arrays.asList(
                         "http://localhost:5173", // Default Vite port
-                        "https://votre-projet.vercel.app" // Your future production domain
+                        "http://localhost:4173", // Preview Vite port
+                        "https://puericultureprojectpai.vercel.app/" // Production domain
                         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
