@@ -52,16 +52,6 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # This cache prevents the cold-boot download of 15+ Supabase containers on every run,
-      # saving massive amounts of compute time.
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-supabase-${{ hashFiles('project/back/supabase/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-supabase-
-
       - name: Start Supabase Local
         working-directory: project/back
         run: npx supabase start
