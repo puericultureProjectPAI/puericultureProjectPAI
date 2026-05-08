@@ -1,62 +1,90 @@
-# Puericulture project PAI
+# Puericulture Project PAI
 
-# Create/launch your dev environment
+> **CRITICAL SETUP:** Do not bypass the root initialization. Husky pre-commit hooks are mandatory. Your code will be rejected automatically if quality standards are not met.
 
-## Launch environment models
-
-In the folder `project/back`, 
-**At university**
-- ```bash 
-    npx supabase start -x edge-runtime
-    ```
-
-**At home:**
-- ```bash 
-    npx supabase start
-    ```
-
-## Personalise your environment
-In the file `/project/back`, create the file `.env`, and complete it with the information of your local supabase
-
-# Launch docker
-
-## Development
-Builds an image containing Maven to run the app in watch/debug mode.
-- ```bash
-  docker build --target dev -t puericulture:dev .
-  ```
-- ```bash
-  docker run -p 8080:8080 puericulture:dev
-  ```
-
-## Production
-Builds a slim production image (JRE only) with compiled assets.
-- ```bash
-    docker build --target prod -t puericulture:prod .
-  ```
-- ```bash
-    docker run -p 8080:8080 puericulture:prod
-  ```
-
-# Create a modification of the data base
-> Note : This requires the validation of tech leads and CTO before merging a change on the data base
-
-## 1. Create Migration
-Generate a new timestamped SQL file:
+## 1. Global Setup (Run Once)
+At the absolute root of the repository (`puericultureProjectPAI`), install the global Git hooks:
 ```bash
-npx supabase migration new your_feature_name
+  npm install
 ```
 
-## 2. Implementation
-- Edit the generated file in supabase/migrations/.
-- Use PostgreSQL syntax (DDL).
+## 2. Dependencies Setup
+You must install dependencies for both sides of the monorepo.
 
-## 3. Local Test
-Apply changes and refresh your local environment:
+**Front-end:**
 ```bash
-npx supabase db reset
+  cd project/front
+  npm install
 ```
-Verify that `supabase/seed.sql` still works and your features aren't broken.
 
-## 4. Review & Merge
-- Once everything is done open a Pull Request and wait for review of Tech Lead/CTO
+**Back-end:**
+```bash
+  cd project/back
+  npm install
+```
+
+## 3. Environment & Database
+
+### Back-end (Spring Boot) & Supabase Auth
+We are using Supabase to handle Authentication. **Spring Boot needs the exact same JWT Secret as Supabase** to validate user tokens.
+
+**1. Set up your `.env` in `project/back`:**
+Copy `.env.example` to `.env`.
+
+**2. Fetch your local JWT Secret:**
+- Start Supabase locally: `npx supabase start`
+- Run `npx supabase status`
+- Copy the `JWT secret` value from the console output.
+- Paste it into your `.env` file under `JWT_SECRET_KEY=...`
+
+*(Note: If you run `npx supabase stop --no-backup` and restart, this local secret will change. You must update your `.env` file).*
+
+### Front-end (Vite)
+Create an `.env.local` file in `project/front` to connect to your local backend:
+```env
+  VITE_API_URL=http://localhost:8080
+```
+
+**Mandatory rule for API calls**: Always use import.meta.env.VITE_API_URL to construct your fetch requests. This ensures seamless transition between local development and production.
+
+## 4. Local Execution & Deployment
+### Run Back-end (Local Dev):
+**Development Mode (Watch/Debug):**
+```bash
+  cd project/back
+  mvn spring-boot:run
+```
+
+### Run Front-end (Local Dev):
+```bash
+  cd project/front
+  npm run dev
+```
+
+### Deployment Infrastructure:
+
+- Backend: Automatically built via GitHub Actions and deployed to Koyeb as a Docker container.
+
+- Frontend: Automatically built and deployed by Vercel upon pushing to the main branch. No Docker required for the frontend.
+
+## 5. Database Migrations Workflow
+> Modifications require Tech Lead / CTO validation before merging.
+
+1. **Create Migration:** Run `npx supabase migration new your_feature_name`
+2. **Implementation:** Write PostgreSQL DDL in the generated file under `supabase/migrations/`.
+3. **Local Test:** Run `npx supabase db reset` to apply changes and verify `supabase/seed.sql` integrity.
+4. **Merge:** Open a Pull Request for review.
+
+## 6. Quality Control & Auto-formatting
+A pre-commit hook (Husky) is strictly enforced at the root of the repository.
+When you attempt to commit, the pipeline will **automatically**:
+1. Format your frontend code (Prettier) and fix simple linting errors (ESLint).
+2. Format your backend code (Spotless/Google Java Format).
+3. Run a syntax compilation check on the Java backend.
+
+If a logical error prevents formatting or compilation, the commit will be rejected.
+
+**Manual Commands:**
+If you want to run these tools manually before committing:
+- **Frontend:** run `npm run format` and `npm run lint:fix` in `project/front`.
+- **Backend:** run `mvn spotless:apply` in `project/back`.
