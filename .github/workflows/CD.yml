@@ -36,7 +36,7 @@ jobs:
   migrate-database:
     needs: release
     # Execute only if there is new migrations
-    if: needs.release.outputs.new_release_published == 'true'
+    if: always() && needs.migrate-database.result != 'failure'
     runs-on: ubuntu-latest
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -63,7 +63,7 @@ jobs:
   # JOB 3: BUILD & PUSH DOCKER IMAGE (Backend)
   # ==========================================
   deploy-backend:
-    needs: migrate-database # Make sure the Data base is up to date
+    needs: migrate-database
     runs-on: ubuntu-latest
     # Necessary right to write on GitHub registry  (GHCR)
     permissions:

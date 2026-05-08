@@ -19,7 +19,7 @@ function App() {
         </p>
 
         <button className="w-full sm:bg-red-500 sm:w-96 bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition">
-          Do nothing.
+          Do nothing
         </button>
       </div>
     </div>
