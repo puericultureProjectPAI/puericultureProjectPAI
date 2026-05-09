@@ -32,7 +32,7 @@ We are using Supabase to handle Authentication. **Spring Boot needs the exact sa
 Copy `.env.example` to `.env`.
 
 **2. Fetch your local JWT Secret:**
-- Start Supabase locally: `npx supabase start`
+- Start Supabase locally: `npx supabase start -x edge-runtime`
 - Run `npx supabase status`
 - Copy the `JWT secret` value from the console output.
 - Paste it into your `.env` file under `JWT_SECRET_KEY=...`
