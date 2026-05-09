@@ -39,7 +39,7 @@ public class SecurityConfig {
                 Arrays.asList(
                         "http://localhost:5173", // Default Vite port
                         "http://localhost:4173", // Preview Vite port
-                        "https://puericultureprojectpai.vercel.app/" // Production domain
+                        "https://puericultureprojectpai-o8o2y0tr2-leo-defossezs-projects.vercel.app" // Production domain
                         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
