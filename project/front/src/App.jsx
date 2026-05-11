@@ -1,29 +1,64 @@
-import "./App.css";
-import InstallPWA from "./common/components/InstallPWA";
+import { useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router";
+import Layout from "./common/views/Layout";
+import Connection from "./common/views/Connection";
+import { AuthProvider } from "./common/security/AuthContext";
+import RoleGuard from "./common/security/RoleGuard";
+import ProtectedRoute from "./common/security/ProtectedRoute";
 
-function App() {
+export default function App() {
+  useEffect(() => {
+    // PWA Logic: Captured at root to ensure shell availability
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      globalThis.deferredPrompt = e;
+      globalThis.dispatchEvent(new Event("pwa-prompt-available"));
+    };
+
+    globalThis.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt,
+    );
+    return () =>
+      globalThis.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* The installation banner handles its own visibility logic */}
-      <InstallPWA />
+    <AuthProvider>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<Connection />} />
 
-      <header className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">
-          Puericulture Platform
-        </h1>
-      </header>
+        {/* Security: Protected Shell*/}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/home" element={<Home />} />
 
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-6">
-          Project PAI
-        </p>
+            <Route element={<RoleGuard access={() => true} />}>
+              {/* Future vertical routes go here */}
+            </Route>
 
-        <button className="w-full sm:bg-red-500 sm:w-96 bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition">
-          Do nothing
-        </button>
-      </div>
-    </div>
+            {/* Default Redirections: Explicit logic  */}
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Route>
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 
-export default App;
+function Home() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Project PAI</h1>
+      {/*Mobile-first styling*/}
+      <button className="w-full max-w-sm bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition-transform">
+        Main Action
+      </button>
+    </div>
+  );
+}
