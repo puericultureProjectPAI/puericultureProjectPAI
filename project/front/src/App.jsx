@@ -5,6 +5,7 @@ import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 
 export default function App() {
   useEffect(() => {
@@ -39,6 +40,8 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
+              {/* FT */}
+              <Route path="/create-children" element={<CreationEnfantView />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
