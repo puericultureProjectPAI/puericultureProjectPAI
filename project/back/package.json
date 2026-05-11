@@ -1,4 +1,7 @@
 {
+  "name": "puericulture-pai-backend",
+  "private": true,
+  "version": "1.0.0",
   "devDependencies": {
     "supabase": "^2.98.2"
   }
