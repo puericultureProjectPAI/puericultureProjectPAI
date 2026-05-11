@@ -1,10 +1,48 @@
-package com.puericulture.troc.repository; // 定义交换仓库所在的 troc repository 包。
+package com.puericulture.troc.repository;
 
-import com.puericulture.troc.entity.Troc; // 引入 Troc 实体，用来操作 troc 子表和继承自 posts 的公共字段。
-import java.util.List; // 引入 List，用来返回多条交换公告。
-import org.springframework.data.jpa.repository.JpaRepository; // 引入 JpaRepository，获得基础数据库操作能力。
+import com.puericulture.troc.entity.Troc;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface TrocRepository extends JpaRepository<Troc, Long> { // 定义 TrocRepository，用 Long 作为 Troc/Posts 共享主键类型。
+public interface TrocRepository extends JpaRepository<Troc, Long> {
 
-    List<Troc> findAllByOpenTrueOrderByIdDesc(); // 查询所有开放中的 Troc 公告，并按继承自 Posts 的 id 倒序返回。
-} // 结束 TrocRepository 接口。
+    @Query(
+            value = """
+                    SELECT p.id AS "productId",
+                           p.post_title AS title,
+                           p.description AS description,
+                           COALESCE(img.image_url, '') AS "imageUrl",
+                           p.category AS category,
+                           t.estimated_price AS "estimatedPrice"
+                    FROM public.product_troc t
+                    JOIN public.products p ON p.id = t.product_id
+                    LEFT JOIN public.product_images img
+                           ON img.product_id = p.id
+                          AND img.position = 0
+                    WHERE p.category = 'TROC'
+                    ORDER BY p.id DESC
+                    """,
+            nativeQuery = true)
+    List<TrocProjection> findAllTrocProducts();
+
+    @Query(
+            value = """
+                    SELECT p.id AS "productId",
+                           p.post_title AS title,
+                           p.description AS description,
+                           COALESCE(img.image_url, '') AS "imageUrl",
+                           p.category AS category,
+                           t.estimated_price AS "estimatedPrice"
+                    FROM public.product_troc t
+                    JOIN public.products p ON p.id = t.product_id
+                    LEFT JOIN public.product_images img
+                           ON img.product_id = p.id
+                          AND img.position = 0
+                    WHERE p.id = :productId
+                    """,
+            nativeQuery = true)
+    Optional<TrocProjection> findTrocProductByProductId(@Param("productId") Long productId);
+}

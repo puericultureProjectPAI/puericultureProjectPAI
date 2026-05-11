@@ -1,20 +1,26 @@
-package com.puericulture.troc.entity; // 定义交换类型实体所在的 troc 实体包。
+package com.puericulture.troc.entity;
 
-import com.puericulture.common.entity.Posts; // 引入 Posts 抽象父类，用来继承公告公共字段。
-import jakarta.persistence.Column; // 引入字段映射注解，用来配置数据库列。
-import jakarta.persistence.Entity; // 引入实体注解，用来声明这是数据库实体。
-import jakarta.persistence.PrimaryKeyJoinColumn; // 引入主键连接注解，用来让 troc.id 同时引用 posts.id。
-import jakarta.persistence.Table; // 引入表名映射注解。
-import lombok.Getter; // 引入 Lombok Getter，自动生成 getter 方法。
-import lombok.Setter; // 引入 Lombok Setter，自动生成 setter 方法。
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter // 自动为所有字段生成 getter，减少重复代码。
-@Setter // 自动为所有字段生成 setter，减少重复代码。
-@Entity // 声明该类是 JPA 实体，会映射到数据库表。
-@Table(name = "troc") // 使用 troc 作为数据库表名，匹配类图中的 Troc。
-@PrimaryKeyJoinColumn(name = "id") // 指定 troc.id 是继承自 posts.id 的共享主键。
-public class Troc extends Posts { // 定义 Troc 子类，继承 Posts 的 id、title、description、open、author 等公共字段。
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "product_troc")
+public class Troc {
 
-    @Column(name = "estimated_price", nullable = false) // 设置估计价格字段不为空，并映射为 estimated_price。
-    private Long estimatedPrice; // 保存交换物品估计价值，对应类图中的 estimated price: long。
-} // 结束 Troc 实体类。
+    @Id
+    @Column(name = "product_id")
+    private Long productId;
+
+    @Column(name = "estimated_price", nullable = false)
+    private Long estimatedPrice;
+}

@@ -20,11 +20,9 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults()) // Enables CORS with the configuration defined below
                 .csrf(csrf -> csrf.disable()) // Often disabled for stateless APIs
                 .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers("/api/public/**")
-                                        .permitAll()
-                                        .anyRequest()
-                                        .authenticated());
+                        auth -> auth
+                                .requestMatchers("/api/public/**", "/troc/posts/**", "/troc/products/**").permitAll()
+                                .anyRequest().authenticated());
         return http.build();
     }
 
