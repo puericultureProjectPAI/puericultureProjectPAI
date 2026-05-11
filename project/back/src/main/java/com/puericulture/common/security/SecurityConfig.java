@@ -15,46 +15,42 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-// Assure-toi que l'import de ton filtre JWT correspond bien à ton arborescence
-// import com.puericulture.common.security.JwtAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Importé du 2ème fichier
-@RequiredArgsConstructor // Remplace @AllArgsConstructor, meilleure pratique avec Spring pour les
-// champs "final"
+@EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    // Importé du 2ème fichier
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults()) // Active la configuration CORS définie plus bas
-                // (Réf 1)
-                .csrf(csrf -> csrf.disable()) // Désactivé pour les API (Réf 1 & 2)
+        http.cors(Customizer.withDefaults())
+                // CSRF is disabled as the application relies strictly on stateless JWT
+                // authentication
+                .csrf(csrf -> csrf.disable())
 
-                // Gestion de session STATELESS requise pour le JWT (Importé du 2ème fichier)
+                // Enforce stateless session management. Spring must not maintain HTTP sessions.
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
                                 auth
-                                        // Endpoints publics combinés (Réf 1 & 2)
-                                        .requestMatchers(
-                                                "/api/public/**", "/api/auth/**", "/health")
+                                        // The /api/auth/** wildcard is explicitly REMOVED.
+                                        // Identity is handled by Supabase. Only health-checks and
+                                        // specific public endpoints pass freely.
+                                        .requestMatchers("/api/public/**", "/health")
                                         .permitAll()
-
-                                        // Endpoints admin (Importé du 2ème fichier)
                                         .requestMatchers("/api/admin/**")
                                         .hasRole("ADMIN")
 
-                                        // Tout le reste nécessite une authentification
+                                        // All other requests require a valid JWT validated by the
+                                        // filter
                                         .anyRequest()
                                         .authenticated());
 
-        // Ajout du filtre JWT avant le filtre classique d'authentification (Importé du 2ème
-        // fichier)
+        // Intercept requests to validate the Supabase JWT before Spring attempts standard
+        // authentication
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -64,18 +60,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // CORRECTION STRATÉGIQUE CONSERVÉE (Réf 1)
-        // Beaucoup plus sécurisé que le "*" du 2ème fichier
+        // Strict explicit origins mapped to your development and deployment environments
         configuration.setAllowedOrigins(
                 Arrays.asList(
-                        "http://localhost:5173", // Default Vite port
-                        "http://localhost:4173", // Preview Vite port
-                        "https://puericultureprojectpai.vercel.app" // Production domain
-                        ));
+                        "http://localhost:5173",
+                        "http://localhost:4173",
+                        "https://puericultureprojectpai.vercel.app"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Nécessaire pour les cookies ou Basic auth
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
 
     @Override
@@ -25,43 +27,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String personRole = null;
-        String personId = null;
-        String personName = null;
 
-        // Extract JWT token from Authorization header
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            try {
-                personRole = jwtService.extractRole(token);
-                personId = jwtService.extractPersonId(token);
-                personName = jwtService.extractName(token);
-            } catch (Exception e) {
-                // Invalid token
-                filterChain.doFilter(request, response);
-                return;
-            }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        // Validate token and set authentication
-        if (personId != null
-                && personName != null
-                && personRole != null
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Map<String, String> principal = Map.of("personId", personId, "personName", personName);
-            if (jwtService.validateToken(token)) {
-                // Create authentication object with role
+        String token = authHeader.substring(7);
+
+        try {
+            if (jwtService.validateToken(token)
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String personId = jwtService.extractPersonId(token);
+                String personRole = jwtService.extractRole(token);
+
+                // Fallback: If no role is provided in user_metadata, default to ROLE_USER
+                String role =
+                        (personRole != null) ? "ROLE_" + personRole.toUpperCase() : "ROLE_USER";
+
+                // The Principal is set strictly to the Supabase UUID (personId).
+                // This allows downstream Controllers to retrieve the UUID easily.
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                principal,
+                                personId,
                                 null,
-                                Collections.singletonList(
-                                        new SimpleGrantedAuthority(
-                                                "ROLE_" + personRole.toUpperCase())));
+                                Collections.singletonList(new SimpleGrantedAuthority(role)));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+        } catch (Exception e) {
+            // Authentication fails silently at the filter level.
+            // Downstream protected endpoints will automatically reject the request with a 401 or
+            // 403.
+            log.error("Could not set user authentication in security context: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
