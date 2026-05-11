@@ -32,8 +32,8 @@ The Backend acts as a stateless API, verifying the token's cryptographic signatu
 
 ### Back-end (Spring Boot) & Supabase Auth
 Set up your .env in project/back:
-Copy `.env.example` to `.env`. For a standard local Supabase environment, use the strict configuration indicated in it.
-
+1. Copy `.env.example` to `.env`. For a standard local Supabase environment, use the strict configuration indicated in it.
+2. Complete SUPABASE_SERVICE_KEY with your local Supabase Authentication Keys Secret obtained through `npx supabase status`. 
 
 ### Front-end (Vite)
 Set up your `.env.local` in project/front:

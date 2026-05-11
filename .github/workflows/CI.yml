@@ -63,12 +63,11 @@ jobs:
       - name: Build and Run Tests backend
         working-directory: project/back
         env:
-          DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/postgres
-          DATABASE_USER: postgres
-          DATABASE_PASSWORD: postgres
-          # SECRETS NOT USED: Using dummy values for CI test execution
-          JWT_SECRET_KEY: dummy_jwt_secret_for_ci_environment_only
-          SPRING_AI_OPENAI_API_KEY: dummy_openai_key_use_mocks_in_tests
+          SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:54322/postgres
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
+          SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+          OPENAI_API_KEY: dummy_key
         run: mvn -B clean verify
 
   # ==========================================
