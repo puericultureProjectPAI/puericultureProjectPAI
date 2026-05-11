@@ -17,5 +17,5 @@ public class ChildrenEntity {
     @Column(name = "birthdate")
     Date birthDate;
 
-    String genre;
+    String gender;
 }

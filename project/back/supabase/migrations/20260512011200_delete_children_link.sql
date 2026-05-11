@@ -1,1 +1,0 @@
-ALTER TABLE children DROP COLUMN user_id;

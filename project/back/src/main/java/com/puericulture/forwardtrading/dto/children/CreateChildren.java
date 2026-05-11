@@ -19,6 +19,7 @@ public class CreateChildren {
     @Schema(
             examples = {"m", "f", "o"},
             maxLength = 1,
-            minLength = 1)
-    String genre;
+            minLength = 1,
+            allowableValues = {"m", "f", "s"})
+    String gender;
 }

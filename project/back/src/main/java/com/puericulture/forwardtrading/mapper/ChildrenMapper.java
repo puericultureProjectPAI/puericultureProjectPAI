@@ -9,6 +9,6 @@ import org.mapstruct.Mapping;
 public abstract class ChildrenMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "birthDate", source = "dpa")
-    @Mapping(target = "genre", source = "genre")
+    @Mapping(target = "gender", source = "gender")
     public abstract ChildrenEntity toChildrenEntity(CreateChildren children);
 }
