@@ -1,29 +1,16 @@
-import "./App.css";
-import InstallPWA from "./common/components/InstallPWA";
+import "./App.css"; // 引入应用级 CSS 文件。
+import InstallPWA from "./common/components/InstallPWA"; // 引入 PWA 安装提示组件。
+import PublishAnnouncementView from "./troc/views/PublishAnnouncementView"; // 引入 US1 发布公告页面。
 
-function App() {
-  return (
+function App() { // 定义应用根组件。
+  return ( // 返回应用整体页面。
     <div className="min-h-screen bg-white">
-      {/* The installation banner handles its own visibility logic */}
+      {/* PWA 安装提示组件，保留原项目已有能力。 */}
       <InstallPWA />
-
-      <header className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">
-          Puericulture Platform
-        </h1>
-      </header>
-
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-6">
-          Project PAI
-        </p>
-
-        <button className="w-full sm:bg-red-500 sm:w-96 bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition">
-          Do nothing
-        </button>
-      </div>
+      {/* Troc US1 页面，包含发布表单和公告列表。 */}
+      <PublishAnnouncementView />
     </div>
-  );
-}
+  ); // 结束 return。
+} // 结束 App 组件。
 
-export default App;
+export default App; // 导出 App 组件，供 main.jsx 挂载。
