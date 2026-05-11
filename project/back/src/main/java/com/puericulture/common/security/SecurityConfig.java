@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Often disabled for stateless APIs
                 .authorizeHttpRequests(
                         auth ->
-                                auth.requestMatchers("/api/public/**", "**")
+                                auth.requestMatchers("/api/public/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated());
