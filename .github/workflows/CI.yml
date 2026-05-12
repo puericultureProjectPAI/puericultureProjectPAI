@@ -52,16 +52,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # Use the official action to benefit from binary caching (faster than npx)
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      # Amputates the dead ecosystem
-      - name: Start Postgres Engine Only
+      - name: Start Supabase Local
         working-directory: project/back
-        run: supabase db start
+        run: npx supabase start
 
       - name: Check Backend Formatting (Spotless)
         working-directory: project/back
@@ -75,6 +68,10 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: postgres
           SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
           OPENAI_API_KEY: dummy_key
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_SERVICE_KEY: dummy_service_key
+          SUPABASE_STORAGE_BUCKET: puericulture-images
+          SUPABASE_STORAGE_MAX_SIZE: 5242880
         run: mvn -B clean verify
 
   # ==========================================
