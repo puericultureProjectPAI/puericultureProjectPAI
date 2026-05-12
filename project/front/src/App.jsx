@@ -6,6 +6,9 @@ import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 
+// Second-hand
+import SecondHandScan from "./second-hand/views/SecondHandScan";
+
 export default function App() {
   useEffect(() => {
     // PWA Logic: Captured at root to ensure shell availability
@@ -39,6 +42,8 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
+              {/* Second-hand : scan de code-barres */}
+              <Route path="/second-hand/scan" element={<SecondHandScan />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}

@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Animation de la ligne de scan dans BarcodeScanner.jsx */
+
+@keyframes scan {
+  0% {
+    top: 10%;
+  }
+  50% {
+    top: 85%;
+  }
+  100% {
+    top: 10%;
+  }
+}
+
+.animate-scan {
+  position: absolute;
+  animation: scan 2s ease-in-out infinite;
+}
