@@ -38,7 +38,6 @@ jobs:
   # ==========================================
   backend:
     needs: detect-changes
-    # Strict execution: run only if the "backend" filter returns true
     if: needs.detect-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -52,15 +51,47 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Start Supabase Local
-        working-directory: project/back
-        run: npx supabase start
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
 
-      - name: Check Backend Formatting (Spotless)
+      # Asynchronous infrastructure boot
+      - name: Start Supabase (Background I/O)
         working-directory: project/back
-        run: mvn spotless:check
+        # We ruthlessly exclude everything that is not DB or Storage.
+        # Kong, Auth, and Rest remain necessary for the operation of Storage.
+        run: |
+          supabase start --exclude realtime,edge-runtime,studio,inbucket,logflare,vector,pgadmin-schema-diff &
+          echo "Démarrage de l'infrastructure délégué en arrière-plan..."
 
-      - name: Build and Run Tests backend
+      # Latency absorption by the CPU compilation
+      - name: Parallel CPU Task - Compile & Check
+        working-directory: project/back
+        # We download the dependencies and compile the classes (without running tests).
+         # This phase will "hide" the startup time of Supabase.
+        run: |
+          mvn spotless:check
+          mvn -B clean test-compile
+
+      # Final sync
+      - name: Tactical Wait (Synchronization)
+        run: |
+          echo "Attente de la confirmation de la Gateway (Kong)..."
+          timeout=120
+          counter=0
+          until curl -s http://127.0.0.1:54321/rest/v1/ >/dev/null; do
+            if [ $counter -gt $timeout ]; then
+              echo "Échec : L'infrastructure n'a pas répondu à temps."
+              exit 1
+            fi
+            sleep 2
+            counter=$((counter + 2))
+          done
+          echo "Infrastructure Supabase alignée et opérationnelle."
+
+      # Execution of the keystroke (The tests will run instantly because the code is already compiled)
+      - name: Execute Tests
         working-directory: project/back
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:54322/postgres
@@ -72,7 +103,7 @@ jobs:
           SUPABASE_SERVICE_KEY: dummy_service_key
           SUPABASE_STORAGE_BUCKET: puericulture-images
           SUPABASE_STORAGE_MAX_SIZE: 5242880
-        run: mvn -B clean verify
+        run: mvn -B verify
 
   # ==========================================
   # JOB 2: FRONTEND PIPELINE
