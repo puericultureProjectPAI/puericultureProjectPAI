@@ -24,30 +24,31 @@ You must install dependencies for both sides of the monorepo.
 ```
 
 ## 3. Environment & Database
+**Architectural Paradigm:** 
+Identity and Authentication are completely delegated to Supabase Auth.
+The Frontend logs the user in directly via the Supabase SDK and receives a JWT.
+This JWT is then attached to every request sent to the Spring Boot Backend.
+The Backend acts as a stateless API, verifying the token's cryptographic signature locally before granting access.
 
 ### Back-end (Spring Boot) & Supabase Auth
-We are using Supabase to handle Authentication. **Spring Boot needs the exact same JWT Secret as Supabase** to validate user tokens.
-
-**1. Set up your `.env` in `project/back`:**
-Copy `.env.example` to `.env`.
-
-**2. Fetch your local JWT Secret:**
-- Start Supabase locally: `npx supabase start -x edge-runtime`
-- Run `npx supabase status`
-- Copy the `JWT secret` value from the console output.
-- Paste it into your `.env` file under `JWT_SECRET_KEY=...`
-
-*(Note: If you run `npx supabase stop --no-backup` and restart, this local secret will change. You must update your `.env` file).*
+Set up your .env in project/back:
+1. Copy `.env.example` to `.env`. For a standard local Supabase environment, use the strict configuration indicated in it.
+2. Complete SUPABASE_SERVICE_KEY with your local Supabase Authentication Keys Secret obtained through `npx supabase status`. 
 
 ### Front-end (Vite)
-Create an `.env.local` file in `project/front` to connect to your local backend:
-```env
-  VITE_API_URL=http://localhost:8080
-```
+Set up your `.env.local` in project/front:
+Copy `.env.local.example` to `.env.local` to connect to your local backend and Supabase instance.
 
 **Mandatory rule for API calls**: Always use import.meta.env.VITE_API_URL to construct your fetch requests. This ensures seamless transition between local development and production.
 
 ## 4. Local Execution & Deployment
+
+### Start Supabase (Database & Auth Engine):
+```bash
+  cd project/back
+  npx supabase start -x edge-runtime
+```
+
 ### Run Back-end (Local Dev):
 **Development Mode (Watch/Debug):**
 ```bash
@@ -63,7 +64,7 @@ Create an `.env.local` file in `project/front` to connect to your local backend:
 
 ### Deployment Infrastructure:
 
-- Backend: Automatically built via GitHub Actions and deployed to Koyeb as a Docker container.
+- Backend: Automatically built via GitHub Actions and deployed to Render as a Docker container.
 
 - Frontend: Automatically built and deployed by Vercel upon pushing to the main branch. No Docker required for the frontend.
 
