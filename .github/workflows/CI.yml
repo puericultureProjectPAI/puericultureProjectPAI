@@ -52,9 +52,16 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Start Supabase Local
+      # Use the official action to benefit from binary caching (faster than npx)
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # Amputates the dead ecosystem
+      - name: Start Postgres Engine Only
         working-directory: project/back
-        run: npx supabase start
+        run: supabase db start
 
       - name: Check Backend Formatting (Spotless)
         working-directory: project/back
