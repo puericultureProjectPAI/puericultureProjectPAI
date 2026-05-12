@@ -1,54 +1,114 @@
-// src/views/RegisterView.jsx
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { supabase } from "../utils/supabaseClient";
-import RegisterForm from "../components/RegisterForm";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-export default function RegisterView() {
-  const [status, setStatus] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+const validationSchema = Yup.object({
+  lastName: Yup.string().required("Le nom est requis."),
+  firstName: Yup.string().required("Le prénom est requis."),
+  birthDate: Yup.date()
+    .max(new Date(), "La date de naissance doit être dans le passé.")
+    .required("La date de naissance est requise."),
+  email: Yup.string()
+    .email("Le format de l'adresse email est invalide.")
+    .required("L'email est requis."),
+  password: Yup.string()
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+    .matches(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre.")
+    .matches(
+      /[!@#$%^&*(),.?":{}|<>]/,
+      "Le mot de passe doit contenir au moins un caractère spécial.",
+    )
+    .required("Le mot de passe est requis."),
+});
 
-  const handleSignUp = async (formValues) => {
-    setIsLoading(true);
-    setStatus("");
-
-    const { email, password, lastName, firstName, birthDate } = formValues;
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          last_name: lastName,
-          first_name: firstName,
-          birth_date: birthDate,
-        },
-      },
-    });
-
-    setIsLoading(false);
-
-    if (error) {
-      if (
-        error.message.includes("already registered") ||
-        error.status === 422
-      ) {
-        setStatus("Un compte existe déjà avec cette adresse email.");
-      } else {
-        setStatus(`Erreur : ${error.message}`);
-      }
-    } else {
-      setStatus("Compte créé avec succès ! Redirection vers l'onboarding...");
-      setTimeout(() => navigate("/onboarding"), 1500);
-    }
-  };
+export default function RegisterForm({ onSubmit, isLoading }) {
+  const formik = useFormik({
+    initialValues: {
+      lastName: "",
+      firstName: "",
+      birthDate: "",
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      onSubmit(values);
+    },
+  });
 
   return (
-    <div>
-      <h2>Créer un compte</h2>
-      <RegisterForm onSubmit={handleSignUp} isLoading={isLoading} />
-      {status && <p>{status}</p>}
-    </div>
+    <form onSubmit={formik.handleSubmit}>
+      <div>
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Nom"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.lastName}
+        />
+        {formik.touched.lastName && formik.errors.lastName && (
+          <div>{formik.errors.lastName}</div>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="text"
+          name="firstName"
+          placeholder="Prénom"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.firstName}
+        />
+        {formik.touched.firstName && formik.errors.firstName && (
+          <div>{formik.errors.firstName}</div>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="date"
+          name="birthDate"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.birthDate}
+        />
+        {formik.touched.birthDate && formik.errors.birthDate && (
+          <div>{formik.errors.birthDate}</div>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.email}
+        />
+        {formik.touched.email && formik.errors.email && (
+          <div>{formik.errors.email}</div>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="password"
+          name="password"
+          placeholder="Mot de passe"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.password}
+        />
+        {formik.touched.password && formik.errors.password && (
+          <div>{formik.errors.password}</div>
+        )}
+      </div>
+
+      <button type="submit" disabled={isLoading || !formik.isValid}>
+        {isLoading ? "Inscription en cours..." : "S'inscrire"}
+      </button>
+    </form>
   );
 }
