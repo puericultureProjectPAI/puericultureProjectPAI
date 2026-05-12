@@ -43,6 +43,9 @@ public class Person {
     @Column(name = "genre", length = 1)
     private String genre;
 
+    @Column(name = "date_of_birth")
+    private java.sql.Date dateOfBirth;
+
     /**
      * EXAMPLE OF A RELATIONSHIP: All domain relations (products, messages, leasing orders) now
      * point to THIS Person entity, not the native Supabase 'users' table. * @OneToMany(mappedBy =
