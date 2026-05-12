@@ -41,6 +41,8 @@ public class SecurityConfig {
                                         // specific public endpoints pass freely.
                                         .requestMatchers("/api/public/**", "/health")
                                         .permitAll()
+                                        .requestMatchers("/troc/**")
+                                        .permitAll()
                                         .requestMatchers("/api/admin/**")
                                         .hasRole("ADMIN")
 
