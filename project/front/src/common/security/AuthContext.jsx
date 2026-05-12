@@ -1,43 +1,47 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { supabase } from "../utils/supabaseClient";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [session, setSession] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem("user");
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-      console.error("Erreur de parsing utilisateur:", error);
-      return null;
-    }
-  });
+  useEffect(() => {
+    // 1. Retrieving the session from the timeline
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-  const login = (newToken, userData) => {
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(userData));
+    //  2. Event listener (login, logout, automatic token refresh)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    setToken(newToken);
-    setUser(userData);
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // The login is managed directly in the components via supabase.auth.signInWithPassword()
+  // But we centralize the logout here.
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setToken(null);
-    setUser(null);
-  };
-
-  //Helper isConnected ?
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!session;
 
   return (
     <AuthContext.Provider
-      value={{ token, user, login, logout, isAuthenticated }}
+      value={{ session, user, logout, isAuthenticated, loading }}
     >
-      {children}
+      {/* We are blocking the rendering of the roads as long as Supabase has not confirmed the state.  */}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
