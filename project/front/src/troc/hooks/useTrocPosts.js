@@ -10,7 +10,6 @@ export function useTrocPosts() {
   const loadPosts = useCallback(async () => {
     setLoading(true);
     setError("");
-
     try {
       const data = await getTrocs();
       setPosts(data);
@@ -25,7 +24,6 @@ export function useTrocPosts() {
   const publishPost = async (values) => {
     setError("");
     setSuccess("");
-
     try {
       await createTroc(values);
       setSuccess("Annonce publiée avec succès.");

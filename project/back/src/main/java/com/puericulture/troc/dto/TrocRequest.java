@@ -10,20 +10,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TrocRequest {
-
     @NotBlank(message = "Le titre est obligatoire")
     private String title;
 
     @NotBlank(message = "La description est obligatoire")
     private String description;
 
-    private String imageUrl;
+    private String imagesReferences;
 
     @NotNull(message = "Le prix estimé est obligatoire")
     @PositiveOrZero(message = "Le prix estimé doit être positif ou égal à zéro")
     private Long estimatedPrice;
 
     private UUID authorId;
-
-    private String category;
 }
