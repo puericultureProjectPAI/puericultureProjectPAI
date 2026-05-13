@@ -18,7 +18,7 @@ echo ">> [2/2] Formatting & Analyzing Back-end..."
 cd project/back || exit 1
 
 echo "   -> Applying Spotless formatting..."
-mvn spotless:apply || {
+./mvnw spotless:apply || {
   echo "❌ [BACKEND ERROR] Spotless failed to format. Commit aborted."
   exit 1
 }
@@ -29,7 +29,7 @@ git add project/back
 
 cd project/back || exit 1
 echo "   -> Compiling tests (Syntax check)..."
-mvn clean test-compile || {
+./mvnw clean test-compile || {
   echo "❌ [BACKEND ERROR] Compilation failed. Commit aborted."
   exit 1
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "product_troc")
-@PrimaryKeyJoinColumn(name = "id")
+@PrimaryKeyJoinColumn(name = "product_id", referencedColumnName = "id")
 public class Troc extends Products {
 
     @Column(name = "estimated_price", nullable = false)
