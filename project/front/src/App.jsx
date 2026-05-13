@@ -5,6 +5,7 @@ import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+import RegisterView from "./common/views/RegisterView";
 
 export default function App() {
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function App() {
       <Routes>
         {/* Public Route */}
         <Route path="/login" element={<Connection />} />
+        <Route path="/register" element={<RegisterView />} />
 
         {/* Security: Protected Shell*/}
         <Route element={<ProtectedRoute />}>
