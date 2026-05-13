@@ -7,13 +7,26 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TrocDto {
-    private Long id;
+
+    private Long postId;
+
+    private Long trocId;
+
     private String title;
+
     private String description;
-    private String imagesReferences;
-    private boolean open;
+
+    private boolean open = true;
+
     private Long estimatedPrice;
+
     private UUID authorId;
+
     private String authorName;
+
+    private String city;
+
     private String category;
+
+    private String imagesReferences;
 }

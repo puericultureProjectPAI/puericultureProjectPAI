@@ -4,11 +4,7 @@ import com.puericulture.common.entity.Products;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- * Legacy repository name kept for compatibility while Posts is renamed to Products.
- */
-@Deprecated
-public interface PostsRepository extends JpaRepository<Products, Long> {
+public interface ProductsRepository extends JpaRepository<Products, Long> {
 
     List<Products> findAllByOrderByIdDesc();
 }

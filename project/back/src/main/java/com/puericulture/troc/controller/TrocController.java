@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/troc/posts")
+@RequestMapping("/troc/products")
 public class TrocController {
+
     private final TrocService trocService;
 
     public TrocController(TrocService trocService) {
