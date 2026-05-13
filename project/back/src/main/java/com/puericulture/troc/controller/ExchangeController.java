@@ -3,6 +3,7 @@ package com.puericulture.troc.controller;
 import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
 import com.puericulture.troc.service.ExchangeService;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,5 +22,17 @@ public class ExchangeController {
     public ExchangeResponse createExchange(@RequestBody CreateExchangeRequest request) {
 
         return exchangeService.createExchange(request);
+    }
+
+    @DeleteMapping("/{exchangeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteExchange(@PathVariable Long exchangeId) {
+
+        exchangeService.deleteExchange(exchangeId);
+    }
+
+    @GetMapping
+    public List<ExchangeResponse> getAllExchanges() {
+        return exchangeService.getAllExchanges();
     }
 }

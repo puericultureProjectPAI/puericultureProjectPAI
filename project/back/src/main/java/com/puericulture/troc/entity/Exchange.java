@@ -2,6 +2,7 @@ package com.puericulture.troc.entity;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "exchanges", schema = "public")
@@ -10,6 +11,9 @@ public class Exchange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "creator_id", nullable = false)
+    private UUID creatorId;
 
     @Column(name = "proposer_product_id", nullable = false)
     private Long proposerProductId;
@@ -60,5 +64,13 @@ public class Exchange {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public UUID getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(UUID creatorId) {
+        this.creatorId = creatorId;
     }
 }
