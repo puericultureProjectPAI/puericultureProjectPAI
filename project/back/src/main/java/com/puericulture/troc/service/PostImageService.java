@@ -4,11 +4,10 @@ import com.puericulture.troc.dto.PostImageDto;
 import com.puericulture.troc.entity.PostImage;
 import com.puericulture.troc.mapper.PostImageMapper;
 import com.puericulture.troc.repository.PostImageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PostImageService {
@@ -16,14 +15,14 @@ public class PostImageService {
     private final PostImageMapper postImageMapper;
 
     @Autowired
-    public PostImageService(PostImageRepository postImageRepository, PostImageMapper postImageMapper) {
+    public PostImageService(
+            PostImageRepository postImageRepository, PostImageMapper postImageMapper) {
         this.postImageRepository = postImageRepository;
         this.postImageMapper = postImageMapper;
     }
 
     public List<PostImageDto> getImagesByPostId(Long postId) {
-        return postImageRepository.findByPostId(postId)
-                .stream()
+        return postImageRepository.findByPostId(postId).stream()
                 .map(postImageMapper::toDto)
                 .collect(Collectors.toList());
     }

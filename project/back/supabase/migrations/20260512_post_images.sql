@@ -4,7 +4,7 @@
 
 CREATE TABLE public.post_images (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    post_id BIGINT NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
+    post_id BIGINT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
     url TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
