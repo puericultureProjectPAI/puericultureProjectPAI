@@ -11,7 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDto {
+public abstract class ProductDto {
+
+    /*
+        Classe abstraite: les DTO pourront l'étendre pour récupérer directement toutes les infos d'un Product
+     */
 
     private Long id;
     private String postTitle;
