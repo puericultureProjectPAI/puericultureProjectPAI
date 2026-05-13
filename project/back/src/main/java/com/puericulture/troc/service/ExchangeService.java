@@ -7,10 +7,8 @@ import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
-import com.puericulture.troc.entity.Product;
 import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.repository.ExchangeRepository;
-import com.puericulture.troc.repository.ProductRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 public class ExchangeService {
 
     private final ExchangeRepository exchangeRepository;
-    private final ProductRepository productRepository;
     private final ProductTrocRepository productTrocRepository;
 
     private static final UUID MOCK_USER_ID =
@@ -31,44 +28,24 @@ public class ExchangeService {
     // connecté quand le front sera prêt
 
     public ExchangeService(
-            ExchangeRepository exchangeRepository,
-            ProductRepository productRepository,
-            ProductTrocRepository productTrocRepository) {
+            ExchangeRepository exchangeRepository, ProductTrocRepository productTrocRepository) {
         this.exchangeRepository = exchangeRepository;
-        this.productRepository = productRepository;
         this.productTrocRepository = productTrocRepository;
     }
 
     public ExchangeResponse createExchange(CreateExchangeRequest request) {
 
-        Product proposerProduct =
-                productRepository
+        ProductTroc proposerProduct =
+                productTrocRepository
                         .findById(request.getProposerProductId())
                         .orElseThrow(() -> new NotFoundException("Proposer product not found"));
 
-        Product receiverProduct =
-                productRepository
+        ProductTroc receiverProduct =
+                productTrocRepository
                         .findById(request.getReceiverProductId())
                         .orElseThrow(() -> new NotFoundException("Receiver product not found"));
 
-        ProductTroc proposerTroc =
-                productTrocRepository
-                        .findById(request.getProposerProductId())
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundException(
-                                                "Proposer product is not a troc product"));
-
-        ProductTroc receiverTroc =
-                productTrocRepository
-                        .findById(request.getReceiverProductId())
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundException(
-                                                "Receiver product is not a troc product"));
-
-        if (proposerProduct.getAuthorId().equals(receiverProduct.getAuthorId())) {
-
+        if (proposerProduct.getAuthor().equals(receiverProduct.getAuthor())) {
             throw new BadRequestException("Cannot exchange products from the same user");
         }
 
@@ -80,7 +57,7 @@ public class ExchangeService {
             throw new BadRequestException("Exchange already exists");
         }
 
-        if (!proposerProduct.getAuthorId().equals(MOCK_USER_ID)) {
+        if (!proposerProduct.getAuthor().getId().equals(MOCK_USER_ID)) {
 
             throw new ForbiddenException("You can only propose exchanges with your own product");
         }
@@ -136,18 +113,18 @@ public class ExchangeService {
                 .collect(Collectors.toList());
     }
 
-    public List<ExchangeResponse>
-            getExchangesProposedToConnectedUser() { // uniquement les échanges proposés à
+    public List<ExchangeResponse> getExchangesProposedToConnectedUser() {
+        // uniquement les échanges proposés à
         // l'utilisateur connecté
         return exchangeRepository.findAll().stream()
                 .filter(
                         exchange -> {
-                            Product receiverProduct =
-                                    productRepository
+                            ProductTroc receiverProduct =
+                                    productTrocRepository
                                             .findById(exchange.getReceiverProductId())
                                             .orElse(null);
                             return receiverProduct != null
-                                    && receiverProduct.getAuthorId().equals(MOCK_USER_ID);
+                                    && receiverProduct.getAuthor().getId().equals(MOCK_USER_ID);
                         })
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -168,12 +145,12 @@ public class ExchangeService {
             throw new BadRequestException("Only pending exchanges can be accepted");
         }
 
-        Product receiverProduct =
-                productRepository
+        ProductTroc receiverProduct =
+                productTrocRepository
                         .findById(exchange.getReceiverProductId())
                         .orElseThrow(() -> new NotFoundException("Receiver product not found"));
 
-        if (!receiverProduct.getAuthorId().equals(MOCK_USER_ID)) {
+        if (!receiverProduct.getAuthor().getId().equals(MOCK_USER_ID)) {
             throw new ForbiddenException("You can only accept exchanges proposed to you");
         }
 
@@ -196,12 +173,12 @@ public class ExchangeService {
             throw new BadRequestException("Only pending exchanges can be refused");
         }
 
-        Product receiverProduct =
-                productRepository
+        ProductTroc receiverProduct =
+                productTrocRepository
                         .findById(exchange.getReceiverProductId())
                         .orElseThrow(() -> new NotFoundException("Receiver product not found"));
 
-        if (!receiverProduct.getAuthorId().equals(MOCK_USER_ID)) {
+        if (!receiverProduct.getAuthor().getId().equals(MOCK_USER_ID)) {
             throw new ForbiddenException("You can only refuse exchanges proposed to you");
         }
 
@@ -212,12 +189,12 @@ public class ExchangeService {
     public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
             Long productId) { // uniquement les échanges proposés à l'utilisateur connecté pour
         // un produit donné
-        Product product =
-                productRepository
+        ProductTroc product =
+                productTrocRepository
                         .findById(productId)
                         .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        if (!product.getAuthorId().equals(MOCK_USER_ID)) {
+        if (!product.getAuthor().getId().equals(MOCK_USER_ID)) {
             throw new ForbiddenException(
                     "You can only view exchanges proposed to your own products");
         }

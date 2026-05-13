@@ -1,14 +1,12 @@
 package com.puericulture.troc.entity;
 
+import com.puericulture.common.entity.Product;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "product_troc", schema = "public")
-public class ProductTroc {
-
-    @Id
-    @Column(name = "product_id")
-    private Long productId;
+@PrimaryKeyJoinColumn(name = "product_id")
+public class ProductTroc extends Product {
 
     @Column(name = "estimated_price")
     private Long estimatedPrice;
@@ -17,14 +15,6 @@ public class ProductTroc {
     private String status;
 
     public ProductTroc() {}
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
 
     public Long getEstimatedPrice() {
         return estimatedPrice;

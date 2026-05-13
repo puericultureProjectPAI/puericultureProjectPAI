@@ -4,4 +4,4 @@ INSERT INTO public.product_troc (
     status
 )
 VALUES
-(3, 50, 'AVAILABLE')
+(1, 50, 'AVAILABLE')
