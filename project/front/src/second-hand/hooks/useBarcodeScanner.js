@@ -1,107 +1,105 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { BrowserMultiFormatReader } from "@zxing/browser";
+import { Html5Qrcode } from "html5-qrcode";
 
 export function useBarcodeScanner(onDetected) {
-  const videoRef = useRef(null);
-  const codeReaderRef = useRef(null);
-  const controlsRef = useRef(null);
-  const stopScannerRef = useRef(null);
+  const scannerRef = useRef(null);
+  const onDetectedRef = useRef(onDetected);
+  const isMountedRef = useRef(true);
+  const isStartingRef = useRef(false);
+
+  useEffect(() => {
+    onDetectedRef.current = onDetected;
+  }, [onDetected]);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState(null);
-  const [lastBarcode, setLastBarcode] = useState(null);
 
   const stopScanner = useCallback(() => {
-    if (controlsRef.current?.stop) {
-      controlsRef.current.stop();
-      controlsRef.current = null;
-    } else if (codeReaderRef.current?.reset) {
-      codeReaderRef.current.reset();
+    if (scannerRef.current) {
+      scannerRef.current
+        .stop()
+        .then(() => {
+          scannerRef.current?.clear();
+          scannerRef.current = null;
+        })
+        .catch(() => {
+          scannerRef.current = null;
+        });
     }
-
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
-      videoRef.current.srcObject = null;
-    }
-
     setIsScanning(false);
   }, []);
 
-  // Mise à jour de la ref HORS du render, via useEffect
-  useEffect(() => {
-    stopScannerRef.current = stopScanner;
-  }, [stopScanner]);
-
   const startScanner = useCallback(async () => {
+    if (isStartingRef.current) return;
     setError(null);
-    setLastBarcode(null);
-
+    setIsScanning(true);
+    isStartingRef.current = true;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    if (!isMountedRef.current) {
+      isStartingRef.current = false;
+      return;
+    }
     try {
-      codeReaderRef.current = new BrowserMultiFormatReader();
-
-      const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-
-      if (!devices || devices.length === 0) {
-        setError("Aucune caméra détectée sur cet appareil.");
-        return;
+      const containerWidth =
+        document.getElementById("qr-reader")?.offsetWidth || 300;
+      const qrboxWidth = Math.min(containerWidth - 40, 280);
+      if (scannerRef.current) {
+        try {
+          await scannerRef.current.stop();
+          await scannerRef.current.clear();
+        } catch {
+          // ignore cleanup errors
+        }
       }
-
-      const rearCamera = devices.find(
-        (d) =>
-          d.label.toLowerCase().includes("back") ||
-          d.label.toLowerCase().includes("arrière") ||
-          d.label.toLowerCase().includes("environment"),
-      );
-      const selectedDeviceId = (rearCamera ?? devices[0]).deviceId;
-
-      setIsScanning(true);
-
-      const controls = await codeReaderRef.current.decodeFromVideoDevice(
-        selectedDeviceId,
-        videoRef.current,
-        (result, err) => {
-          if (result) {
-            const barcode = result.getText();
-
-            if (navigator.vibrate) {
-              navigator.vibrate([100, 50, 100]);
-            }
-
-            setLastBarcode(barcode);
-            onDetected?.(barcode);
-            stopScannerRef.current?.();
-          }
-
-          if (err && err.name !== "NotFoundException") {
-            console.warn("[BarcodeScanner] Erreur de décodage :", err);
-          }
-        },
-      );
-
-      if (controls) {
-        controlsRef.current = controls;
-      }
-    } catch (e) {
-      console.error("[BarcodeScanner]", e);
-      if (e.name === "NotAllowedError") {
-        setError(
-          "Permission caméra refusée. Autorisez l'accès dans les réglages.",
+      const html5Qrcode = new Html5Qrcode("qr-reader", { verbose: false });
+      scannerRef.current = html5Qrcode;
+      const config = {
+        fps: 10,
+        qrbox: { width: qrboxWidth, height: Math.round(qrboxWidth * 0.55) },
+        formatsToSupport: [8],
+      };
+      const handleSuccess = (decodedText) => {
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        onDetectedRef.current?.(decodedText);
+        stopScanner();
+      };
+      try {
+        await html5Qrcode.start(
+          { facingMode: "environment" },
+          config,
+          handleSuccess,
+          () => undefined,
         );
-      } else if (e.name === "NotFoundError") {
-        setError("Aucune caméra compatible trouvée.");
+      } catch {
+        await html5Qrcode.start(
+          { facingMode: "user" },
+          config,
+          handleSuccess,
+          () => undefined,
+        );
+      }
+      isStartingRef.current = false;
+      if (!isMountedRef.current) stopScanner();
+    } catch (e) {
+      isStartingRef.current = false;
+      const msg = e?.toString() ?? "";
+      if (msg.includes("Permission") || msg.includes("NotAllowed")) {
+        setError("Permission caméra refusée.");
+      } else if (msg.includes("NotFound")) {
+        setError("Aucune caméra détectée.");
       } else {
-        setError("Erreur lors de l'accès à la caméra.");
+        setError(`Erreur caméra : ${msg}`);
       }
       setIsScanning(false);
+      scannerRef.current = null;
     }
-  }, [onDetected]);
+  }, [stopScanner]);
 
-  return {
-    videoRef,
-    isScanning,
-    error,
-    lastBarcode,
-    startScanner,
-    stopScanner,
-  };
+  return { isScanning, error, startScanner, stopScanner };
 }
