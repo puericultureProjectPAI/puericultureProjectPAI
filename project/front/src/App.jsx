@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router";
+
 import Layout from "./common/views/Layout";
 import Connection from "./common/views/Connection";
+
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+
+import CartPage from "./leasing/views/CartPage";
 
 export default function App() {
   useEffect(() => {
@@ -19,6 +23,7 @@ export default function App() {
       "beforeinstallprompt",
       handleBeforeInstallPrompt,
     );
+
     return () =>
       globalThis.removeEventListener(
         "beforeinstallprompt",
@@ -30,18 +35,20 @@ export default function App() {
     <AuthProvider>
       <Routes>
         {/* Public Route */}
-        <Route path="/login" element={<Connection />} />
+<Route path="/login" element={<Connection />} />
+<Route path="/leasing/cart" element={<CartPage />} />
 
-        {/* Security: Protected Shell*/}
+        {/* Security: Protected Shell */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />
 
             <Route element={<RoleGuard access={() => true} />}>
-              {/* Future vertical routes go here */}
+              {/* Leasing */}
+              <Route path="/leasing/cart" element={<CartPage />} />
             </Route>
 
-            {/* Default Redirections: Explicit logic  */}
+            {/* Default Redirections */}
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
@@ -53,10 +60,13 @@ export default function App() {
 
 function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Project PAI</h1>
-      {/*Mobile-first styling*/}
-      <button className="w-full max-w-sm bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition-transform">
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">
+        Project PAI
+      </h1>
+
+      {/* Mobile-first styling */}
+      <button className="w-full max-w-sm rounded-xl bg-blue-600 px-6 py-3 font-medium text-white shadow-md transition-transform hover:bg-blue-700 active:scale-95">
         Main Action
       </button>
     </div>
