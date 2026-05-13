@@ -14,15 +14,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED) //Pour l'héritage
+@Inheritance(strategy = InheritanceType.JOINED) // Pour l'héritage
 public abstract class Product {
     /*
-        La classe est abstraite : les produits sont soit un Troc, un Leasing ou un SecondHand
-        On peut travailler sur l'ensemble des produits mais pas créer un produit depuis cette classe,
-        il faut passer par une sous classe.
+       La classe est abstraite : les produits sont soit un Troc, un Leasing ou un SecondHand.
+       On peut travailler sur l'ensemble des produits mais pas créer un produit depuis cette classe,
+       il faut passer par une sous classe.
 
-        Autrement dit : les types de produits (Leasing, ...) doivent hériter de cette entité.
-     */
+       Autrement dit : les types de produits (Leasing, ...) doivent hériter de cette entité.
+    */
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

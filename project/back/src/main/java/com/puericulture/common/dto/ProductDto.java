@@ -2,20 +2,14 @@ package com.puericulture.common.dto;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class ProductDto {
 
     /*
-        Classe abstraite: les DTO pourront l'étendre pour récupérer directement toutes les infos d'un Product
-     */
+       Classe abstraite: les DTO pourront l'étendre pour récupérer directement toutes les infos d'un Product
+    */
 
     private Long id;
     private String postTitle;
