@@ -1,5 +1,6 @@
-import { useFormik } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import MyTextInput from "./MyTextInput";
 
 const validationSchema = Yup.object({
   lastName: Yup.string().required("Le nom est requis."),
@@ -21,94 +22,29 @@ const validationSchema = Yup.object({
 });
 
 export default function RegisterForm({ onSubmit, isLoading }) {
-  const formik = useFormik({
-    initialValues: {
-      lastName: "",
-      firstName: "",
-      birthDate: "",
-      email: "",
-      password: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      onSubmit(values);
-    },
-  });
-
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <div>
-        <input
-          type="text"
-          name="lastName"
-          placeholder="Nom"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.lastName}
-        />
-        {formik.touched.lastName && formik.errors.lastName && (
-          <div>{formik.errors.lastName}</div>
-        )}
-      </div>
+    <Formik
+      initialValues={{
+        lastName: "",
+        firstName: "",
+        birthDate: "",
+        email: "",
+        password: "",
+      }}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
+      <Form>
+        <MyTextInput label="Nom" name="lastName" type="text" />
+        <MyTextInput label="Prénom" name="firstName" type="text" />
+        <MyTextInput label="Date de naissance" name="birthDate" type="date" />
+        <MyTextInput label="Email" name="email" type="email" />
+        <MyTextInput label="Mot de passe" name="password" type="password" />
 
-      <div>
-        <input
-          type="text"
-          name="firstName"
-          placeholder="Prénom"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.firstName}
-        />
-        {formik.touched.firstName && formik.errors.firstName && (
-          <div>{formik.errors.firstName}</div>
-        )}
-      </div>
-
-      <div>
-        <input
-          type="date"
-          name="birthDate"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.birthDate}
-        />
-        {formik.touched.birthDate && formik.errors.birthDate && (
-          <div>{formik.errors.birthDate}</div>
-        )}
-      </div>
-
-      <div>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.email}
-        />
-        {formik.touched.email && formik.errors.email && (
-          <div>{formik.errors.email}</div>
-        )}
-      </div>
-
-      <div>
-        <input
-          type="password"
-          name="password"
-          placeholder="Mot de passe"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.password}
-        />
-        {formik.touched.password && formik.errors.password && (
-          <div>{formik.errors.password}</div>
-        )}
-      </div>
-
-      <button type="submit" disabled={isLoading || !formik.isValid}>
-        {isLoading ? "Inscription en cours..." : "S'inscrire"}
-      </button>
-    </form>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Inscription..." : "S'inscrire"}
+        </button>
+      </Form>
+    </Formik>
   );
 }
