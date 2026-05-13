@@ -5,6 +5,7 @@ import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
+              <Route path="/forward" element={<ForwardTradingView />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
