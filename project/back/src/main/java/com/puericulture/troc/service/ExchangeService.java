@@ -26,7 +26,7 @@ public class ExchangeService {
 
     private static final UUID MOCK_USER_ID =
             UUID.fromString(
-                    "1f3ff789-5551-46c2-9836-b2d14b4da22e"); // A rempacer par l'ID de l'utilisateur
+                    "58de0ca9-e943-44e6-a790-0ea0b7be5f14"); // A rempacer par l'ID de l'utilisateur
 
     // connecté quand le front sera prêt
 
@@ -134,5 +134,78 @@ public class ExchangeService {
                 .filter(exchange -> exchange.getCreatorId().equals(MOCK_USER_ID))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<ExchangeResponse>
+            getExchangesProposedToConnectedUser() { // uniquement les échanges proposés à
+        // l'utilisateur connecté
+        return exchangeRepository.findAll().stream()
+                .filter(
+                        exchange -> {
+                            Product receiverProduct =
+                                    productRepository
+                                            .findById(exchange.getReceiverProductId())
+                                            .orElse(null);
+                            return receiverProduct != null
+                                    && receiverProduct.getAuthorId().equals(MOCK_USER_ID);
+                        })
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void acceptExchange(Long exchangeId) {
+        /*
+        uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
+        les autres échanges proposés sur les produits concernés sont automatiquement refusés
+        et les produits concernés sont marqués comme échangés   */
+
+        Exchange exchange =
+                exchangeRepository
+                        .findById(exchangeId)
+                        .orElseThrow(() -> new NotFoundException("Exchange not found"));
+
+        if (!exchange.getStatus().equals(ExchangeStatus.PENDING)) {
+            throw new BadRequestException("Only pending exchanges can be accepted");
+        }
+
+        Product receiverProduct =
+                productRepository
+                        .findById(exchange.getReceiverProductId())
+                        .orElseThrow(() -> new NotFoundException("Receiver product not found"));
+
+        if (!receiverProduct.getAuthorId().equals(MOCK_USER_ID)) {
+            throw new ForbiddenException("You can only accept exchanges proposed to you");
+        }
+
+        exchange.setStatus(ExchangeStatus.CONFIRMED);
+        exchangeRepository.save(exchange);
+    }
+
+    public void refuseExchange(Long exchangeId) {
+        /*
+        uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
+        les autres échanges proposés sur les produits concernés sont automatiquement refusés
+        et les produits concernés sont marqués comme refusés   */
+
+        Exchange exchange =
+                exchangeRepository
+                        .findById(exchangeId)
+                        .orElseThrow(() -> new NotFoundException("Exchange not found"));
+
+        if (!exchange.getStatus().equals(ExchangeStatus.PENDING)) {
+            throw new BadRequestException("Only pending exchanges can be refused");
+        }
+
+        Product receiverProduct =
+                productRepository
+                        .findById(exchange.getReceiverProductId())
+                        .orElseThrow(() -> new NotFoundException("Receiver product not found"));
+
+        if (!receiverProduct.getAuthorId().equals(MOCK_USER_ID)) {
+            throw new ForbiddenException("You can only refuse exchanges proposed to you");
+        }
+
+        exchange.setStatus(ExchangeStatus.REFUSED);
+        exchangeRepository.save(exchange);
     }
 }
