@@ -37,24 +37,24 @@ INSERT INTO auth.users (
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. Produits (6 articles leasing, auteur = utilisateur 1)
-INSERT INTO public.products (id, author_id, post_title, description, category, city)
+INSERT INTO public.products (id, author_id, post_title, description, category, city, condition)
 OVERRIDING SYSTEM VALUE VALUES
-    (1, '00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',         'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'Poussette', 'Paris'),
-    (2, '00000000-0000-0000-0000-000000000001', 'Siège auto groupe 0+',           'Siège auto homologué ECE R44/04, coque rigide, harnais 5 points.',                    'Siège auto', 'Lyon'),
-    (3, '00000000-0000-0000-0000-000000000001', 'Berceau co-dodo',                'Berceau fixable au lit parental, matelas inclus, structure bois.',                     'Couchage',   'Bordeaux'),
-    (4, '00000000-0000-0000-0000-000000000001', 'Transat vibrant Fisher-Price',   'Transat à vibrations douces, arche de jeux amovible, 3 positions.',                   'Transat',    'Paris'),
-    (5, '00000000-0000-0000-0000-000000000001', 'Trotteur évolutif',              'Trotteur réglable en hauteur, plateau d''activités, roues antidérapantes.',            'Éveil',      'Marseille'),
-    (6, '00000000-0000-0000-0000-000000000001', 'Baignoire bébé ergonomique',     'Baignoire avec support antidérapant et thermomètre intégré, 0-24 mois.',              'Bain',       'Nantes')
+    (1, '00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',         'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'Poussette', 'Paris',      'Très bon état'),
+    (2, '00000000-0000-0000-0000-000000000001', 'Siège auto groupe 0+',           'Siège auto homologué ECE R44/04, coque rigide, harnais 5 points.',                    'Siège auto', 'Lyon',       'Bon état'),
+    (3, '00000000-0000-0000-0000-000000000001', 'Berceau co-dodo',                'Berceau fixable au lit parental, matelas inclus, structure bois.',                     'Couchage',   'Bordeaux',   'Excellent état'),
+    (4, '00000000-0000-0000-0000-000000000001', 'Transat vibrant Fisher-Price',   'Transat à vibrations douces, arche de jeux amovible, 3 positions.',                   'Transat',    'Paris',      'Bon état'),
+    (5, '00000000-0000-0000-0000-000000000001', 'Trotteur évolutif',              'Trotteur réglable en hauteur, plateau d''activités, roues antidérapantes.',            'Éveil',      'Marseille',  'État correct'),
+    (6, '00000000-0000-0000-0000-000000000001', 'Baignoire bébé ergonomique',     'Baignoire avec support antidérapant et thermomètre intégré, 0-24 mois.',              'Bain',       'Nantes',     'Excellent état')
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. Entrées leasing (prix en euros entiers)
-INSERT INTO public.product_leasing (product_id, price_per_day, price_per_month, condition) VALUES
-    (1, 5,  90, 'Très bon état'),
-    (2, 4,  70, 'Bon état'),
-    (3, 3,  55, 'Excellent état'),
-    (4, 2,  35, 'Bon état'),
-    (5, 2,  30, 'État correct'),
-    (6, 1,  18, 'Excellent état')
+INSERT INTO public.product_leasing (product_id, price_per_day, price_per_month) VALUES
+    (1, 5,  90),
+    (2, 4,  70),
+    (3, 3,  55),
+    (4, 2,  35),
+    (5, 2,  30),
+    (6, 1,  18)
 ON CONFLICT (product_id) DO NOTHING;
 
 -- 4. Images produits (produit 1 intentionnellement sans image)

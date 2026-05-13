@@ -26,7 +26,4 @@ public class LeasingProduct {
 
     @Column(name = "price_per_month", nullable = false)
     private Long pricePerMonth;
-
-    @Column(name = "condition", length = 255)
-    private String condition;
 }

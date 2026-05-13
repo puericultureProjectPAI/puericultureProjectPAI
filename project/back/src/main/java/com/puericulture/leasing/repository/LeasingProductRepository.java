@@ -19,7 +19,7 @@ public interface LeasingProductRepository extends JpaRepository<LeasingProduct, 
                     p.city,
                     pl.price_per_day    AS "pricePerDay",
                     pl.price_per_month  AS "pricePerMonth",
-                    pl.condition,
+                    p.condition,
                     pi_first.image_url  AS "firstImageUrl",
                     CASE
                         WHEN EXISTS (
