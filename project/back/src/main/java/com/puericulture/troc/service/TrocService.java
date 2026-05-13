@@ -27,6 +27,14 @@ public class TrocService {
 
     @Transactional
     public TrocDto createTroc(TrocRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Troc request is required");
+        }
+
+        if (request.getAuthorId() == null) {
+            throw new IllegalArgumentException("authorId is required to create a troc product");
+        }
+
         Troc troc = new Troc();
         troc.setPostTitle(request.getTitle());
         troc.setDescription(request.getDescription());
