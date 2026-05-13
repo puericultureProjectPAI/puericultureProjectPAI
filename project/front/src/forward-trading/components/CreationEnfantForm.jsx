@@ -31,21 +31,24 @@ const CreationEnfantForm = ({ onSubmit, isPending }) => {
             <label htmlFor="genre">Genre :</label>
             <Field as="select" id="genre" name="genre">
               <option value="">Sélectionnez un genre</option>
-              <option value="Fille">Fille</option>
-              <option value="Garçon">Garçon</option>
-              <option value="Autre">Autre</option>
+              <option value="f">Fille</option>
+              <option value="m">Garçon</option>
+              <option value="s">Autre</option>
             </Field>
             <ErrorMessage name="genre" component="div" />
           </div>
 
           <div>
-            <label htmlFor="dpa">Date de naissance (MM/AAAA) :</label>
+            {/* Mise à jour du label et du placeholder */}
+            <label htmlFor="dpa">
+              Date de naissance (JJ/MM/AAAA ou MM/AAAA) :
+            </label>
             <Field
               type="text"
               id="dpa"
               name="dpa"
-              placeholder="Ex: 05/2026"
-              maxLength="7"
+              placeholder="Ex: 27/11/2026 ou 11/2026"
+              maxLength="10"
             />
             <ErrorMessage name="dpa" component="div" />
           </div>

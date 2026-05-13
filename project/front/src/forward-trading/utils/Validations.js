@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
-export const REGEX_DPA_MM_AAAA = /^(0[1-9]|1[0-2])\/\d{4}$/;
+// Accepte MM/AAAA (ex: 11/2026) OU JJ/MM/AAAA (ex: 27/11/2026)
+export const REGEX_DPA = /^((0[1-9]|[12]\d|3[01])\/)?(0[1-9]|1[0-2])\/\d{4}$/;
 
 export const schemaCreationEnfant = Yup.object({
   prenom: Yup.string()
@@ -9,12 +10,12 @@ export const schemaCreationEnfant = Yup.object({
 
   genre: Yup.string()
     .oneOf(
-      ["Fille", "Garçon", "Autre"],
+      ["f", "m", "s"], // Aligné avec ton DTO backend
       "Veuillez sélectionner un genre valide",
     )
     .required("Le genre est requis"),
 
   dpa: Yup.string()
-    .matches(REGEX_DPA_MM_AAAA, "Le format doit être MM/AAAA (ex: 11/2026)")
+    .matches(REGEX_DPA, "Le format doit être JJ/MM/AAAA ou MM/AAAA")
     .required("La date est requise"),
 });

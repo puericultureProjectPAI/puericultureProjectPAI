@@ -6,7 +6,10 @@ import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+// 👇 2. Crée l'instance du client en dehors du composant
+const queryClient = new QueryClient();
 export default function App() {
   useEffect(() => {
     // PWA Logic: Captured at root to ensure shell availability
@@ -28,29 +31,27 @@ export default function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <Routes>
-        {/* Public Route */}
-        <Route path="/login" element={<Connection />} />
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Routes>
+          {/* Public Route */}
+          <Route path="/login" element={<Connection />} />
 
-        {/* Security: Protected Shell*/}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Layout />}>
-            <Route path="/home" element={<Home />} />
-
-            <Route element={<RoleGuard access={() => true} />}>
-              {/* Future vertical routes go here */}
-              {/* FT */}
+          {/* Security: Protected Shell*/}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<Layout />}>
+              <Route path="/home" element={<Home />} />
               <Route path="/create-children" element={<CreationEnfantView />} />
-            </Route>
+              <Route element={<RoleGuard access={() => true} />}></Route>
 
-            {/* Default Redirections: Explicit logic  */}
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
+              {/* Default Redirections: Explicit logic  */}
+              <Route path="/" element={<Navigate to="/home" replace />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
-    </AuthProvider>
+        </Routes>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

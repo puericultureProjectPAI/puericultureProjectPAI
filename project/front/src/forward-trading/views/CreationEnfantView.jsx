@@ -2,12 +2,32 @@ import CreationEnfantForm from "../components/CreationEnfantForm";
 import { useCreateEnfant } from "../hooks/UseCreateEnfant";
 
 const CreationEnfantView = () => {
-  // Récupération de la mutation TanStack Query
   const { mutateAsync, isPending, isError, error } = useCreateEnfant();
 
   const handleFormSubmit = async (values, { resetForm }) => {
     try {
-      await mutateAsync(values);
+      const parts = values.dpa.split("/");
+      let formattedDate = "";
+
+      if (parts.length === 2) {
+        // Cas MM/AAAA on force le jour à "01"
+        const [month, year] = parts;
+        formattedDate = `${year}-${month}-01`;
+      } else if (parts.length === 3) {
+        // Cas JJ/MM/AAAA
+        const [day, month, year] = parts;
+        formattedDate = `${year}-${month}-${day}`;
+      }
+
+      const payloadForBackend = {
+        name: values.prenom,
+        gender: values.genre,
+        dpa: formattedDate,
+      };
+
+      // 3. Appel API
+      await mutateAsync(payloadForBackend);
+
       alert("Enfant ajouté avec succès !");
       resetForm();
     } catch (err) {
