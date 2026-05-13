@@ -14,7 +14,12 @@ public class ProductTroc extends Product {
     @Column(name = "status")
     private String status;
 
-    public ProductTroc() {}
+    public ProductTroc() {
+        this.setPostDate(
+                java.time.LocalDateTime
+                        .now()); // Initialiser la date de publication à la création du produit
+        this.setStatus(ExchangeStatus.PENDING);
+    }
 
     public Long getEstimatedPrice() {
         return estimatedPrice;
@@ -28,7 +33,7 @@ public class ProductTroc extends Product {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(ExchangeStatus pending) {
+        this.status = pending.toString();
     }
 }

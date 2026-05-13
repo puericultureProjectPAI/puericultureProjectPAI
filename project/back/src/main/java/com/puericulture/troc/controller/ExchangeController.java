@@ -2,9 +2,11 @@ package com.puericulture.troc.controller;
 
 import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
+import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.service.ExchangeService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,9 +53,17 @@ public class ExchangeController {
         exchangeService.refuseExchange(exchangeId);
     }
 
-    @GetMapping("/proposed-to-me/{productId}")
+    @GetMapping("/product/proposed-to-me/{productId}")
     public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
             @PathVariable Long productId) {
         return exchangeService.getExchangesProposedToConnectedUserForProduct(productId);
+    }
+
+    @GetMapping("/product/{productId}/status")
+    public ResponseEntity<ProductExchangeStatusResponse> getExchangeStatusForProduct(
+            @PathVariable Long productId) {
+
+        return ResponseEntity.ok(
+                exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(productId));
     }
 }

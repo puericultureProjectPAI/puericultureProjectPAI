@@ -1,2 +1,1 @@
-SELECT *
-FROM products;
+select * from exchanges

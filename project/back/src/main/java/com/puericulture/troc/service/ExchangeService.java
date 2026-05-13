@@ -5,12 +5,14 @@ import com.puericulture.config.errormanager.exception.ForbiddenException;
 import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
+import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
 import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,11 @@ public class ExchangeService {
 
     private static final UUID MOCK_USER_ID =
             UUID.fromString(
-                    "58de0ca9-e943-44e6-a790-0ea0b7be5f14"); // A rempacer par l'ID de l'utilisateur
+                    "10814ed3-a02b-4b69-9d64-aa96ed92bceb"); // A rempacer par l'ID de l'utilisateur
+
+    // alice: "3ea68001-4154-4417-85ca-03383e0513b2" - produit : 4  // toky :
+    // "10814ed3-a02b-4b69-9d64-aa96ed92bceb" produit : 3 // mateo :
+    // "e50f8bb1-d640-44a8-a0f7-9b8e51b4db9d" produit : 7
 
     // connecté quand le front sera prêt
 
@@ -130,11 +136,11 @@ public class ExchangeService {
                 .collect(Collectors.toList());
     }
 
+    /*
+    uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
+    les autres échanges proposés sur les produits concernés sont automatiquement refusés
+    et les produits concernés sont marqués comme échangés   */
     public void acceptExchange(Long exchangeId) {
-        /*
-        uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
-        les autres échanges proposés sur les produits concernés sont automatiquement refusés
-        et les produits concernés sont marqués comme échangés   */
 
         Exchange exchange =
                 exchangeRepository
@@ -158,12 +164,11 @@ public class ExchangeService {
         exchangeRepository.save(exchange);
     }
 
+    /*
+    uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
+    les autres échanges proposés sur les produits concernés sont automatiquement refusés
+    et les produits concernés sont marqués comme refusés   */
     public void refuseExchange(Long exchangeId) {
-        /*
-        uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
-        les autres échanges proposés sur les produits concernés sont automatiquement refusés
-        et les produits concernés sont marqués comme refusés   */
-
         Exchange exchange =
                 exchangeRepository
                         .findById(exchangeId)
@@ -203,5 +208,58 @@ public class ExchangeService {
                 .filter(exchange -> exchange.getReceiverProductId().equals(productId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    // Depuis les détails d'un produit_troc qui n'est pas le sien,
+    //  un utilisateur doit pouvoir voir s'il a proposé un échange sur ce produit ou pas,
+    // et s'il a proposé un échange, il doit pouvoir voir le statut de cet échange
+    // (pending,confirmed,refused)
+    public ProductExchangeStatusResponse getIfIHaveProposedExchangeForSomeonesProduct(
+            Long productId) {
+
+        ProductTroc product =
+                productTrocRepository
+                        .findById(productId)
+                        .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        if (product.getAuthor().getId().equals(MOCK_USER_ID)) {
+
+            throw new ForbiddenException("You cannot check your own product");
+        }
+
+        Optional<Exchange> exchangeOptional =
+                exchangeRepository.findAll().stream()
+                        .filter(exchange -> exchange.getReceiverProductId().equals(productId))
+                        .filter(
+                                exchange -> {
+                                    ProductTroc proposerProduct =
+                                            productTrocRepository
+                                                    .findById(exchange.getProposerProductId())
+                                                    .orElse(null);
+
+                                    return proposerProduct != null
+                                            && proposerProduct
+                                                    .getAuthor()
+                                                    .getId()
+                                                    .equals(MOCK_USER_ID);
+                                })
+                        .findFirst();
+
+        ProductExchangeStatusResponse response = new ProductExchangeStatusResponse();
+
+        if (exchangeOptional.isPresent()) {
+
+            Exchange exchange = exchangeOptional.get();
+
+            response.setHasExchange(true);
+            response.setExchangeId(exchange.getId());
+            response.setStatus(exchange.getStatus());
+
+        } else {
+
+            response.setHasExchange(false);
+        }
+
+        return response;
     }
 }
