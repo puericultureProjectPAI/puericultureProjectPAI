@@ -1,8 +1,7 @@
 package com.puericulture.troc.service;
 
-import com.puericulture.troc.configuration.exception.ExchangeAlreadyExistsException;
-import com.puericulture.troc.configuration.exception.InvalidExchangeException;
-import com.puericulture.troc.configuration.exception.ProductNotFoundException;
+import com.puericulture.config.errormanager.exception.BadRequestException;
+import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
 import com.puericulture.troc.entity.Exchange;
@@ -35,21 +34,19 @@ public class ExchangeService {
         Product proposerProduct =
                 productRepository
                         .findById(request.getProposerProductId())
-                        .orElseThrow(
-                                () -> new ProductNotFoundException("Proposer product not found"));
+                        .orElseThrow(() -> new NotFoundException("Proposer product not found"));
 
         Product receiverProduct =
                 productRepository
                         .findById(request.getReceiverProductId())
-                        .orElseThrow(
-                                () -> new ProductNotFoundException("Receiver product not found"));
+                        .orElseThrow(() -> new NotFoundException("Receiver product not found"));
 
         ProductTroc proposerTroc =
                 productTrocRepository
                         .findById(request.getProposerProductId())
                         .orElseThrow(
                                 () ->
-                                        new ProductNotFoundException(
+                                        new NotFoundException(
                                                 "Proposer product is not a troc product"));
 
         ProductTroc receiverTroc =
@@ -57,12 +54,12 @@ public class ExchangeService {
                         .findById(request.getReceiverProductId())
                         .orElseThrow(
                                 () ->
-                                        new ProductNotFoundException(
+                                        new NotFoundException(
                                                 "Receiver product is not a troc product"));
 
         if (proposerProduct.getAuthorId().equals(receiverProduct.getAuthorId())) {
 
-            throw new InvalidExchangeException("Cannot exchange products from the same user");
+            throw new BadRequestException("Cannot exchange products from the same user");
         }
 
         boolean alreadyExists =
@@ -70,7 +67,7 @@ public class ExchangeService {
                         request.getProposerProductId(), request.getReceiverProductId());
 
         if (alreadyExists) {
-            throw new ExchangeAlreadyExistsException("Exchange already exists");
+            throw new BadRequestException("Exchange already exists");
         }
 
         Exchange exchange = new Exchange();
