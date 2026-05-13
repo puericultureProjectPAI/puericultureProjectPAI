@@ -5,6 +5,8 @@ import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
+import RegisterView from "./common/views/RegisterView";
 
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
@@ -34,6 +36,7 @@ export default function App() {
       <Routes>
         {/* Public Route */}
         <Route path="/login" element={<Connection />} />
+        <Route path="/register" element={<RegisterView />} />
 
         {/* Security: Protected Shell*/}
         <Route element={<ProtectedRoute />}>
@@ -44,6 +47,7 @@ export default function App() {
               {/* Future vertical routes go here */}
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
+              <Route path="/forward" element={<ForwardTradingView />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
