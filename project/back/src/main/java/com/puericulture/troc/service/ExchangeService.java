@@ -208,4 +208,23 @@ public class ExchangeService {
         exchange.setStatus(ExchangeStatus.REFUSED);
         exchangeRepository.save(exchange);
     }
+
+    public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
+            Long productId) { // uniquement les échanges proposés à l'utilisateur connecté pour
+        // un produit donné
+        Product product =
+                productRepository
+                        .findById(productId)
+                        .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        if (!product.getAuthorId().equals(MOCK_USER_ID)) {
+            throw new ForbiddenException(
+                    "You can only view exchanges proposed to your own products");
+        }
+
+        return exchangeRepository.findAll().stream()
+                .filter(exchange -> exchange.getReceiverProductId().equals(productId))
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }

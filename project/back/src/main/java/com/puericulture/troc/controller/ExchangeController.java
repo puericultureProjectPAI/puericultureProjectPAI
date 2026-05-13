@@ -50,4 +50,10 @@ public class ExchangeController {
     public void refuseExchange(@PathVariable Long exchangeId) {
         exchangeService.refuseExchange(exchangeId);
     }
+
+    @GetMapping("/proposed-to-me/{productId}")
+    public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
+            @PathVariable Long productId) {
+        return exchangeService.getExchangesProposedToConnectedUserForProduct(productId);
+    }
 }
