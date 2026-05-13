@@ -7,6 +7,7 @@ import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+import RegisterView from "./common/views/RegisterView";
 
 import CartPage from "./leasing/views/CartPage";
 
@@ -37,6 +38,8 @@ export default function App() {
         {/* Public Route */}
 <Route path="/login" element={<Connection />} />
 <Route path="/leasing/cart" element={<CartPage />} />
+        <Route path="/login" element={<Connection />} />
+        <Route path="/register" element={<RegisterView />} />
 
         {/* Security: Protected Shell */}
         <Route element={<ProtectedRoute />}>
