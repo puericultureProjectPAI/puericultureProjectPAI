@@ -1,8 +1,10 @@
 package com.puericulture.secondhand.controller;
 
+import com.puericulture.secondhand.dto.ExternalProductDTO;
 import com.puericulture.secondhand.dto.PriceComparisonDTO;
 import com.puericulture.secondhand.dto.ProductResponseDTO;
 import com.puericulture.secondhand.service.ProductService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,12 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    @PostMapping
+    public ResponseEntity<?> saveProduct(@Valid @RequestBody ExternalProductDTO dto) {
+        ProductResponseDTO saved = productService.saveExternalProduct(dto);
+        return ResponseEntity.status(201).body(saved);
+    }
+
     @GetMapping("/{ean}/price-comparison")
     public ResponseEntity<?> getPriceComparison(
             @PathVariable @Pattern(regexp = "^[0-9]{13}$") String ean) {
@@ -39,10 +47,8 @@ public class ProductController {
             return ResponseEntity.status(404).body(Map.of("error", "PRODUCT_NOT_FOUND"));
         }
 
-        Double newPrice = product.getNewPrice();
-        String category = product.getCategory();
-
-        PriceComparisonDTO comparison = productService.getPriceComparison(category, newPrice);
+        PriceComparisonDTO comparison =
+                productService.getPriceComparison(product.getCategory(), product.getNewPrice());
         return ResponseEntity.ok(comparison);
     }
 }
