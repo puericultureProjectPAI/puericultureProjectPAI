@@ -4,7 +4,7 @@ CREATE TABLE public.external_products (
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(255),
     category VARCHAR(255),
-    image_url TEXT (optional),
+    image_url TEXT,
     price DECIMAL(10,2)
 );
 
