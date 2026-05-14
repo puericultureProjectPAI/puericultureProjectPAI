@@ -1,0 +1,32 @@
+# ==========================================
+# 1. GLOBAL RULE (Fallback)
+# ==========================================
+# By default, all the code is owned by the TechLeads team.
+* @puericultureProjectPAI/TechLeads
+
+# ==========================================
+# 2. SECURITY OF THE CODEOWNER FILE
+# ==========================================
+# Only the CTO can accept modification on the CODEOWNERs file. this rule override every other rule '*'.
+/.github/CODEOWNERS @LeoDefossez
+
+# ==========================================
+# 3. VERTICAL (Overrides)
+# ==========================================
+# If a file of the pull request is in one of the vertical files, override the global rule
+
+## Troc
+/project/back/src/main/java/com/puericulture/troc/ @JA-DEL2
+/project/front/src/troc/ @JA-DEL2
+
+## Secondhand
+/project/back/src/main/java/com/puericulture/secondhand/ @saitalilyas
+/project/front/src/secondhand/ @saitalilyas
+
+## Forward Trading
+/project/back/src/main/java/com/puericulture/forwardtrading/ @Moyon-Xavier
+/project/front/src/forwardtrading/ @Moyon-Xavier
+
+## Leasing
+/project/back/src/main/java/com/puericulture/leasing/ biduletruc477@gmail.com
+/project/front/src/leasing/ biduletruc477@gmail.com
