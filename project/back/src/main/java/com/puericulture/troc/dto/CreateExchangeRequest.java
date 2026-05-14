@@ -1,26 +1,22 @@
 package com.puericulture.troc.dto;
 
+import com.puericulture.troc.entity.ProductTroc;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class CreateExchangeRequest {
 
-    private Long proposerProductId;
+    private ProductTroc proposerProduct;
 
-    private Long receiverProductId;
-
-    public CreateExchangeRequest() {}
-
-    public Long getProposerProductId() {
-        return proposerProductId;
-    }
-
-    public void setProposerProductId(Long proposerProductId) {
-        this.proposerProductId = proposerProductId;
-    }
-
-    public Long getReceiverProductId() {
-        return receiverProductId;
-    }
-
-    public void setReceiverProductId(Long receiverProductId) {
-        this.receiverProductId = receiverProductId;
-    }
+    private ProductTroc receiverProduct;
 }

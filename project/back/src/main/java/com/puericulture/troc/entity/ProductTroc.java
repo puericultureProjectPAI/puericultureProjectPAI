@@ -2,10 +2,16 @@ package com.puericulture.troc.entity;
 
 import com.puericulture.common.entity.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "product_troc", schema = "public")
 @PrimaryKeyJoinColumn(name = "product_id")
+@Getter
+@Setter
+@AllArgsConstructor
 public class ProductTroc extends Product {
 
     @Column(name = "estimated_price")
@@ -19,18 +25,6 @@ public class ProductTroc extends Product {
                 java.time.LocalDateTime
                         .now()); // Initialiser la date de publication à la création du produit
         this.setStatus(ExchangeStatus.PENDING);
-    }
-
-    public Long getEstimatedPrice() {
-        return estimatedPrice;
-    }
-
-    public void setEstimatedPrice(Long estimatedPrice) {
-        this.estimatedPrice = estimatedPrice;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public void setStatus(ExchangeStatus pending) {

@@ -3,9 +3,17 @@ package com.puericulture.troc.entity;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "exchanges", schema = "public")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Exchange {
 
     @Id
@@ -15,11 +23,13 @@ public class Exchange {
     @Column(name = "creator_id", nullable = false)
     private UUID creatorId;
 
-    @Column(name = "proposer_product_id", nullable = false)
-    private Long proposerProductId;
+    @ManyToOne
+    @JoinColumn(name = "proposer_product_id", nullable = false)
+    private ProductTroc proposerProduct;
 
-    @Column(name = "receiver_product_id", nullable = false)
-    private Long receiverProductId;
+    @ManyToOne
+    @JoinColumn(name = "receiver_product_id", nullable = false)
+    private ProductTroc receiverProduct;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -27,50 +37,4 @@ public class Exchange {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
-
-    public Exchange() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getProposerProductId() {
-        return proposerProductId;
-    }
-
-    public void setProposerProductId(Long proposerProductId) {
-        this.proposerProductId = proposerProductId;
-    }
-
-    public Long getReceiverProductId() {
-        return receiverProductId;
-    }
-
-    public void setReceiverProductId(Long receiverProductId) {
-        this.receiverProductId = receiverProductId;
-    }
-
-    public ExchangeStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ExchangeStatus status) {
-        this.status = status;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public UUID getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(UUID creatorId) {
-        this.creatorId = creatorId;
-    }
 }

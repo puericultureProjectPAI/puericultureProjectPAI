@@ -1,3 +1,5 @@
+// ExchangeService.java
+
 package com.puericulture.troc.service;
 
 import com.puericulture.config.errormanager.exception.BadRequestException;
@@ -24,17 +26,11 @@ public class ExchangeService {
     private final ProductTrocRepository productTrocRepository;
 
     private static final UUID MOCK_USER_ID =
-            UUID.fromString(
-                    "10814ed3-a02b-4b69-9d64-aa96ed92bceb"); // A rempacer par l'ID de l'utilisateur
-
-    // alice: "3ea68001-4154-4417-85ca-03383e0513b2" - produit : 4  // toky :
-    // "10814ed3-a02b-4b69-9d64-aa96ed92bceb" produit : 3 // mateo :
-    // "e50f8bb1-d640-44a8-a0f7-9b8e51b4db9d" produit : 7
-
-    // connecté quand le front sera prêt
+            UUID.fromString("10814ed3-a02b-4b69-9d64-aa96ed92bceb");
 
     public ExchangeService(
             ExchangeRepository exchangeRepository, ProductTrocRepository productTrocRepository) {
+
         this.exchangeRepository = exchangeRepository;
         this.productTrocRepository = productTrocRepository;
     }
@@ -43,23 +39,25 @@ public class ExchangeService {
 
         ProductTroc proposerProduct =
                 productTrocRepository
-                        .findById(request.getProposerProductId())
+                        .findById(request.getProposerProduct().getId())
                         .orElseThrow(() -> new NotFoundException("Proposer product not found"));
 
         ProductTroc receiverProduct =
                 productTrocRepository
-                        .findById(request.getReceiverProductId())
+                        .findById(request.getReceiverProduct().getId())
                         .orElseThrow(() -> new NotFoundException("Receiver product not found"));
 
         if (proposerProduct.getAuthor().equals(receiverProduct.getAuthor())) {
+
             throw new BadRequestException("Cannot exchange products from the same user");
         }
 
         boolean alreadyExists =
-                exchangeRepository.existsByProposerProductIdAndReceiverProductId(
-                        request.getProposerProductId(), request.getReceiverProductId());
+                exchangeRepository.existsByProposerProductAndReceiverProduct(
+                        proposerProduct, receiverProduct);
 
         if (alreadyExists) {
+
             throw new BadRequestException("Exchange already exists");
         }
 
@@ -70,14 +68,10 @@ public class ExchangeService {
 
         Exchange exchange = new Exchange();
 
-        exchange.setProposerProductId(request.getProposerProductId());
-        exchange.setReceiverProductId(request.getReceiverProductId());
-
+        exchange.setProposerProduct(proposerProduct);
+        exchange.setReceiverProduct(receiverProduct);
         exchange.setStatus(ExchangeStatus.PENDING);
-
-        exchange.setCreatorId(
-                MOCK_USER_ID); // A remplacer par l'ID de l'utilisateur connecté quand le front sera
-        // prêt
+        exchange.setCreatorId(MOCK_USER_ID);
 
         Exchange savedExchange = exchangeRepository.save(exchange);
 
@@ -89,8 +83,8 @@ public class ExchangeService {
         ExchangeResponse response = new ExchangeResponse();
 
         response.setId(exchange.getId());
-        response.setProposerProductId(exchange.getProposerProductId());
-        response.setReceiverProductId(exchange.getReceiverProductId());
+        response.setProposerProduct(exchange.getProposerProduct());
+        response.setReceiverProduct(exchange.getReceiverProduct());
         response.setStatus(exchange.getStatus());
         response.setCreatedAt(exchange.getCreatedAt());
 
@@ -98,6 +92,7 @@ public class ExchangeService {
     }
 
     public void deleteExchange(Long exchangeId) {
+
         Exchange exchange =
                 exchangeRepository
                         .findById(exchangeId)
@@ -111,35 +106,26 @@ public class ExchangeService {
         exchangeRepository.delete(exchange);
     }
 
-    public List<ExchangeResponse>
-            getAllExchanges() { // uniquement les échanges créés par l'utilisateur connecté
-        return exchangeRepository.findAll().stream()
-                .filter(exchange -> exchange.getCreatorId().equals(MOCK_USER_ID))
+    public List<ExchangeResponse> getAllExchanges() {
+
+        return exchangeRepository.findByCreatorId(MOCK_USER_ID).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<ExchangeResponse> getExchangesProposedToConnectedUser() {
-        // uniquement les échanges proposés à
-        // l'utilisateur connecté
+
         return exchangeRepository.findAll().stream()
                 .filter(
-                        exchange -> {
-                            ProductTroc receiverProduct =
-                                    productTrocRepository
-                                            .findById(exchange.getReceiverProductId())
-                                            .orElse(null);
-                            return receiverProduct != null
-                                    && receiverProduct.getAuthor().getId().equals(MOCK_USER_ID);
-                        })
+                        exchange ->
+                                exchange.getReceiverProduct()
+                                        .getAuthor()
+                                        .getId()
+                                        .equals(MOCK_USER_ID))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    /*
-    uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
-    les autres échanges proposés sur les produits concernés sont automatiquement refusés
-    et les produits concernés sont marqués comme échangés   */
     public void acceptExchange(Long exchangeId) {
 
         Exchange exchange =
@@ -148,72 +134,60 @@ public class ExchangeService {
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
 
         if (!exchange.getStatus().equals(ExchangeStatus.PENDING)) {
+
             throw new BadRequestException("Only pending exchanges can be accepted");
         }
 
-        ProductTroc receiverProduct =
-                productTrocRepository
-                        .findById(exchange.getReceiverProductId())
-                        .orElseThrow(() -> new NotFoundException("Receiver product not found"));
+        if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
 
-        if (!receiverProduct.getAuthor().getId().equals(MOCK_USER_ID)) {
             throw new ForbiddenException("You can only accept exchanges proposed to you");
         }
 
         exchange.setStatus(ExchangeStatus.CONFIRMED);
+
         exchangeRepository.save(exchange);
     }
 
-    /*
-    uniquement les échanges proposés à l'utilisateur connecté et qui sont en statut PENDING,
-    les autres échanges proposés sur les produits concernés sont automatiquement refusés
-    et les produits concernés sont marqués comme refusés   */
     public void refuseExchange(Long exchangeId) {
+
         Exchange exchange =
                 exchangeRepository
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
 
         if (!exchange.getStatus().equals(ExchangeStatus.PENDING)) {
+
             throw new BadRequestException("Only pending exchanges can be refused");
         }
 
-        ProductTroc receiverProduct =
-                productTrocRepository
-                        .findById(exchange.getReceiverProductId())
-                        .orElseThrow(() -> new NotFoundException("Receiver product not found"));
+        if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
 
-        if (!receiverProduct.getAuthor().getId().equals(MOCK_USER_ID)) {
             throw new ForbiddenException("You can only refuse exchanges proposed to you");
         }
 
         exchange.setStatus(ExchangeStatus.REFUSED);
+
         exchangeRepository.save(exchange);
     }
 
-    public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
-            Long productId) { // uniquement les échanges proposés à l'utilisateur connecté pour
-        // un produit donné
+    public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(Long productId) {
+
         ProductTroc product =
                 productTrocRepository
                         .findById(productId)
                         .orElseThrow(() -> new NotFoundException("Product not found"));
 
         if (!product.getAuthor().getId().equals(MOCK_USER_ID)) {
+
             throw new ForbiddenException(
                     "You can only view exchanges proposed to your own products");
         }
 
-        return exchangeRepository.findAll().stream()
-                .filter(exchange -> exchange.getReceiverProductId().equals(productId))
+        return exchangeRepository.findByReceiverProduct(product).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Depuis les détails d'un produit_troc qui n'est pas le sien,
-    //  un utilisateur doit pouvoir voir s'il a proposé un échange sur ce produit ou pas,
-    // et s'il a proposé un échange, il doit pouvoir voir le statut de cet échange
-    // (pending,confirmed,refused)
     public ProductExchangeStatusResponse getIfIHaveProposedExchangeForSomeonesProduct(
             Long productId) {
 
@@ -228,21 +202,13 @@ public class ExchangeService {
         }
 
         Optional<Exchange> exchangeOptional =
-                exchangeRepository.findAll().stream()
-                        .filter(exchange -> exchange.getReceiverProductId().equals(productId))
+                exchangeRepository.findByReceiverProduct(product).stream()
                         .filter(
-                                exchange -> {
-                                    ProductTroc proposerProduct =
-                                            productTrocRepository
-                                                    .findById(exchange.getProposerProductId())
-                                                    .orElse(null);
-
-                                    return proposerProduct != null
-                                            && proposerProduct
-                                                    .getAuthor()
-                                                    .getId()
-                                                    .equals(MOCK_USER_ID);
-                                })
+                                exchange ->
+                                        exchange.getProposerProduct()
+                                                .getAuthor()
+                                                .getId()
+                                                .equals(MOCK_USER_ID))
                         .findFirst();
 
         ProductExchangeStatusResponse response = new ProductExchangeStatusResponse();
