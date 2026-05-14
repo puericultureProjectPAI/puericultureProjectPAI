@@ -2,10 +2,15 @@ package com.puericulture.secondhand.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExternalProductDTO {
 
     @NotBlank
@@ -17,5 +22,5 @@ public class ExternalProductDTO {
     private String brand;
     private String category;
     private String imageUrl;
-    private Double newPrice;
+    private Double Price;
 }

@@ -27,9 +27,9 @@ public class ExternalProduct {
     @Column(name = "category", length = 255)
     private String category;
 
-    @Column(name = "image_url", length = 500)
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
-    @Column(name = "new_price")
-    private Double newPrice;
+    @Column(name = "price")
+    private Double price;
 }

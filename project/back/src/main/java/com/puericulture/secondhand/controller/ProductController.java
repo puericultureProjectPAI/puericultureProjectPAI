@@ -48,7 +48,7 @@ public class ProductController {
         }
 
         PriceComparisonDTO comparison =
-                productService.getPriceComparison(product.getCategory(), product.getNewPrice());
+                productService.getPriceComparison(product.getCategory(), product.getPrice());
         return ResponseEntity.ok(comparison);
     }
 }

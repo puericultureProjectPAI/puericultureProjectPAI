@@ -4,8 +4,8 @@ CREATE TABLE public.external_products (
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(255),
     category VARCHAR(255),
-    image_url VARCHAR(500),
-    new_price DECIMAL(10,2)
+    image_url TEXT (optional),
+    price DECIMAL(10,2)
 );
 
 ALTER TABLE public.external_products ENABLE ROW LEVEL SECURITY;

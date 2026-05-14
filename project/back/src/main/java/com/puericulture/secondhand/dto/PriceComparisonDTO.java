@@ -1,10 +1,14 @@
 package com.puericulture.secondhand.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class PriceComparisonDTO {
 
     private String category;
@@ -13,26 +17,4 @@ public class PriceComparisonDTO {
     private Double savingsAmount;
     private Double savingsPercent;
     private boolean lowSampleWarning;
-
-    public PriceComparisonDTO(String category) {
-        this.category = category;
-        this.averageOccasionPrice = null;
-        this.listingsCount = 0L;
-        this.lowSampleWarning = false;
-    }
-
-    public PriceComparisonDTO(
-            String category,
-            Double averageOccasionPrice,
-            Long listingsCount,
-            Double savingsAmount,
-            Double savingsPercent,
-            boolean lowSampleWarning) {
-        this.category = category;
-        this.averageOccasionPrice = averageOccasionPrice;
-        this.listingsCount = listingsCount;
-        this.savingsAmount = savingsAmount;
-        this.savingsPercent = savingsPercent;
-        this.lowSampleWarning = lowSampleWarning;
-    }
 }
