@@ -18,7 +18,6 @@ const products = Array.from({ length: 6 }, (_, index) => ({
 export default function CatalogPage() {
   return (
     <main className="mx-auto h-screen w-[260px] overflow-y-auto bg-white text-[#040037]">
-      {/* HEADER */}
       <header className="flex h-[39px] items-center justify-between bg-[#040037] px-[10px] text-white">
         <img
           src="/images/logo-kiabi.png"
@@ -32,7 +31,6 @@ export default function CatalogPage() {
         </div>
       </header>
 
-      {/* TITLE */}
       <section className="px-[8px] pt-[10px]">
         <h2 className="text-[11px] font-bold leading-none">
           Articles disponibles à la location
@@ -43,7 +41,6 @@ export default function CatalogPage() {
         </p>
       </section>
 
-      {/* PRODUCTS */}
       <section className="grid grid-cols-2 gap-x-[10px] gap-y-[8px] px-[14px] pt-[12px] pb-[70px]">
         {products.slice(0, 4).map((product) => (
           <article
@@ -66,23 +63,19 @@ export default function CatalogPage() {
               </span>
             </div>
 
-            <h3 className="mt-[5px] text-[8px] leading-none">{product.name}</h3>
+            <h3 className="mt-[5px] text-[8px] leading-none">
+              {product.name}
+            </h3>
 
             <p className="mt-[3px] text-[9px] font-bold leading-none">
               {product.price}
             </p>
 
-            <button
-              type="button"
-              className="mt-[9px] h-[24px] w-full rounded-[5px] bg-[#040037] text-[8px] font-semibold text-white"
-            >
-              Louer
-            </button>
+            <div className="h-[6px]" />
           </article>
         ))}
       </section>
 
-      {/* NAVBAR */}
       <nav className="fixed bottom-0 left-1/2 flex h-[42px] w-[260px] -translate-x-1/2 items-center justify-around border-t border-[#E6E6E6] bg-white">
         {[
           { icon: House, label: "Accueil", active: true },
