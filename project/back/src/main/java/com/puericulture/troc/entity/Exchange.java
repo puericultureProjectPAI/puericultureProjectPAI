@@ -2,7 +2,6 @@ package com.puericulture.troc.entity;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +18,6 @@ public class Exchange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "creator_id", nullable = false)
-    private UUID creatorId;
 
     @ManyToOne
     @JoinColumn(name = "proposer_product_id", nullable = false)

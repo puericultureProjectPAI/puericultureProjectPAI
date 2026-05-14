@@ -113,7 +113,7 @@ class ExchangeServiceTest {
     void shouldDeleteExchangeSuccessfully() {
 
         Exchange exchange = new Exchange();
-        exchange.setCreatorId(MOCK_USER_ID);
+        exchange.setProposerProduct(proposerProduct);
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
 
@@ -125,8 +125,13 @@ class ExchangeServiceTest {
     @Test
     void shouldThrowWhenDeletingExchangeNotOwnedByUser() {
 
+        Person connectedUser = new Person();
+        connectedUser.setId(UUID.randomUUID());
+
+        receiverProduct.setAuthor(connectedUser);
+
         Exchange exchange = new Exchange();
-        exchange.setCreatorId(UUID.randomUUID());
+        exchange.setProposerProduct(receiverProduct);
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
 

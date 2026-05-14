@@ -71,7 +71,6 @@ public class ExchangeService {
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
         exchange.setStatus(ExchangeStatus.PENDING);
-        exchange.setCreatorId(MOCK_USER_ID);
 
         Exchange savedExchange = exchangeRepository.save(exchange);
 
@@ -98,7 +97,7 @@ public class ExchangeService {
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
 
-        if (!exchange.getCreatorId().equals(MOCK_USER_ID)) {
+        if (!exchange.getProposerProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
 
             throw new ForbiddenException("You can only delete exchanges that you have created");
         }
@@ -108,7 +107,7 @@ public class ExchangeService {
 
     public List<ExchangeResponse> getAllExchanges() {
 
-        return exchangeRepository.findByCreatorId(MOCK_USER_ID).stream()
+        return exchangeRepository.findByProposerProductAuthorId(MOCK_USER_ID).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
