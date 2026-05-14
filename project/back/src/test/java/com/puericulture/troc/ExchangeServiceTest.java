@@ -15,6 +15,7 @@ import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
 import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import com.puericulture.troc.service.ExchangeService;
@@ -34,6 +35,7 @@ class ExchangeServiceTest {
     @Mock private ExchangeRepository exchangeRepository;
 
     @Mock private ProductTrocRepository productTrocRepository;
+    @Mock private ExchangeMapper exchangeMapper;
 
     @InjectMocks private ExchangeService exchangeService;
 
@@ -80,6 +82,12 @@ class ExchangeServiceTest {
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
         exchange.setStatus(ExchangeStatus.PENDING);
+
+        ExchangeResponse mockResponse = new ExchangeResponse();
+        mockResponse.setStatus(ExchangeStatus.PENDING);
+
+        when(exchangeMapper.toEntity(request)).thenReturn(exchange);
+        when(exchangeMapper.toResponse(any(Exchange.class))).thenReturn(mockResponse);
 
         when(exchangeRepository.save(any(Exchange.class))).thenReturn(exchange);
 

@@ -11,6 +11,7 @@ import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
 import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.util.List;
@@ -24,15 +25,19 @@ public class ExchangeService {
 
     private final ExchangeRepository exchangeRepository;
     private final ProductTrocRepository productTrocRepository;
+    private final ExchangeMapper exchangeMapper;
 
     private static final UUID MOCK_USER_ID =
             UUID.fromString("10814ed3-a02b-4b69-9d64-aa96ed92bceb");
 
     public ExchangeService(
-            ExchangeRepository exchangeRepository, ProductTrocRepository productTrocRepository) {
+            ExchangeRepository exchangeRepository,
+            ProductTrocRepository productTrocRepository,
+            ExchangeMapper exchangeMapper) {
 
         this.exchangeRepository = exchangeRepository;
         this.productTrocRepository = productTrocRepository;
+        this.exchangeMapper = exchangeMapper;
     }
 
     public ExchangeResponse createExchange(CreateExchangeRequest request) {
@@ -66,7 +71,8 @@ public class ExchangeService {
             throw new ForbiddenException("You can only propose exchanges with your own product");
         }
 
-        Exchange exchange = new Exchange();
+        Exchange exchange = exchangeMapper.toEntity(request);
+        ;
 
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
@@ -74,20 +80,7 @@ public class ExchangeService {
 
         Exchange savedExchange = exchangeRepository.save(exchange);
 
-        return mapToResponse(savedExchange);
-    }
-
-    private ExchangeResponse mapToResponse(Exchange exchange) {
-
-        ExchangeResponse response = new ExchangeResponse();
-
-        response.setId(exchange.getId());
-        response.setProposerProduct(exchange.getProposerProduct());
-        response.setReceiverProduct(exchange.getReceiverProduct());
-        response.setStatus(exchange.getStatus());
-        response.setCreatedAt(exchange.getCreatedAt());
-
-        return response;
+        return exchangeMapper.toResponse(savedExchange);
     }
 
     public void deleteExchange(Long exchangeId) {
@@ -108,7 +101,7 @@ public class ExchangeService {
     public List<ExchangeResponse> getAllExchanges() {
 
         return exchangeRepository.findByProposerProductAuthorId(MOCK_USER_ID).stream()
-                .map(this::mapToResponse)
+                .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -121,7 +114,7 @@ public class ExchangeService {
                                         .getAuthor()
                                         .getId()
                                         .equals(MOCK_USER_ID))
-                .map(this::mapToResponse)
+                .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -183,7 +176,7 @@ public class ExchangeService {
         }
 
         return exchangeRepository.findByReceiverProduct(product).stream()
-                .map(this::mapToResponse)
+                .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
