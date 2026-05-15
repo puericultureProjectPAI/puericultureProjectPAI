@@ -99,7 +99,7 @@ It allows Frontend developers to mock data, understand backend responses, and wo
 
 **Local Endpoints (Backend must be running):**
 - **Swagger UI (Visual Interface & Testing):** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
-- **OpenAPI Schema (Raw JSON):** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- **OpenAPI Schema (Raw JSON):** [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
 
 **Reference Implementation:**
 Before writing your first endpoint, you must understand our standard. Strictly follow the structure, Javadoc intent, and annotation rules demonstrated in these two reference files:
