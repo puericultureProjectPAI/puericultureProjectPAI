@@ -86,7 +86,7 @@ class ExchangeServiceTest {
         ExchangeResponse mockResponse = new ExchangeResponse();
         mockResponse.setStatus(ExchangeStatus.PENDING);
 
-        when(exchangeMapper.toEntity(request)).thenReturn(exchange);
+        // when(exchangeMapper.toEntity(request)).thenReturn(exchange);
         when(exchangeMapper.toResponse(any(Exchange.class))).thenReturn(mockResponse);
 
         when(exchangeRepository.save(any(Exchange.class))).thenReturn(exchange);

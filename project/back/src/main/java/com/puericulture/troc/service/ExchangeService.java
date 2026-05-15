@@ -71,8 +71,7 @@ public class ExchangeService {
             throw new ForbiddenException("You can only propose exchanges with your own product");
         }
 
-        Exchange exchange = exchangeMapper.toEntity(request);
-        ;
+        Exchange exchange = new Exchange();
 
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
@@ -107,13 +106,7 @@ public class ExchangeService {
 
     public List<ExchangeResponse> getExchangesProposedToConnectedUser() {
 
-        return exchangeRepository.findAll().stream()
-                .filter(
-                        exchange ->
-                                exchange.getReceiverProduct()
-                                        .getAuthor()
-                                        .getId()
-                                        .equals(MOCK_USER_ID))
+        return exchangeRepository.findByReceiverProductAuthorId(MOCK_USER_ID).stream()
                 .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }

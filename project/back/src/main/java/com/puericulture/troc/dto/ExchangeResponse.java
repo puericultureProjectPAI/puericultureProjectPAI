@@ -1,7 +1,6 @@
 package com.puericulture.troc.dto;
 
 import com.puericulture.troc.entity.ExchangeStatus;
-import com.puericulture.troc.entity.ProductTroc;
 import java.time.OffsetDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +19,9 @@ public class ExchangeResponse {
 
     private Long id;
 
-    private ProductTroc proposerProduct;
+    private ProductTrocDto proposerProduct;
 
-    private ProductTroc receiverProduct;
+    private ProductTrocDto receiverProduct;
 
     private ExchangeStatus status;
 

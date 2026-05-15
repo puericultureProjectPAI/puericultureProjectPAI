@@ -18,4 +18,6 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long> {
     List<Exchange> findByProposerProduct(ProductTroc proposerProduct);
 
     List<Exchange> findByProposerProductAuthorId(UUID mockUserId);
+
+    List<Exchange> findByReceiverProductAuthorId(UUID authorId);
 }
