@@ -35,7 +35,7 @@ public interface LeasingProductRepository extends JpaRepository<LeasingProduct, 
                 INNER JOIN public.product_leasing pl ON pl.product_id = p.id
                 LEFT JOIN LATERAL (
                     SELECT image_url FROM public.product_images
-                    WHERE product_id = p.id ORDER BY position ASC LIMIT 1
+                    WHERE product_id = p.id ORDER BY image_position ASC LIMIT 1
                 ) pi_first ON true
                 ORDER BY p.id DESC
                 """,

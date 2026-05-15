@@ -8,6 +8,7 @@ import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
+import ProductDetailPage from "./leasing/views/ProductDetailPage";
 
 export default function App() {
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function App() {
 
         {/* Preview sans connexion */}
         <Route path="/leasing/catalog-preview" element={<CatalogPage />} />
+        <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>

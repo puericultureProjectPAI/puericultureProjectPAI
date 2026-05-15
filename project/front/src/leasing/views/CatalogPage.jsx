@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import {
   House,
   Search,
@@ -7,23 +9,30 @@ import {
   QrCode,
   Heart,
 } from "lucide-react";
-
-const products = Array.from({ length: 6 }, (_, index) => ({
-  id: index + 1,
-  name: "Pyjama gris",
-  price: "8.90€",
-  image: "/images/pyjama-gris.png",
-}));
+const fallbackImage = (category) =>
+  `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
 export default function CatalogPage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/public/leasing/products`)
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => setProducts(data))
+      .catch(() => setError("Impossible de charger les articles."))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <main className="mx-auto h-screen w-[260px] overflow-y-auto bg-white text-[#040037]">
       <header className="flex h-[39px] items-center justify-between bg-[#040037] px-[10px] text-white">
-        <img
-          src="/images/logo-kiabi.png"
-          alt="KIABI"
-          className="h-[17px] object-contain"
-        />
+        <span className="text-[14px] font-bold tracking-widest">KIABI</span>
 
         <div className="flex items-center gap-[10px]">
           <QrCode size={15} strokeWidth={2} />
@@ -37,19 +46,41 @@ export default function CatalogPage() {
         </h2>
 
         <p className="mt-[4px] text-[9px] leading-none text-[#7C7A8A]">
-          6 articles
+          {loading ? "…" : `${products.length} articles`}
         </p>
       </section>
 
       <section className="grid grid-cols-2 gap-x-[10px] gap-y-[8px] px-[14px] pt-[12px] pb-[70px]">
-        {products.slice(0, 4).map((product) => (
+        {loading && (
+          <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+            Chargement…
+          </p>
+        )}
+        {error && (
+          <p className="col-span-2 text-center text-[9px] text-red-500">
+            {error}
+          </p>
+        )}
+        {!loading && !error && products.length === 0 && (
+          <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+            Aucun article disponible.
+          </p>
+        )}
+        {products.map((product) => (
           <article
             key={product.id}
-            className="rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)]"
+            onClick={() =>
+              product.available && navigate(`/leasing/products/${product.id}`)
+            }
+            className={`flex flex-col rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)]${
+              product.available
+                ? " cursor-pointer"
+                : " opacity-50 pointer-events-none"
+            }`}
           >
             <img
-              src={product.image}
-              alt={product.name}
+              src={product.firstImageUrl || fallbackImage(product.category)}
+              alt={product.postTitle}
               className="h-[110px] w-full rounded-[5px] object-cover"
             />
 
@@ -63,13 +94,22 @@ export default function CatalogPage() {
               </span>
             </div>
 
-            <h3 className="mt-[5px] text-[8px] leading-none">{product.name}</h3>
+            <h3 className="mt-[5px] text-[8px] leading-none">
+              {product.postTitle}
+            </h3>
 
-            <p className="mt-[3px] text-[9px] font-bold leading-none">
-              {product.price}
+            <p className="mt-[2px] text-[7px] leading-none text-[#7C7A8A]">
+              {product.category} · {product.condition}
             </p>
 
-            <div className="h-[6px]" />
+            <p className="mt-[3px] text-[9px] font-bold leading-none">
+              {product.pricePerMonth}€/mois
+            </p>
+
+            <div className="min-h-[6px] flex-1" />
+            <button className="w-full rounded-[5px] bg-[#040037] py-[5px] text-[8px] font-medium text-white">
+              Louer
+            </button>
           </article>
         ))}
       </section>
