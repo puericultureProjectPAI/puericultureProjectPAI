@@ -1,8 +1,13 @@
 {
   "name": "puericultureprojectpai",
-  "version": "1.0.0",
   "description": "In the folder `project/back`, \r **At university**\r - ```bash \r     npx supabase start -x edge-runtime\r     ```",
   "main": "index.js",
+  "version": "1.0.0",
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
