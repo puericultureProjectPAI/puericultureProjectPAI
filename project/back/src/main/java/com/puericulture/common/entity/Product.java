@@ -69,6 +69,6 @@ public abstract class Product {
     private String model;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = false)
     private Person author;
 }
