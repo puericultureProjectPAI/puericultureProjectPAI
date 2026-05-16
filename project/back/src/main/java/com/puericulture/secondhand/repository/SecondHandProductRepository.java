@@ -9,13 +9,13 @@ public interface SecondHandProductRepository extends JpaRepository<SecondHandPro
 
     @Query(
             "SELECT AVG(s.price) FROM SecondHandProduct s "
-                    + "WHERE s.category = :category "
+                    + "WHERE s.ean = :ean "
                     + "AND s.status = 'ACTIVE'")
-    Double findAveragePriceByCategory(@Param("category") String category);
+    Double findAveragePriceByEan(@Param("ean") String ean);
 
     @Query(
             "SELECT COUNT(s) FROM SecondHandProduct s "
-                    + "WHERE s.category = :category "
+                    + "WHERE s.ean = :ean "
                     + "AND s.status = 'ACTIVE'")
-    Long countActiveListingsByCategory(@Param("category") String category);
+    Long countActiveListingsByEan(@Param("ean") String ean);
 }
