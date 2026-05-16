@@ -44,17 +44,17 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PriceComparisonDTO getPriceComparison(String ean, Double price) {
+    public PriceComparisonDTO getPriceComparison(String category, Double price) {
 
-        Long count = secondHandProductRepository.countActiveListingsByEan(ean);
+        Long count = secondHandProductRepository.countActiveListingsByCategory(category);
         if (count == 0) {
             PriceComparisonDTO dto = new PriceComparisonDTO();
-            dto.setEan(ean);
+            dto.setCategory(category);
             dto.setListingsCount(0L);
             return dto;
         }
 
-        Double rawAverage = secondHandProductRepository.findAveragePriceByEan(ean);
+        Double rawAverage = secondHandProductRepository.findAveragePriceByCategory(category);
         Double averageOccasionPrice = Math.round(rawAverage * 100.0) / 100.0;
 
         Double savingsAmount = null;
@@ -67,7 +67,7 @@ public class ProductService {
         boolean lowSampleWarning = count < 3;
 
         return new PriceComparisonDTO(
-                ean,
+                category,
                 averageOccasionPrice,
                 count,
                 savingsAmount,

@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PriceComparisonDTO {
 
-    private String ean;
+    private String category;
     private Double averageOccasionPrice;
     private Long listingsCount;
     private Double savingsAmount;
