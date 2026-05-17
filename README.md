@@ -89,3 +89,19 @@ If a logical error prevents formatting or compilation, the commit will be reject
 If you want to run these tools manually before committing:
 - **Frontend:** run `npm run format` and `npm run lint:fix` in `project/front`.
 - **Backend:** run `mvn spotless:apply` in `project/back`.
+
+## 7. API Documentation & Contract (Swagger / OpenAPI)
+> **CRITICAL STANDARD:** Every new endpoint must be fully documented using OpenAPI annotations.
+> If the Swagger UI is missing your endpoint, lacks descriptions, or hides DTO schemas, your Pull Request will be rejected.
+
+Spring Doc OpenAPI automatically generates our API contract. This is our single source of truth.
+It allows Frontend developers to mock data, understand backend responses, and work synchronously without having to read a single line of Java code.
+
+**Local Endpoints (Backend must be running):**
+- **Swagger UI (Visual Interface & Testing):** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- **OpenAPI Schema (Raw JSON):** [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
+
+**Reference Implementation:**
+Before writing your first endpoint, you must understand our standard. Strictly follow the structure, Javadoc intent, and annotation rules demonstrated in these two reference files:
+1. **Controller:** [`project/back/src/main/java/com/puericulture/common/controller/HealthCheckController.java`](project/back/src/main/java/com/puericulture/common/controller/HealthCheckController.java)
+2. **DTO:** [`project/back/src/main/java/com/puericulture/common/dto/HealthCheckResponse.java`](project/back/src/main/java/com/puericulture/common/dto/HealthCheckResponse.java)
