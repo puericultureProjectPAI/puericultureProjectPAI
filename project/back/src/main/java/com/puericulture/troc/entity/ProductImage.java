@@ -1,5 +1,6 @@
 package com.puericulture.troc.entity;
 
+import com.puericulture.common.entity.Product;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,8 +11,9 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
@@ -27,12 +29,12 @@ public class ProductImage {
         this.id = id;
     }
 
-    public Long getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getImageUrl() {

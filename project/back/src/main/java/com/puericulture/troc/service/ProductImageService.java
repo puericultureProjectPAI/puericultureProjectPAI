@@ -1,6 +1,9 @@
 package com.puericulture.troc.service;
 
+import com.puericulture.common.entity.Product;
+import com.puericulture.common.repository.ProductRepository;
 import com.puericulture.config.errormanager.exception.BadRequestException;
+import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.troc.dto.ProductImageDto;
 import com.puericulture.troc.entity.ProductImage;
 import com.puericulture.troc.mapper.ProductImageMapper;
@@ -23,19 +26,22 @@ public class ProductImageService {
     private final ProductImageRepository productImageRepository;
     private final ProductImageMapper productImageMapper;
     private final SupabaseStorageService supabaseStorageService;
+    private final ProductRepository productRepository;
 
     @Autowired
     public ProductImageService(
             ProductImageRepository productImageRepository,
             ProductImageMapper productImageMapper,
-            SupabaseStorageService supabaseStorageService) {
+            SupabaseStorageService supabaseStorageService,
+            ProductRepository productRepository) {
         this.productImageRepository = productImageRepository;
         this.productImageMapper = productImageMapper;
         this.supabaseStorageService = supabaseStorageService;
+        this.productRepository = productRepository;
     }
 
     public List<ProductImageDto> getImagesByProductId(Long productId) {
-        return productImageRepository.findByProductId(productId).stream()
+        return productImageRepository.findByProduct_Id(productId).stream()
                 .map(productImageMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -47,7 +53,13 @@ public class ProductImageService {
                     "Format non supporté. Formats acceptés : JPEG, PNG, GIF, WEBP");
         }
 
-        long currentCount = productImageRepository.countByProductId(productId);
+        Product product =
+                productRepository
+                        .findById(productId)
+                        .orElseThrow(
+                                () -> new NotFoundException("Produit introuvable : " + productId));
+
+        long currentCount = productImageRepository.countByProduct_Id(productId);
         if (currentCount >= MAX_IMAGES_PER_PRODUCT) {
             throw new BadRequestException(
                     "Maximum " + MAX_IMAGES_PER_PRODUCT + " images par produit");
@@ -56,7 +68,7 @@ public class ProductImageService {
         String url = supabaseStorageService.upload(file, productId);
 
         ProductImage entity = new ProductImage();
-        entity.setProductId(productId);
+        entity.setProduct(product);
         entity.setImageUrl(url);
         entity.setPosition((int) currentCount + 1);
 

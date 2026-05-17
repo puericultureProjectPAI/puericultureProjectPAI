@@ -11,19 +11,9 @@ public class ProductImageMapper {
         if (entity == null) return null;
         ProductImageDto dto = new ProductImageDto();
         dto.setId(entity.getId());
-        dto.setProductId(entity.getProductId());
+        dto.setProductId(entity.getProduct().getId());
         dto.setImageUrl(entity.getImageUrl());
         dto.setPosition(entity.getPosition());
         return dto;
-    }
-
-    public ProductImage toEntity(ProductImageDto dto) {
-        if (dto == null) return null;
-        ProductImage entity = new ProductImage();
-        entity.setId(dto.getId());
-        entity.setProductId(dto.getProductId());
-        entity.setImageUrl(dto.getImageUrl());
-        entity.setPosition(dto.getPosition());
-        return entity;
     }
 }
