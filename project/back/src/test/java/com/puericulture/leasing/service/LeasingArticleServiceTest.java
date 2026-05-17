@@ -1,7 +1,8 @@
-package com.puericulture.leasing;
+package com.puericulture.leasing.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.puericulture.config.errormanager.exception.NotFoundException;
@@ -9,7 +10,6 @@ import com.puericulture.leasing.dto.LeasingArticleDetailDto;
 import com.puericulture.leasing.entity.LeasingArticle;
 import com.puericulture.leasing.mapper.LeasingArticleMapper;
 import com.puericulture.leasing.repository.LeasingArticleRepository;
-import com.puericulture.leasing.service.LeasingArticleService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +37,7 @@ class LeasingArticleServiceTest {
         LeasingArticleDetailDto result = leasingArticleService.getArticleDetail(1L);
 
         assertThat(result).isEqualTo(dto);
+        verify(leasingArticleRepository).findByIdWithImages(1L);
     }
 
     @Test
