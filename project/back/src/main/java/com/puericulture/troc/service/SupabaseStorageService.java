@@ -26,9 +26,9 @@ public class SupabaseStorageService {
         this.restClient = RestClient.create();
     }
 
-    public String upload(MultipartFile file, Long postId) throws IOException {
+    public String upload(MultipartFile file, Long productId) throws IOException {
         String extension = extractExtension(file.getOriginalFilename());
-        String path = postId + "/" + UUID.randomUUID() + "." + extension;
+        String path = productId + "/" + UUID.randomUUID() + "." + extension;
 
         restClient
                 .post()
