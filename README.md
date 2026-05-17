@@ -28,12 +28,19 @@ You must install dependencies for both sides of the monorepo.
 Identity and Authentication are completely delegated to Supabase Auth.
 The Frontend logs the user in directly via the Supabase SDK and receives a JWT.
 This JWT is then attached to every request sent to the Spring Boot Backend.
-The Backend acts as a stateless API, verifying the token's cryptographic signature locally before granting access.
+The Backend acts as a stateless API. It automatically fetches the public key via the Supabase JWKS endpoint to verify the token's cryptographic signature (ES256) before granting access.
+
+**Retrieving Local Supabase Variables**
+To extract the required local credentials, run the following command while the local Supabase instance is running:
+```bash
+npx supabase status --output env
+```
 
 ### Back-end (Spring Boot) & Supabase Auth
 Set up your .env in project/back:
-1. Copy `.env.example` to `.env`. For a standard local Supabase environment, use the strict configuration indicated in it.
-2. Complete SUPABASE_SERVICE_KEY with your local Supabase Authentication Keys Secret obtained through `npx supabase status`. 
+1. Copy `.env.example` to `.env`.
+2. **Note on JWTs:** Hardcoding the `SUPABASE_JWT_SECRET` is completely obsolete. The backend's `JwtService` automatically retrieves the correct public key from the Supabase JWKS endpoint.
+3. Complete any remaining variables (such as database credentials or `SUPABASE_SERVICE_KEY`) using the output provided by the `npx supabase status` command.
 
 ### Front-end (Vite)
 Set up your `.env.local` in project/front:
@@ -46,7 +53,7 @@ Copy `.env.local.example` to `.env.local` to connect to your local backend and S
 ### Start Supabase (Database & Auth Engine):
 ```bash
   cd project/back
-  npx supabase start -x edge-runtime
+  npx supabase start -x edge-runtime,storage-api
 ```
 
 ### Run Back-end (Local Dev):
@@ -57,11 +64,19 @@ Copy `.env.local.example` to `.env.local` to connect to your local backend and S
 ```
 
 ### Run Front-end (Local Dev):
+> **ARCHITECTURAL REQUIREMENT:** A local mock server is mandatory to intercept image uploads and prevent Cloudinary quota exhaustion or secret exposure in development.
+
+**Terminal 1 (Image Mock Server):**
+```bash
+  cd project/front
+  node mock-server.js
+```
+
+**Terminal 2 (Vite Application):**
 ```bash
   cd project/front
   npm run dev
 ```
-
 ### Deployment Infrastructure:
 
 - Backend: Automatically built via GitHub Actions and deployed to Render as a Docker container.

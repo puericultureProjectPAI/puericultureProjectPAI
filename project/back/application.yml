@@ -26,21 +26,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true # Pratique pour le debug en local
-  # Limite de taille d'image pour ne pas tuer les instances gratuites de Render et supabase
-  servlet:
-    multipart:
-      max-file-size: ${SUPABASE_STORAGE_MAX_SIZE}
-      max-request-size: ${SUPABASE_STORAGE_MAX_SIZE}
 
 # Configuration Supabase (Correspond EXACTEMENT aux @Value de ton JwtService)
 supabase:
-  jwt:
-    secret: ${SUPABASE_JWT_SECRET}
   url: ${SUPABASE_URL}
   service:
     key: ${SUPABASE_SERVICE_KEY}
-  storage:
-    bucket: ${SUPABASE_STORAGE_BUCKET:puericulture-images}
 
 # Documentation API (Swagger)
 springdoc:
