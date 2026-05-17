@@ -62,7 +62,6 @@ export function useBarcodeScanner(onDetected) {
       const config = {
         fps: 10,
         qrbox: { width: qrboxWidth, height: Math.round(qrboxWidth * 0.55) },
-        formatsToSupport: [8],
       };
       const handleSuccess = (decodedText) => {
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);

@@ -18,9 +18,9 @@ export default function SecondHandScan() {
         </p>
       </div>
 
-      <BarcodeScanner onDetected={handleDetected} />
-
-      {scannedCode && (
+      {!scannedCode ? (
+        <BarcodeScanner onDetected={handleDetected} />
+      ) : (
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
           <p className="font-mono text-lg font-bold">{scannedCode}</p>
           <button
