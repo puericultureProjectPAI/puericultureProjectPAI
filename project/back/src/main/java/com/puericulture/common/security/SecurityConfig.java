@@ -43,7 +43,8 @@ public class SecurityConfig {
                                                 "/swagger-ui.html",
                                                 "/swagger-resources/**",
                                                 "/configuration/**",
-                                                "/webjars/**" // Required for the UI assets
+                                                "/webjars/**",
+                                                "/forward-trading" // Required for the UI assets
                                                 )
                                         .permitAll()
                                         // The /api/auth/** wildcard is explicitly REMOVED.
