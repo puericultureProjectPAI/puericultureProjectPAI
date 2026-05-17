@@ -44,10 +44,13 @@ public class SecurityConfig {
                                                 // token
                                                 "/swagger-ui.html",
                                                 "/swagger-ui/**",
+                                                "/swagger-resources/**",
                                                 "/api-docs",
                                                 "/api-docs/**",
                                                 "/v3/api-docs",
                                                 "/v3/api-docs/**",
+                                                "/configuration/**",
+                                                "/webjars/**", // Required for the UI assets
                                                 // Spring Boot Actuator health endpoint
                                                 "/actuator/health")
                                         .permitAll()
