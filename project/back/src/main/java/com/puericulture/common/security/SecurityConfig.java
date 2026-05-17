@@ -35,7 +35,17 @@ public class SecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
-                                auth
+                                auth // Authorization of Swagger & OpenAPI routes
+                                        .requestMatchers(
+                                                "/v3/api-docs/**",
+                                                "/api-docs/**",
+                                                "/swagger-ui/**",
+                                                "/swagger-ui.html",
+                                                "/swagger-resources/**",
+                                                "/configuration/**",
+                                                "/webjars/**" // Required for the UI assets
+                                                )
+                                        .permitAll()
                                         // The /api/auth/** wildcard is explicitly REMOVED.
                                         // Identity is handled by Supabase. Only health-checks and
                                         // specific public endpoints pass freely.
