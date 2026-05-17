@@ -18,7 +18,7 @@ public class ProductImage {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column(name = "position", nullable = false)
+    @Column(name = "image_position")
     private Integer position;
 
     public Long getId() {
