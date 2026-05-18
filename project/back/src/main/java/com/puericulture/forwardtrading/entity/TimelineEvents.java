@@ -7,6 +7,7 @@ import lombok.*;
 @Entity
 @Table(name = "timeline_events")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TimelineEvents {
