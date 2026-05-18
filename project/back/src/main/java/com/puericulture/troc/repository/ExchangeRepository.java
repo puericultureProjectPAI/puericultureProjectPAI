@@ -40,7 +40,7 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long> {
             OR e.proposerProduct.id = :product2Id
             OR e.receiverProduct.id = :product2Id
         )
-    """)
+    """) // This query finds all pending exchanges that involve either of the two products, excluding the current exchange.
     List<Exchange> findConflictingPendingExchanges(
             @Param("status") ExchangeStatus status,
             @Param("exchangeId") Long exchangeId,
