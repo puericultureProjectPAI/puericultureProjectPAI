@@ -31,21 +31,21 @@ public class MockTimeLineGenerator implements TimelineGenerator {
                             .build(),
                     TimelinePeriods.builder()
                             .id(2l)
-                            .label("3-6 mois")
+                            .label("4-6 mois")
                             .type("T2")
                             .weekDuration(12)
                             .orderIndex(2)
                             .build(),
                     TimelinePeriods.builder()
                             .id(3l)
-                            .label("6-9 mois")
+                            .label("7-9 mois")
                             .type("T3")
                             .weekDuration(12)
                             .orderIndex(3)
                             .build(),
                     TimelinePeriods.builder()
                             .id(4l)
-                            .label("9-12 mois")
+                            .label("10-12 mois")
                             .type("T4")
                             .weekDuration(12)
                             .orderIndex(4)
@@ -61,7 +61,7 @@ public class MockTimeLineGenerator implements TimelineGenerator {
         timelineIdIncrementer++;
         Timelines timelines =
                 Timelines.builder()
-                        .id(timelineIdIncrementer)
+                        // .id(timelineIdIncrementer)
                         .name("Timeline - %s".formatted(timelineIdIncrementer))
                         .events(new ArrayList<>())
                         .build();
@@ -75,7 +75,7 @@ public class MockTimeLineGenerator implements TimelineGenerator {
     private TimelineEvents getTimelineEvent(Timelines timelines) {
         timelineIdIncrementer++;
         return TimelineEvents.builder()
-                .id(timelineEventIdIncrementer)
+                // .id(timelineEventIdIncrementer)
                 .timeline(timelines)
                 .articleName(mockedArticles.get(random.nextInt(mockedArticles.size())))
                 .articleTag(mockedTags.get(random.nextInt(mockedTags.size())))
