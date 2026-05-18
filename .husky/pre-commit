@@ -1,0 +1,38 @@
+#!/bin/sh
+
+echo "=== [STRATEGY] Commencing pre-commit auto-formatting & checks ==="
+
+# --- FRONTEND ---
+echo ">> [1/2] Formatting & Analyzing Front-end..."
+cd project/front || exit 1
+
+# lint-staged formats and lints staged files automatically
+npx lint-staged || {
+  echo "❌ [FRONTEND ERROR] Linting failed. Fix your logic. Commit aborted."
+  exit 1
+}
+cd ../..
+
+# --- BACKEND ---
+echo ">> [2/2] Formatting & Analyzing Back-end..."
+cd project/back || exit 1
+
+echo "   -> Applying Spotless formatting..."
+./mvnw spotless:apply || {
+  echo "❌ [BACKEND ERROR] Spotless failed to format. Commit aborted."
+  exit 1
+}
+
+cd ../..
+# Spotless modifies files directly. We must re-add them to the commit.
+git add project/back
+
+cd project/back || exit 1
+echo "   -> Compiling tests (Syntax check)..."
+./mvnw clean test-compile || {
+  echo "❌ [BACKEND ERROR] Compilation failed. Commit aborted."
+  exit 1
+}
+cd ../..
+
+echo "✅ [STRATEGY] Code automatically formatted and verified. Commit authorized."

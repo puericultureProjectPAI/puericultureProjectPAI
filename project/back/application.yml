@@ -1,0 +1,57 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: projet-puericulture
+
+  # Configuration de l'IA (OpenRouter / Ollama)
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
+  # Configuration PostgreSQL (Supabase)
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      # CRITIQUE EN LOCAL : Autorise Hibernate à créer/mettre à jour tes tables métier
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true # Pratique pour le debug en local
+
+# Configuration Supabase (Correspond EXACTEMENT aux @Value de ton JwtService)
+supabase:
+  url: ${SUPABASE_URL}
+  service:
+    key: ${SUPABASE_SERVICE_KEY}
+
+# Documentation API (Swagger)
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Gestion des logs
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    # Correction du nom de package pour correspondre à tes classes Java
+    com.puericulture: DEBUG
