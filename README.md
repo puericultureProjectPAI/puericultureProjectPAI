@@ -83,6 +83,8 @@ Copy `.env.local.example` to `.env.local` to connect to your local backend and S
 
 - Frontend: Automatically built and deployed by Vercel upon pushing to the main branch. No Docker required for the frontend.
 
+**Note : Remember to clean the folder `/public/mock-uploads` to prevent it from being overfilled.**
+
 ## 5. Database Migrations Workflow
 > Modifications require Tech Lead / CTO validation before merging.
 
