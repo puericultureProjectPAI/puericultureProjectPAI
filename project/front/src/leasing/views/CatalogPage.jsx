@@ -72,7 +72,7 @@ export default function CatalogPage() {
             onClick={() =>
               product.available && navigate(`/leasing/products/${product.id}`)
             }
-            className={`flex flex-col rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)]${
+            className={`rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)]${
               product.available
                 ? " cursor-pointer"
                 : " opacity-50 pointer-events-none"
@@ -105,11 +105,6 @@ export default function CatalogPage() {
             <p className="mt-[3px] text-[9px] font-bold leading-none">
               {product.pricePerMonth}€/mois
             </p>
-
-            <div className="min-h-[6px] flex-1" />
-            <button className="w-full rounded-[5px] bg-[#040037] py-[5px] text-[8px] font-medium text-white">
-              Louer
-            </button>
           </article>
         ))}
       </section>
