@@ -143,6 +143,20 @@ public class ExchangeService {
 
         exchange.setStatus(ExchangeStatus.CONFIRMED);
 
+        List<Exchange> conflictingExchanges =
+                exchangeRepository.findConflictingPendingExchanges(
+                        ExchangeStatus.PENDING,
+                        exchange.getId(),
+                        exchange.getProposerProduct().getId(),
+                        exchange.getReceiverProduct().getId());
+
+        for (Exchange conflictingExchange : conflictingExchanges) {
+
+            conflictingExchange.setStatus(ExchangeStatus.REFUSED);
+        }
+
+        exchangeRepository.saveAll(conflictingExchanges);
+
         exchange.getProposerProduct().setStatus(ProductTrocStatus.CLOSED);
         exchange.getReceiverProduct().setStatus(ProductTrocStatus.CLOSED);
 

@@ -20,6 +20,7 @@ import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import com.puericulture.troc.service.ExchangeService;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -235,5 +236,50 @@ class ExchangeServiceTest {
                 exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(2L);
 
         assertFalse(response.isHasExchange());
+    }
+
+    @Test
+    void shouldRefuseOtherPendingExchangesWhenOneIsAccepted() {
+
+        Person connectedUser = new Person();
+        connectedUser.setId(MOCK_USER_ID);
+
+        receiverProduct.setAuthor(connectedUser);
+
+        ProductTroc thirdProduct = new ProductTroc();
+        thirdProduct.setId(3L);
+
+        Exchange acceptedExchange = new Exchange();
+        acceptedExchange.setId(1L);
+        acceptedExchange.setProposerProduct(proposerProduct);
+        acceptedExchange.setReceiverProduct(receiverProduct);
+        acceptedExchange.setStatus(ExchangeStatus.PENDING);
+
+        Exchange conflictingExchange = new Exchange();
+        conflictingExchange.setId(2L);
+        conflictingExchange.setProposerProduct(thirdProduct);
+        conflictingExchange.setReceiverProduct(receiverProduct);
+        conflictingExchange.setStatus(ExchangeStatus.PENDING);
+
+        when(exchangeRepository.findById(1L)).thenReturn(Optional.of(acceptedExchange));
+
+        when(exchangeRepository.findConflictingPendingExchanges(
+                        ExchangeStatus.PENDING,
+                        1L,
+                        proposerProduct.getId(),
+                        receiverProduct.getId()))
+                .thenReturn(List.of(conflictingExchange));
+
+        exchangeService.acceptExchange(1L);
+
+        assertEquals(ExchangeStatus.CONFIRMED, acceptedExchange.getStatus());
+
+        assertEquals(ExchangeStatus.REFUSED, conflictingExchange.getStatus());
+
+        assertEquals(ProductTrocStatus.CLOSED, proposerProduct.getStatus());
+
+        assertEquals(ProductTrocStatus.CLOSED, receiverProduct.getStatus());
+
+        verify(exchangeRepository).saveAll(anyList());
     }
 }
