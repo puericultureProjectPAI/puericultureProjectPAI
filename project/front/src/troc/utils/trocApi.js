@@ -1,39 +1,6 @@
-import axios from "axios";
-import { supabase } from "../../common/utils/supabaseClient";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:8080";
-
-const trocApi = axios.create({
-  baseURL: `${API_BASE_URL}/troc/products`,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { apiClient } from "../../common/utils/apiClient";
 
 export async function createTroc(payload) {
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user?.id) {
-    throw new Error("Utilisateur non connecté");
-  }
-
-  const response = await trocApi.post("", {
-    ...payload,
-    authorId: user.id,
-  });
-
+  const response = await apiClient.post("/troc", payload);
   return response.data;
 }
-
-export async function getTrocs() {
-  const response = await trocApi.get("");
-  return response.data;
-}
-
-export default trocApi;
