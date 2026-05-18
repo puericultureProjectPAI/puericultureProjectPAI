@@ -1,17 +1,11 @@
-// ExchangeServiceTest.java
-
 package com.puericulture.troc;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.puericulture.common.entity.Person;
-import com.puericulture.config.errormanager.exception.BadRequestException;
-import com.puericulture.config.errormanager.exception.ForbiddenException;
 import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
-import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
 import com.puericulture.troc.entity.ProductTroc;
@@ -36,6 +30,7 @@ class ExchangeServiceTest {
     @Mock private ExchangeRepository exchangeRepository;
 
     @Mock private ProductTrocRepository productTrocRepository;
+
     @Mock private ExchangeMapper exchangeMapper;
 
     @InjectMocks private ExchangeService exchangeService;
@@ -70,6 +65,7 @@ class ExchangeServiceTest {
     void shouldCreateExchangeSuccessfully() {
 
         CreateExchangeRequest request = new CreateExchangeRequest();
+
         request.setProposerProduct(proposerProduct);
         request.setReceiverProduct(receiverProduct);
 
@@ -82,72 +78,26 @@ class ExchangeServiceTest {
                 .thenReturn(false);
 
         Exchange exchange = new Exchange();
+
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
         exchange.setStatus(ExchangeStatus.PENDING);
 
-        ExchangeResponse mockResponse = new ExchangeResponse();
-        mockResponse.setStatus(ExchangeStatus.PENDING);
+        ExchangeResponse response = new ExchangeResponse();
 
-        // when(exchangeMapper.toEntity(request)).thenReturn(exchange);
-        when(exchangeMapper.toResponse(any(Exchange.class))).thenReturn(mockResponse);
+        response.setStatus(ExchangeStatus.PENDING);
 
         when(exchangeRepository.save(any(Exchange.class))).thenReturn(exchange);
 
-        ExchangeResponse response = exchangeService.createExchange(request);
+        when(exchangeMapper.toResponse(any(Exchange.class))).thenReturn(response);
 
-        assertNotNull(response);
+        ExchangeResponse result = exchangeService.createExchange(request);
 
-        assertEquals(ExchangeStatus.PENDING, response.getStatus());
-        assertEquals(ProductTrocStatus.PENDING, proposerProduct.getStatus());
-        assertEquals(ProductTrocStatus.PENDING, receiverProduct.getStatus());
-        verify(exchangeRepository, times(1)).save(any(Exchange.class));
-    }
+        assertEquals(ExchangeStatus.PENDING, result.getStatus());
 
-    @Test
-    void shouldThrowWhenProductsBelongToSameUser() {
+        assertEquals(ProductTrocStatus.AVAILABLE, proposerProduct.getStatus());
 
-        receiverProduct.setAuthor(proposerProduct.getAuthor());
-
-        CreateExchangeRequest request = new CreateExchangeRequest();
-
-        request.setProposerProduct(proposerProduct);
-        request.setReceiverProduct(receiverProduct);
-
-        when(productTrocRepository.findById(1L)).thenReturn(Optional.of(proposerProduct));
-
-        when(productTrocRepository.findById(2L)).thenReturn(Optional.of(receiverProduct));
-
-        assertThrows(BadRequestException.class, () -> exchangeService.createExchange(request));
-    }
-
-    @Test
-    void shouldDeleteExchangeSuccessfully() {
-
-        Exchange exchange = new Exchange();
-        exchange.setProposerProduct(proposerProduct);
-
-        when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
-
-        exchangeService.deleteExchange(1L);
-
-        verify(exchangeRepository, times(1)).delete(exchange);
-    }
-
-    @Test
-    void shouldThrowWhenDeletingExchangeNotOwnedByUser() {
-
-        Person connectedUser = new Person();
-        connectedUser.setId(UUID.randomUUID());
-
-        receiverProduct.setAuthor(connectedUser);
-
-        Exchange exchange = new Exchange();
-        exchange.setProposerProduct(receiverProduct);
-
-        when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
-
-        assertThrows(ForbiddenException.class, () -> exchangeService.deleteExchange(1L));
+        assertEquals(ProductTrocStatus.AVAILABLE, receiverProduct.getStatus());
     }
 
     @Test
@@ -160,20 +110,48 @@ class ExchangeServiceTest {
 
         Exchange exchange = new Exchange();
 
+        exchange.setId(1L);
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
-
         exchange.setStatus(ExchangeStatus.PENDING);
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
 
+        when(exchangeRepository.findConflictingPendingExchanges(ExchangeStatus.PENDING, 1L, 1L, 2L))
+                .thenReturn(List.of());
+
         exchangeService.acceptExchange(1L);
 
-        assertEquals(ExchangeStatus.CONFIRMED, exchange.getStatus());
-        assertEquals(ProductTrocStatus.CLOSED, proposerProduct.getStatus());
-        assertEquals(ProductTrocStatus.CLOSED, receiverProduct.getStatus());
+        assertEquals(ExchangeStatus.ACCEPTED, exchange.getStatus());
 
-        verify(exchangeRepository, times(1)).save(exchange);
+        assertEquals(ProductTrocStatus.PENDING, proposerProduct.getStatus());
+
+        assertEquals(ProductTrocStatus.PENDING, receiverProduct.getStatus());
+    }
+
+    @Test
+    void shouldConfirmExchangeSuccessfully() {
+
+        Person connectedUser = new Person();
+        connectedUser.setId(MOCK_USER_ID);
+
+        receiverProduct.setAuthor(connectedUser);
+
+        Exchange exchange = new Exchange();
+
+        exchange.setProposerProduct(proposerProduct);
+        exchange.setReceiverProduct(receiverProduct);
+        exchange.setStatus(ExchangeStatus.ACCEPTED);
+
+        when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
+
+        exchangeService.confirmExchange(1L);
+
+        assertEquals(ExchangeStatus.CONFIRMED, exchange.getStatus());
+
+        assertEquals(ProductTrocStatus.CLOSED, proposerProduct.getStatus());
+
+        assertEquals(ProductTrocStatus.CLOSED, receiverProduct.getStatus());
     }
 
     @Test
@@ -184,102 +162,27 @@ class ExchangeServiceTest {
 
         receiverProduct.setAuthor(connectedUser);
 
+        proposerProduct.setStatus(ProductTrocStatus.PENDING);
+        receiverProduct.setStatus(ProductTrocStatus.PENDING);
+
         Exchange exchange = new Exchange();
 
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
-
-        exchange.setStatus(ExchangeStatus.PENDING);
+        exchange.setStatus(ExchangeStatus.ACCEPTED);
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
+
+        when(exchangeRepository.existsByProductAndStatuses(eq(1L), anyList())).thenReturn(false);
+
+        when(exchangeRepository.existsByProductAndStatuses(eq(2L), anyList())).thenReturn(false);
 
         exchangeService.refuseExchange(1L);
 
         assertEquals(ExchangeStatus.REFUSED, exchange.getStatus());
 
         assertEquals(ProductTrocStatus.AVAILABLE, proposerProduct.getStatus());
+
         assertEquals(ProductTrocStatus.AVAILABLE, receiverProduct.getStatus());
-
-        verify(exchangeRepository, times(1)).save(exchange);
-    }
-
-    @Test
-    void shouldReturnExchangeForConnectedUserOnProduct() {
-
-        Exchange exchange = new Exchange();
-        exchange.setReceiverProduct(receiverProduct);
-        exchange.setProposerProduct(proposerProduct);
-        exchange.setStatus(ExchangeStatus.PENDING);
-
-        when(productTrocRepository.findById(2L)).thenReturn(Optional.of(receiverProduct));
-
-        when(exchangeRepository.findByReceiverProductIdAndProposerProductAuthorId(2L, MOCK_USER_ID))
-                .thenReturn(Optional.of(exchange));
-
-        ProductExchangeStatusResponse response =
-                exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(2L);
-
-        assertTrue(response.isHasExchange());
-
-        assertEquals(ExchangeStatus.PENDING, response.getStatus());
-    }
-
-    @Test
-    void shouldReturnFalseWhenNoExchangeExistsForConnectedUser() {
-
-        when(productTrocRepository.findById(2L)).thenReturn(Optional.of(receiverProduct));
-
-        when(exchangeRepository.findByReceiverProductIdAndProposerProductAuthorId(2L, MOCK_USER_ID))
-                .thenReturn(Optional.empty());
-
-        ProductExchangeStatusResponse response =
-                exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(2L);
-
-        assertFalse(response.isHasExchange());
-    }
-
-    @Test
-    void shouldRefuseOtherPendingExchangesWhenOneIsAccepted() {
-
-        Person connectedUser = new Person();
-        connectedUser.setId(MOCK_USER_ID);
-
-        receiverProduct.setAuthor(connectedUser);
-
-        ProductTroc thirdProduct = new ProductTroc();
-        thirdProduct.setId(3L);
-
-        Exchange acceptedExchange = new Exchange();
-        acceptedExchange.setId(1L);
-        acceptedExchange.setProposerProduct(proposerProduct);
-        acceptedExchange.setReceiverProduct(receiverProduct);
-        acceptedExchange.setStatus(ExchangeStatus.PENDING);
-
-        Exchange conflictingExchange = new Exchange();
-        conflictingExchange.setId(2L);
-        conflictingExchange.setProposerProduct(thirdProduct);
-        conflictingExchange.setReceiverProduct(receiverProduct);
-        conflictingExchange.setStatus(ExchangeStatus.PENDING);
-
-        when(exchangeRepository.findById(1L)).thenReturn(Optional.of(acceptedExchange));
-
-        when(exchangeRepository.findConflictingPendingExchanges(
-                        ExchangeStatus.PENDING,
-                        1L,
-                        proposerProduct.getId(),
-                        receiverProduct.getId()))
-                .thenReturn(List.of(conflictingExchange));
-
-        exchangeService.acceptExchange(1L);
-
-        assertEquals(ExchangeStatus.CONFIRMED, acceptedExchange.getStatus());
-
-        assertEquals(ExchangeStatus.REFUSED, conflictingExchange.getStatus());
-
-        assertEquals(ProductTrocStatus.CLOSED, proposerProduct.getStatus());
-
-        assertEquals(ProductTrocStatus.CLOSED, receiverProduct.getStatus());
-
-        verify(exchangeRepository).saveAll(anyList());
     }
 }

@@ -1,5 +1,3 @@
-// ExchangeService.java
-
 package com.puericulture.troc.service;
 
 import com.puericulture.config.errormanager.exception.BadRequestException;
@@ -41,7 +39,10 @@ public class ExchangeService {
         this.exchangeMapper = exchangeMapper;
     }
 
-    public ExchangeResponse createExchange(CreateExchangeRequest request) {
+    public ExchangeResponse createExchange(
+            CreateExchangeRequest
+                    request) { // the connected user proposes an exchange between one of their
+        // products and another user's product
 
         ProductTroc proposerProduct =
                 productTrocRepository
@@ -72,10 +73,10 @@ public class ExchangeService {
             throw new ForbiddenException("You can only propose exchanges with your own product");
         }
 
-        if (proposerProduct.getStatus() != ProductTrocStatus.AVAILABLE
-                || receiverProduct.getStatus() != ProductTrocStatus.AVAILABLE) {
+        if (proposerProduct.getStatus() == ProductTrocStatus.CLOSED
+                || receiverProduct.getStatus() == ProductTrocStatus.CLOSED) {
 
-            throw new BadRequestException("One of the products is not available for exchange");
+            throw new BadRequestException("One of the products is closed");
         }
 
         Exchange exchange = new Exchange();
@@ -83,12 +84,6 @@ public class ExchangeService {
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
         exchange.setStatus(ExchangeStatus.PENDING);
-
-        proposerProduct.setStatus(ProductTrocStatus.PENDING);
-        receiverProduct.setStatus(ProductTrocStatus.PENDING);
-
-        productTrocRepository.save(proposerProduct);
-        productTrocRepository.save(receiverProduct);
 
         Exchange savedExchange = exchangeRepository.save(exchange);
 
@@ -110,21 +105,24 @@ public class ExchangeService {
         exchangeRepository.delete(exchange);
     }
 
-    public List<ExchangeResponse> getAllExchanges() {
+    public List<ExchangeResponse> getAllExchanges() { // exchanges created by the connected user
 
         return exchangeRepository.findByProposerProductAuthorId(MOCK_USER_ID).stream()
                 .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<ExchangeResponse> getExchangesProposedToConnectedUser() {
+    public List<ExchangeResponse>
+            getExchangesProposedToConnectedUser() { // exchanges targeting products owned by the
+        // connected user
 
         return exchangeRepository.findByReceiverProductAuthorId(MOCK_USER_ID).stream()
                 .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public void acceptExchange(Long exchangeId) {
+    public void acceptExchange(
+            Long exchangeId) { // the owner of the requested product accepts an exchange proposal
 
         Exchange exchange =
                 exchangeRepository
@@ -141,7 +139,11 @@ public class ExchangeService {
             throw new ForbiddenException("You can only accept exchanges proposed to you");
         }
 
-        exchange.setStatus(ExchangeStatus.CONFIRMED);
+        exchange.setStatus(ExchangeStatus.ACCEPTED);
+
+        exchange.getProposerProduct().setStatus(ProductTrocStatus.PENDING);
+
+        exchange.getReceiverProduct().setStatus(ProductTrocStatus.PENDING);
 
         List<Exchange> conflictingExchanges =
                 exchangeRepository.findConflictingPendingExchanges(
@@ -157,7 +159,35 @@ public class ExchangeService {
 
         exchangeRepository.saveAll(conflictingExchanges);
 
+        productTrocRepository.save(exchange.getProposerProduct());
+        productTrocRepository.save(exchange.getReceiverProduct());
+
+        exchangeRepository.save(exchange);
+    }
+
+    public void confirmExchange(
+            Long exchangeId) { // the owner of the requested product confirms an accepted
+        // exchange proposal, which closes the exchange and both products
+
+        Exchange exchange =
+                exchangeRepository
+                        .findById(exchangeId)
+                        .orElseThrow(() -> new NotFoundException("Exchange not found"));
+
+        if (!exchange.getStatus().equals(ExchangeStatus.ACCEPTED)) {
+
+            throw new BadRequestException("Only accepted exchanges can be confirmed");
+        }
+
+        if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
+
+            throw new ForbiddenException("You can only confirm exchanges proposed to you");
+        }
+
+        exchange.setStatus(ExchangeStatus.CONFIRMED);
+
         exchange.getProposerProduct().setStatus(ProductTrocStatus.CLOSED);
+
         exchange.getReceiverProduct().setStatus(ProductTrocStatus.CLOSED);
 
         productTrocRepository.save(exchange.getProposerProduct());
@@ -166,16 +196,21 @@ public class ExchangeService {
         exchangeRepository.save(exchange);
     }
 
-    public void refuseExchange(Long exchangeId) {
+    public void refuseExchange(
+            Long exchangeId) { // the owner of the requested product refuses a pending or
+        // accepted exchange proposal, which sets the exchange as refused
+        // and makes both products available again if they are not
+        // involved in any other pending or accepted exchange
 
         Exchange exchange =
                 exchangeRepository
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
 
-        if (!exchange.getStatus().equals(ExchangeStatus.PENDING)) {
+        if (exchange.getStatus() != ExchangeStatus.PENDING
+                && exchange.getStatus() != ExchangeStatus.ACCEPTED) {
 
-            throw new BadRequestException("Only pending exchanges can be refused");
+            throw new BadRequestException("Only pending or accepted exchanges can be refused");
         }
 
         if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
@@ -184,15 +219,36 @@ public class ExchangeService {
         }
 
         exchange.setStatus(ExchangeStatus.REFUSED);
-        exchange.getProposerProduct().setStatus(ProductTrocStatus.AVAILABLE);
-        exchange.getReceiverProduct().setStatus(ProductTrocStatus.AVAILABLE);
 
-        productTrocRepository.save(exchange.getProposerProduct());
-        productTrocRepository.save(exchange.getReceiverProduct());
+        boolean proposerHasActiveExchange =
+                exchangeRepository.existsByProductAndStatuses(
+                        exchange.getProposerProduct().getId(),
+                        List.of(ExchangeStatus.PENDING, ExchangeStatus.ACCEPTED));
+
+        boolean receiverHasActiveExchange =
+                exchangeRepository.existsByProductAndStatuses(
+                        exchange.getReceiverProduct().getId(),
+                        List.of(ExchangeStatus.PENDING, ExchangeStatus.ACCEPTED));
+
+        if (!proposerHasActiveExchange) {
+
+            exchange.getProposerProduct().setStatus(ProductTrocStatus.AVAILABLE);
+
+            productTrocRepository.save(exchange.getProposerProduct());
+        }
+
+        if (!receiverHasActiveExchange) {
+
+            exchange.getReceiverProduct().setStatus(ProductTrocStatus.AVAILABLE);
+
+            productTrocRepository.save(exchange.getReceiverProduct());
+        }
+
         exchangeRepository.save(exchange);
     }
 
-    public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(Long productId) {
+    public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
+            Long productId) { // exchanges targeting a specific product owned by the connected user
 
         ProductTroc product =
                 productTrocRepository
@@ -211,7 +267,8 @@ public class ExchangeService {
     }
 
     public ProductExchangeStatusResponse getIfIHaveProposedExchangeForSomeonesProduct(
-            Long productId) {
+            Long productId) { // allows a user to verify whether they already proposed an
+        // exchange for a product and retrieve its status
 
         ProductTroc product =
                 productTrocRepository

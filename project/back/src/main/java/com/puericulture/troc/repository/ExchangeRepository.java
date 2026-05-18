@@ -1,5 +1,3 @@
-// ExchangeRepository.java
-
 package com.puericulture.troc.repository;
 
 import com.puericulture.troc.entity.Exchange;
@@ -17,13 +15,11 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long> {
     boolean existsByProposerProductAndReceiverProduct(
             ProductTroc proposerProduct, ProductTroc receiverProduct);
 
-    List<Exchange> findByReceiverProduct(ProductTroc receiverProduct);
-
-    List<Exchange> findByProposerProduct(ProductTroc proposerProduct);
-
-    List<Exchange> findByProposerProductAuthorId(UUID mockUserId);
+    List<Exchange> findByProposerProductAuthorId(UUID authorId);
 
     List<Exchange> findByReceiverProductAuthorId(UUID authorId);
+
+    List<Exchange> findByReceiverProduct(ProductTroc product);
 
     Optional<Exchange> findByReceiverProductIdAndProposerProductAuthorId(
             Long receiverProductId, UUID proposerAuthorId);
@@ -32,18 +28,33 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long> {
             """
         SELECT e
         FROM Exchange e
-        WHERE e.status = :status
-        AND e.id <> :exchangeId
-        AND (
-            e.proposerProduct.id = :product1Id
-            OR e.receiverProduct.id = :product1Id
-            OR e.proposerProduct.id = :product2Id
-            OR e.receiverProduct.id = :product2Id
-        )
-    """) // This query finds all pending exchanges that involve either of the two products, excluding the current exchange.
+        WHERE
+            e.status = :status
+            AND e.id <> :exchangeId
+            AND (
+                e.proposerProduct.id = :proposerProductId
+                OR e.receiverProduct.id = :receiverProductId
+                OR e.proposerProduct.id = :receiverProductId
+                OR e.receiverProduct.id = :proposerProductId
+            )
+    """) // request to find all pending exchanges that involve either the proposer or receiver product, excluding the current exchange
     List<Exchange> findConflictingPendingExchanges(
             @Param("status") ExchangeStatus status,
             @Param("exchangeId") Long exchangeId,
-            @Param("product1Id") Long product1Id,
-            @Param("product2Id") Long product2Id);
+            @Param("proposerProductId") Long proposerProductId,
+            @Param("receiverProductId") Long receiverProductId);
+
+    @Query(
+            """
+        SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END
+        FROM Exchange e
+        WHERE
+            (
+                e.proposerProduct.id = :productId
+                OR e.receiverProduct.id = :productId
+            )
+            AND e.status IN :statuses
+    """) // request to check if there are any exchanges involving the given product that are in any of the specified statuses
+    boolean existsByProductAndStatuses(
+            @Param("productId") Long productId, @Param("statuses") List<ExchangeStatus> statuses);
 }

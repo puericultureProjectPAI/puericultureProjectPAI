@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/troc/exchanges")
 @RequiredArgsConstructor
 @Tag(
-        name = "Product Exchanges",
+        name = "Product Exchanges(TROC)",
         description = "Endpoints allowing users to create and manage product exchange proposals.")
 public class ExchangeController {
 
@@ -83,6 +83,7 @@ public class ExchangeController {
             })
     @GetMapping("/my-exchanges")
     public List<ExchangeResponse> getAllExchanges() {
+
         return exchangeService.getAllExchanges();
     }
 
@@ -97,13 +98,35 @@ public class ExchangeController {
             })
     @GetMapping("/proposed-to-me")
     public List<ExchangeResponse> getExchangesProposedToConnectedUser() {
+
         return exchangeService.getExchangesProposedToConnectedUser();
     }
 
     @Operation(
-            summary = "Confirm an exchange",
+            summary = "Accept an exchange",
             description =
-                    "Allows the owner of the requested product to confirm an exchange proposal.")
+                    "Moves an exchange from PENDING to ACCEPTED. This represents the beginning of the negotiation phase through chat. All other pending exchanges involving the same products are automatically refused.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "200", description = "Exchange accepted successfully."),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Only pending exchanges can be accepted."),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "User attempted to accept an exchange not proposed to them."),
+                @ApiResponse(responseCode = "404", description = "Exchange not found.")
+            })
+    @PostMapping("/{exchangeId}/accepted")
+    public void acceptExchange(@PathVariable Long exchangeId) {
+
+        exchangeService.acceptExchange(exchangeId);
+    }
+
+    @Operation(
+            summary = "Confirm an exchange after negotiation",
+            description =
+                    "Final validation step after the negotiation/chat phase. Moves an exchange from ACCEPTED to CONFIRMED and permanently closes both products.")
     @ApiResponses(
             value = {
                 @ApiResponse(
@@ -111,28 +134,29 @@ public class ExchangeController {
                         description = "Exchange confirmed successfully."),
                 @ApiResponse(
                         responseCode = "400",
-                        description = "Only pending exchanges can be confirmed."),
+                        description = "Only accepted exchanges can be confirmed."),
                 @ApiResponse(
                         responseCode = "403",
                         description =
                                 "User attempted to confirm an exchange not proposed to them."),
                 @ApiResponse(responseCode = "404", description = "Exchange not found.")
             })
-    @PostMapping("/{exchangeId}/confirmed")
+    @PostMapping("/{exchangeId}/confirm")
     public void confirmExchange(@PathVariable Long exchangeId) {
-        exchangeService.acceptExchange(exchangeId);
+
+        exchangeService.confirmExchange(exchangeId);
     }
 
     @Operation(
             summary = "Refuse an exchange",
             description =
-                    "Allows the owner of the requested product to refuse an exchange proposal.")
+                    "Allows the owner of the requested product to refuse an exchange proposal during the pending or negotiation phase.")
     @ApiResponses(
             value = {
                 @ApiResponse(responseCode = "200", description = "Exchange refused successfully."),
                 @ApiResponse(
                         responseCode = "400",
-                        description = "Only pending exchanges can be refused."),
+                        description = "Only pending or accepted exchanges can be refused."),
                 @ApiResponse(
                         responseCode = "403",
                         description = "User attempted to refuse an exchange not proposed to them."),
@@ -140,6 +164,7 @@ public class ExchangeController {
             })
     @PostMapping("/{exchangeId}/refused")
     public void refuseExchange(@PathVariable Long exchangeId) {
+
         exchangeService.refuseExchange(exchangeId);
     }
 
@@ -161,6 +186,7 @@ public class ExchangeController {
     @GetMapping("/product/proposed-to-me/{productId}")
     public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
             @PathVariable Long productId) {
+
         return exchangeService.getExchangesProposedToConnectedUserForProduct(productId);
     }
 
