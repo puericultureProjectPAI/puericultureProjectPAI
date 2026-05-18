@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "person_preferences")
@@ -19,8 +21,8 @@ public class PersonPreferences {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
-    @Column(name = "family_status")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "family_status", columnDefinition = "family_status")
     private FamilyStatus familyStatus;
 
     @OneToOne(fetch = FetchType.LAZY)

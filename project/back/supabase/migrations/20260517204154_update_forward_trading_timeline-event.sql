@@ -43,7 +43,7 @@ REFERENCES timeline_periods(id); -- Add constraint between period and events
 -- ==============================================================================
 -- ADD FAMILY STATUS ENUM
 -- ==============================================================================
-CREATE TYPE public.family_status AS ENUM (
+CREATE TYPE family_status AS ENUM (
     'FUTURE_PARENT',
     'PARENT',
     'PARENT_AGAIN'
