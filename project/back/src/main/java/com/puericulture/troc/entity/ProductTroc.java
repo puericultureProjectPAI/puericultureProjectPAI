@@ -3,11 +3,9 @@ package com.puericulture.troc.entity;
 import com.puericulture.common.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
 @Entity
 @Table(name = "product_troc", schema = "public")
 @PrimaryKeyJoinColumn(name = "product_id")
