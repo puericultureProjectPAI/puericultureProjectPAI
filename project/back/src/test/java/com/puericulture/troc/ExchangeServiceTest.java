@@ -15,11 +15,11 @@ import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
 import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import com.puericulture.troc.service.ExchangeService;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,10 +57,12 @@ class ExchangeServiceTest {
         proposerProduct = new ProductTroc();
         proposerProduct.setId(1L);
         proposerProduct.setAuthor(connectedUser);
+        proposerProduct.setStatus(ProductTrocStatus.AVAILABLE);
 
         receiverProduct = new ProductTroc();
         receiverProduct.setId(2L);
         receiverProduct.setAuthor(otherUser);
+        receiverProduct.setStatus(ProductTrocStatus.AVAILABLE);
     }
 
     @Test
@@ -96,7 +98,8 @@ class ExchangeServiceTest {
         assertNotNull(response);
 
         assertEquals(ExchangeStatus.PENDING, response.getStatus());
-
+        assertEquals(ProductTrocStatus.PENDING, proposerProduct.getStatus());
+        assertEquals(ProductTrocStatus.PENDING, receiverProduct.getStatus());
         verify(exchangeRepository, times(1)).save(any(Exchange.class));
     }
 
@@ -155,7 +158,10 @@ class ExchangeServiceTest {
         receiverProduct.setAuthor(connectedUser);
 
         Exchange exchange = new Exchange();
+
+        exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
+
         exchange.setStatus(ExchangeStatus.PENDING);
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
@@ -163,6 +169,8 @@ class ExchangeServiceTest {
         exchangeService.acceptExchange(1L);
 
         assertEquals(ExchangeStatus.CONFIRMED, exchange.getStatus());
+        assertEquals(ProductTrocStatus.CLOSED, proposerProduct.getStatus());
+        assertEquals(ProductTrocStatus.CLOSED, receiverProduct.getStatus());
 
         verify(exchangeRepository, times(1)).save(exchange);
     }
@@ -176,7 +184,10 @@ class ExchangeServiceTest {
         receiverProduct.setAuthor(connectedUser);
 
         Exchange exchange = new Exchange();
+
+        exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
+
         exchange.setStatus(ExchangeStatus.PENDING);
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
@@ -184,6 +195,9 @@ class ExchangeServiceTest {
         exchangeService.refuseExchange(1L);
 
         assertEquals(ExchangeStatus.REFUSED, exchange.getStatus());
+
+        assertEquals(ProductTrocStatus.AVAILABLE, proposerProduct.getStatus());
+        assertEquals(ProductTrocStatus.AVAILABLE, receiverProduct.getStatus());
 
         verify(exchangeRepository, times(1)).save(exchange);
     }
@@ -198,8 +212,8 @@ class ExchangeServiceTest {
 
         when(productTrocRepository.findById(2L)).thenReturn(Optional.of(receiverProduct));
 
-        when(exchangeRepository.findByReceiverProduct(receiverProduct))
-                .thenReturn(List.of(exchange));
+        when(exchangeRepository.findByReceiverProductIdAndProposerProductAuthorId(2L, MOCK_USER_ID))
+                .thenReturn(Optional.of(exchange));
 
         ProductExchangeStatusResponse response =
                 exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(2L);
@@ -214,7 +228,8 @@ class ExchangeServiceTest {
 
         when(productTrocRepository.findById(2L)).thenReturn(Optional.of(receiverProduct));
 
-        when(exchangeRepository.findByReceiverProduct(receiverProduct)).thenReturn(List.of());
+        when(exchangeRepository.findByReceiverProductIdAndProposerProductAuthorId(2L, MOCK_USER_ID))
+                .thenReturn(Optional.empty());
 
         ProductExchangeStatusResponse response =
                 exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(2L);

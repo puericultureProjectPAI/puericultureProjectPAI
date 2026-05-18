@@ -1,7 +1,7 @@
 package com.puericulture.troc.dto;
 
 import com.puericulture.common.dto.ProductDto;
-import com.puericulture.troc.entity.ExchangeStatus;
+import com.puericulture.troc.entity.ProductTrocStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
@@ -18,5 +18,5 @@ public class ProductTrocDto extends ProductDto {
     private Long estimatedPrice;
 
     @Enumerated(EnumType.STRING)
-    private ExchangeStatus status;
+    private ProductTrocStatus status;
 }

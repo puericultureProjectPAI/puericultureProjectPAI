@@ -17,17 +17,18 @@ public class ProductTroc extends Product {
     @Column(name = "estimated_price")
     private Long estimatedPrice;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private ProductTrocStatus status;
 
     public ProductTroc() {
         this.setPostDate(
                 java.time.LocalDateTime
                         .now()); // Initialiser la date de publication à la création du produit
-        this.setStatus(ExchangeStatus.PENDING);
+        this.setStatus(ProductTrocStatus.AVAILABLE); // Initialiser le statut à AVAILABLE par défaut
     }
 
-    public void setStatus(ExchangeStatus pending) {
-        this.status = pending.toString();
+    public void setStatus(ProductTrocStatus status) {
+        this.status = status;
     }
 }

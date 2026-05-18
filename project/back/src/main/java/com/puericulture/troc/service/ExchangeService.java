@@ -11,6 +11,7 @@ import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
 import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
@@ -71,11 +72,23 @@ public class ExchangeService {
             throw new ForbiddenException("You can only propose exchanges with your own product");
         }
 
+        if (proposerProduct.getStatus() != ProductTrocStatus.AVAILABLE
+                || receiverProduct.getStatus() != ProductTrocStatus.AVAILABLE) {
+
+            throw new BadRequestException("One of the products is not available for exchange");
+        }
+
         Exchange exchange = new Exchange();
 
         exchange.setProposerProduct(proposerProduct);
         exchange.setReceiverProduct(receiverProduct);
         exchange.setStatus(ExchangeStatus.PENDING);
+
+        proposerProduct.setStatus(ProductTrocStatus.PENDING);
+        receiverProduct.setStatus(ProductTrocStatus.PENDING);
+
+        productTrocRepository.save(proposerProduct);
+        productTrocRepository.save(receiverProduct);
 
         Exchange savedExchange = exchangeRepository.save(exchange);
 
@@ -130,6 +143,12 @@ public class ExchangeService {
 
         exchange.setStatus(ExchangeStatus.CONFIRMED);
 
+        exchange.getProposerProduct().setStatus(ProductTrocStatus.CLOSED);
+        exchange.getReceiverProduct().setStatus(ProductTrocStatus.CLOSED);
+
+        productTrocRepository.save(exchange.getProposerProduct());
+        productTrocRepository.save(exchange.getReceiverProduct());
+
         exchangeRepository.save(exchange);
     }
 
@@ -151,7 +170,11 @@ public class ExchangeService {
         }
 
         exchange.setStatus(ExchangeStatus.REFUSED);
+        exchange.getProposerProduct().setStatus(ProductTrocStatus.AVAILABLE);
+        exchange.getReceiverProduct().setStatus(ProductTrocStatus.AVAILABLE);
 
+        productTrocRepository.save(exchange.getProposerProduct());
+        productTrocRepository.save(exchange.getReceiverProduct());
         exchangeRepository.save(exchange);
     }
 
@@ -187,14 +210,8 @@ public class ExchangeService {
         }
 
         Optional<Exchange> exchangeOptional =
-                exchangeRepository.findByReceiverProduct(product).stream()
-                        .filter(
-                                exchange ->
-                                        exchange.getProposerProduct()
-                                                .getAuthor()
-                                                .getId()
-                                                .equals(MOCK_USER_ID))
-                        .findFirst();
+                exchangeRepository.findByReceiverProductIdAndProposerProductAuthorId(
+                        productId, MOCK_USER_ID);
 
         ProductExchangeStatusResponse response = new ProductExchangeStatusResponse();
 
