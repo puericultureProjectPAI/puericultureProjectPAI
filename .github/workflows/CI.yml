@@ -54,7 +54,7 @@ jobs:
 
       - name: Start Supabase Local
         working-directory: project/back
-        run: npx supabase start
+        run: npx supabase start -x edge-runtime,storage-api,studio,realtime,imgproxy,logflare,vector
 
       - name: Check Backend Formatting (Spotless)
         working-directory: project/back

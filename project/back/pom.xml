@@ -59,6 +59,11 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>jwks-rsa</artifactId>
+			<version>0.22.1</version>
+		</dependency>
 
 		<!-- BASE DE DONNÉES -->
 		<dependency>
@@ -69,6 +74,13 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+
+		<!-- CLOUDINARY -->
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.36.0</version>
 		</dependency>
 
 		<!-- IA (Spring AI) -->
