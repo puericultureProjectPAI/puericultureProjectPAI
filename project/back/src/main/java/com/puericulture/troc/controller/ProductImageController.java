@@ -8,13 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/troc/images")
@@ -54,33 +51,33 @@ public class ProductImageController {
     }
 
     @Operation(
-            summary = "Upload an image for a product",
+            summary = "Associate a Cloudinary image URL to a product",
             description =
-                    "Uploads a file to Supabase Storage and associates its URL to the product. "
-                            + "Accepted formats: JPEG, PNG, GIF, WEBP. Maximum 5 images per product.")
+                    "Saves a Cloudinary image URL and associates it to a product. "
+                            + "The image must be uploaded to Cloudinary by the frontend first. "
+                            + "Maximum 5 images per product.")
     @ApiResponses(
             value = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "Image uploaded and linked to the product.",
+                        description = "Image URL saved and linked to the product.",
                         content =
                                 @Content(
                                         mediaType = "application/json",
                                         schema = @Schema(implementation = ProductImageDto.class))),
                 @ApiResponse(
                         responseCode = "400",
-                        description = "Unsupported format or maximum image limit reached.",
+                        description = "Maximum image limit reached.",
                         content = @Content(mediaType = "application/json")),
                 @ApiResponse(
                         responseCode = "404",
                         description = "Product not found.",
                         content = @Content(mediaType = "application/json"))
             })
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductImageDto> uploadImage(
-            @RequestParam("file") MultipartFile file, @RequestParam("productId") Long productId)
-            throws IOException {
-        return ResponseEntity.ok(productImageService.uploadImage(file, productId));
+    @PostMapping
+    public ResponseEntity<ProductImageDto> addImage(
+            @RequestParam("imageUrl") String imageUrl, @RequestParam("productId") Long productId) {
+        return ResponseEntity.ok(productImageService.addImage(imageUrl, productId));
     }
 
     @Operation(

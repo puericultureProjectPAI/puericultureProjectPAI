@@ -8,35 +8,27 @@ import com.puericulture.troc.dto.ProductImageDto;
 import com.puericulture.troc.entity.ProductImage;
 import com.puericulture.troc.mapper.ProductImageMapper;
 import com.puericulture.troc.repository.ProductImageRepository;
-import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProductImageService {
 
     private static final int MAX_IMAGES_PER_PRODUCT = 5;
-    private static final Set<String> ALLOWED_TYPES =
-            Set.of("image/jpeg", "image/png", "image/gif", "image/webp");
 
     private final ProductImageRepository productImageRepository;
     private final ProductImageMapper productImageMapper;
-    private final SupabaseStorageService supabaseStorageService;
     private final ProductRepository productRepository;
 
     @Autowired
     public ProductImageService(
             ProductImageRepository productImageRepository,
             ProductImageMapper productImageMapper,
-            SupabaseStorageService supabaseStorageService,
             ProductRepository productRepository) {
         this.productImageRepository = productImageRepository;
         this.productImageMapper = productImageMapper;
-        this.supabaseStorageService = supabaseStorageService;
         this.productRepository = productRepository;
     }
 
@@ -46,13 +38,7 @@ public class ProductImageService {
                 .collect(Collectors.toList());
     }
 
-    public ProductImageDto uploadImage(MultipartFile file, Long productId) throws IOException {
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-            throw new BadRequestException(
-                    "Format non supporté. Formats acceptés : JPEG, PNG, GIF, WEBP");
-        }
-
+    public ProductImageDto addImage(String imageUrl, Long productId) {
         Product product =
                 productRepository
                         .findById(productId)
@@ -65,11 +51,9 @@ public class ProductImageService {
                     "Maximum " + MAX_IMAGES_PER_PRODUCT + " images par produit");
         }
 
-        String url = supabaseStorageService.upload(file, productId);
-
         ProductImage entity = new ProductImage();
         entity.setProduct(product);
-        entity.setImageUrl(url);
+        entity.setImageUrl(imageUrl);
         entity.setPosition((int) currentCount + 1);
 
         return productImageMapper.toDto(productImageRepository.save(entity));
