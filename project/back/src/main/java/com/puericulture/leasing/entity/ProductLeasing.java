@@ -1,23 +1,16 @@
 package com.puericulture.leasing.entity;
 
+import com.puericulture.common.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * Entité ProductLeasing représentant les paramètres de location d'un produit.
- * Contient les prix journaliers et mensuels.
- */
 @Entity
 @Table(name = "product_leasing")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ProductLeasing {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ProductLeasing extends Product {
 
     @Column(name = "price_per_month", nullable = false)
     private Long pricePerMonth;
@@ -25,4 +18,3 @@ public class ProductLeasing {
     @Column(name = "price_per_day", nullable = false)
     private Long pricePerDay;
 }
-
