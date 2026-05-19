@@ -16,6 +16,10 @@ public class Timelines {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "children_id", nullable = false)
+    private ChildrenEntity children;
+
     @Column(name = "name", nullable = false)
     private String name;
 

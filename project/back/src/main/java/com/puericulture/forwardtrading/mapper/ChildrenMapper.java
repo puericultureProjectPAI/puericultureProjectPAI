@@ -7,6 +7,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public abstract class ChildrenMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "person", ignore = true)
     @Mapping(target = "name", source = "name")
     @Mapping(target = "birthDate", source = "dpa")
     @Mapping(target = "gender", source = "gender")

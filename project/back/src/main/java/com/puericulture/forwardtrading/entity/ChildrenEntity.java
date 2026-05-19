@@ -1,8 +1,10 @@
 package com.puericulture.forwardtrading.entity;
 
+import com.puericulture.common.entity.Person;
 import jakarta.persistence.*;
 import java.sql.Date;
-import lombok.Data;
+import java.util.List;
+import lombok.*;
 
 @Entity
 @Table(name = "children")
@@ -10,12 +12,21 @@ import lombok.Data;
 public class ChildrenEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Column(name = "id", unique = true, nullable = false)
+    private Long id;
 
-    String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "person_id", referencedColumnName = "id", nullable = false)
+    private Person person;
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "birthdate")
-    Date birthDate;
+    private Date birthDate;
 
-    String gender;
+    @Column(name = "gender")
+    private String gender;
+
+    @OneToMany private List<Timelines> timelines;
 }
