@@ -1,12 +1,15 @@
 import { apiClient } from "../../common/utils/apiClient";
 
-export async function uploadProductImages(productId, files) {
-  return Promise.all(
-    files.map((file) => {
-      const form = new FormData();
-      form.append("file", file);
-      form.append("productId", productId);
-      return apiClient.post("/api/troc/images/upload", form);
-    }),
-  );
+export async function getProductImages(productId) {
+  return apiClient.get(`/api/troc/images/product/${productId}`);
+}
+
+export async function addProductImage(productId, imageUrl) {
+  return apiClient.post("/api/troc/images", null, {
+    params: { imageUrl, productId },
+  });
+}
+
+export async function addProductImages(productId, imageUrls) {
+  return Promise.all(imageUrls.map((url) => addProductImage(productId, url)));
 }
