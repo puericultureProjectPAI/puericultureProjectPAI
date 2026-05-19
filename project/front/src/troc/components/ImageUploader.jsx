@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useImageManager } from "../../common/hooks/useImageManager";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -14,15 +14,23 @@ export default function ImageUploader({ onImagesChange }) {
     error: uploadError,
   } = useImageManager();
 
+  useEffect(() => {
+    onImagesChange?.(urls);
+  }, [urls]);
+
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
     setLocalError("");
 
+    if (urls.length + files.length > MAX_IMAGES) {
+      setLocalError(
+        `Maximum ${MAX_IMAGES} images par produit. Veuillez sélectionner moins de photos.`,
+      );
+      e.target.value = "";
+      return;
+    }
+
     for (const file of files) {
-      if (urls.length >= MAX_IMAGES) {
-        setLocalError(`Maximum ${MAX_IMAGES} images par produit`);
-        break;
-      }
       if (!ALLOWED_TYPES.includes(file.type)) {
         setLocalError(
           `Format non supporté : ${file.name}. Formats acceptés : JPEG, PNG, GIF, WEBP`,
@@ -32,11 +40,7 @@ export default function ImageUploader({ onImagesChange }) {
 
       const url = await uploadImage(file);
       if (url) {
-        setUrls((prev) => {
-          const updated = [...prev, url];
-          onImagesChange?.(updated);
-          return updated;
-        });
+        setUrls((prev) => [...prev, url]);
       }
     }
 
@@ -45,11 +49,7 @@ export default function ImageUploader({ onImagesChange }) {
 
   const removeImage = async (url) => {
     await deleteImage(url);
-    setUrls((prev) => {
-      const updated = prev.filter((u) => u !== url);
-      onImagesChange?.(updated);
-      return updated;
-    });
+    setUrls((prev) => prev.filter((u) => u !== url));
   };
 
   const error = localError || uploadError;
