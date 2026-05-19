@@ -43,12 +43,11 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
-              <Route path="/forward" element={<ForwardTradingView />}>
-                <Route
-                  path="/create-children"
-                  element={<CreationEnfantView />}
-                />
-              </Route>
+              <Route path="/forward" element={<ForwardTradingView />} />
+              <Route
+                path="/forward/create-children"
+                element={<CreationEnfantView />}
+              />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}

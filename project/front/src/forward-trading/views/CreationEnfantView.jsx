@@ -1,10 +1,13 @@
+import { useState } from "react";
 import CreationEnfantForm from "../components/CreationEnfantForm";
-import { useCreateEnfant } from "../hooks/UseCreateEnfant";
+import { createChild } from "../services/childrenServices";
 
 const CreationEnfantView = () => {
-  const { mutateAsync, isPending, isError, error } = useCreateEnfant();
-
+  const [isPending, setIsLoading] = useState(false);
+  const [isError] = useState(false);
+  const [error] = useState(null);
   const handleFormSubmit = async (values, { resetForm }) => {
+    setIsLoading(true);
     try {
       const parts = values.dpa.split("/");
       let formattedDate = "";
@@ -26,13 +29,15 @@ const CreationEnfantView = () => {
       };
 
       // 3. Appel API
-      await mutateAsync(payloadForBackend);
+      await createChild(payloadForBackend);
+      //await mutateAsync(payloadForBackend);
 
       alert("Enfant ajouté avec succès !");
       resetForm();
     } catch (err) {
       console.error(err);
     }
+    setIsLoading(false);
   };
 
   return (
