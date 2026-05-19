@@ -1,5 +1,6 @@
 package com.puericulture.secondhand.service;
 
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.mapper.ExternalProductMapper;
 import com.puericulture.secondhand.dto.ExternalProductDTO;
 import com.puericulture.secondhand.dto.PriceComparisonDTO;
@@ -46,7 +47,17 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PriceComparisonDTO getPriceComparison(String category, Double price) {
 
-        Long count = secondHandProductRepository.countActiveListingsByCategory(category);
+        ProductCategory productCategory;
+        try {
+            productCategory = ProductCategory.fromLabel(category);
+        } catch (Exception e) {
+            PriceComparisonDTO dto = new PriceComparisonDTO();
+            dto.setCategory(category);
+            dto.setListingsCount(0L);
+            return dto;
+        }
+
+        Long count = secondHandProductRepository.countActiveListingsByCategory(productCategory);
         if (count == 0) {
             PriceComparisonDTO dto = new PriceComparisonDTO();
             dto.setCategory(category);
@@ -54,7 +65,7 @@ public class ProductService {
             return dto;
         }
 
-        Double rawAverage = secondHandProductRepository.findAveragePriceByCategory(category);
+        Double rawAverage = secondHandProductRepository.findAveragePriceByCategory(productCategory);
         Double averageOccasionPrice = Math.round(rawAverage * 100.0) / 100.0;
 
         Double savingsAmount = null;

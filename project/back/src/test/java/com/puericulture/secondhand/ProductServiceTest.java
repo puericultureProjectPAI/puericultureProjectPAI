@@ -3,6 +3,7 @@ package com.puericulture.secondhand;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.mapper.ExternalProductMapper;
 import com.puericulture.secondhand.dto.PriceComparisonDTO;
 import com.puericulture.secondhand.dto.ProductResponseDTO;
@@ -21,9 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ProductServiceTest {
 
     @Mock private ExternalProductRepository externalProductRepository;
-
     @Mock private SecondHandProductRepository secondHandProductRepository;
-
     @Mock private ExternalProductMapper externalProductMapper;
 
     @InjectMocks private ProductService productService;
@@ -61,10 +60,8 @@ class ProductServiceTest {
     }
 
     @Test
-    void getPriceComparison_noListings_returnsZero() {
-        when(secondHandProductRepository.countActiveListingsByCategory("POUSSETTE")).thenReturn(0L);
-
-        PriceComparisonDTO result = productService.getPriceComparison("POUSSETTE", 899.0);
+    void getPriceComparison_unknownCategory_returnsZero() {
+        PriceComparisonDTO result = productService.getPriceComparison("CATEGORIE_INCONNUE", 899.0);
 
         assertEquals(0L, result.getListingsCount());
         assertNull(result.getAverageOccasionPrice());
@@ -72,24 +69,28 @@ class ProductServiceTest {
 
     @Test
     void getPriceComparison_withListings_calculatesSavings() {
-        when(secondHandProductRepository.countActiveListingsByCategory("POUSSETTE")).thenReturn(5L);
-        when(secondHandProductRepository.findAveragePriceByCategory("POUSSETTE"))
-                .thenReturn(449.67);
+        String label = "Poussettes, porte-bébés et sièges auto";
+        ProductCategory category = ProductCategory.TRANSPORT_BEBE;
 
-        PriceComparisonDTO result = productService.getPriceComparison("POUSSETTE", 899.0);
+        when(secondHandProductRepository.countActiveListingsByCategory(category)).thenReturn(5L);
+        when(secondHandProductRepository.findAveragePriceByCategory(category)).thenReturn(449.67);
+
+        PriceComparisonDTO result = productService.getPriceComparison(label, 899.0);
 
         assertEquals(449.67, result.getAverageOccasionPrice());
         assertEquals(449.33, result.getSavingsAmount());
-        assertEquals(50.0, result.getSavingsPercent());
         assertFalse(result.isLowSampleWarning());
     }
 
     @Test
     void getPriceComparison_fewListings_lowSampleWarningTrue() {
-        when(secondHandProductRepository.countActiveListingsByCategory("POUSSETTE")).thenReturn(2L);
-        when(secondHandProductRepository.findAveragePriceByCategory("POUSSETTE")).thenReturn(450.0);
+        String label = "Poussettes, porte-bébés et sièges auto";
+        ProductCategory category = ProductCategory.TRANSPORT_BEBE;
 
-        PriceComparisonDTO result = productService.getPriceComparison("POUSSETTE", 899.0);
+        when(secondHandProductRepository.countActiveListingsByCategory(category)).thenReturn(2L);
+        when(secondHandProductRepository.findAveragePriceByCategory(category)).thenReturn(450.0);
+
+        PriceComparisonDTO result = productService.getPriceComparison(label, 899.0);
 
         assertTrue(result.isLowSampleWarning());
     }

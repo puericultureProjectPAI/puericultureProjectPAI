@@ -1,5 +1,6 @@
 package com.puericulture.secondhand.repository;
 
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.secondhand.entity.SecondHandProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,11 +12,11 @@ public interface SecondHandProductRepository extends JpaRepository<SecondHandPro
             "SELECT AVG(s.price) FROM SecondHandProduct s "
                     + "WHERE s.category = :category "
                     + "AND s.status = 'ACTIVE'")
-    Double findAveragePriceByCategory(@Param("category") String category);
+    Double findAveragePriceByCategory(@Param("category") ProductCategory category);
 
     @Query(
             "SELECT COUNT(s) FROM SecondHandProduct s "
                     + "WHERE s.category = :category "
                     + "AND s.status = 'ACTIVE'")
-    Long countActiveListingsByCategory(@Param("category") String category);
+    Long countActiveListingsByCategory(@Param("category") ProductCategory category);
 }
