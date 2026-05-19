@@ -2,10 +2,6 @@ package com.puericulture.troc.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * STRATEGIC INTENT: Exposes only the data the frontend needs to render a product image. Never
- * expose the entity directly to avoid accidental data leaks.
- */
 @Schema(description = "Represents a single image associated to a product listing.")
 public class ProductImageDto {
 

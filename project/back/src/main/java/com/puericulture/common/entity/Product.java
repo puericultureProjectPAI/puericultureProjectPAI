@@ -44,8 +44,11 @@ public abstract class Product {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", length = 255, nullable = false)
-    private String category;
+    private ProductCategory category;
+
+    // Pour récupérer la version d'affichage : category.getLabel()
 
     @Column(name = "last_check_date")
     private Date lastCheckDate;
@@ -70,6 +73,12 @@ public abstract class Product {
 
     @Column(name = "model", length = 255)
     private String model;
+
+    @Column(name = "condition", length = 255)
+    private String condition;
+
+    @Column(name = "confidence_score")
+    private Integer confidenceScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)

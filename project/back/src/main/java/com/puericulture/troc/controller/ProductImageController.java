@@ -16,10 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * STRATEGIC INTENT: Manages the lifecycle of images associated to a product listing. Images are
- * stored in Supabase Storage; only the public URL is persisted in the database.
- */
 @RestController
 @RequestMapping("/api/troc/images")
 @Tag(
