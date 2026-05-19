@@ -10,6 +10,7 @@ import RegisterView from "./common/views/RegisterView";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import { FamilyOnboardingView } from "./forward-trading/views/FamilyOnboardingView";
 
 export default function App() {
   useEffect(() => {
@@ -55,6 +56,9 @@ export default function App() {
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
+                 <Route path="/onboarding-family"
+                element={<FamilyOnboardingView />}
+                />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
