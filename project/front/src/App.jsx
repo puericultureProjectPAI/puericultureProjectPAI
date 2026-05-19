@@ -5,11 +5,10 @@ import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
+import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
+import RegisterView from "./common/views/RegisterView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// 👇 2. Crée l'instance du client en dehors du composant
-const queryClient = new QueryClient();
 export default function App() {
   useEffect(() => {
     // PWA Logic: Captured at root to ensure shell availability
@@ -31,27 +30,34 @@ export default function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Routes>
-          {/* Public Route */}
-          <Route path="/login" element={<Connection />} />
+    <AuthProvider>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<Connection />} />
+        <Route path="/register" element={<RegisterView />} />
 
-          {/* Security: Protected Shell*/}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/create-children" element={<CreationEnfantView />} />
-              <Route element={<RoleGuard access={() => true} />}></Route>
+        {/* Security: Protected Shell*/}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/home" element={<Home />} />
 
-              {/* Default Redirections: Explicit logic  */}
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="*" element={<Navigate to="/home" replace />} />
+            <Route element={<RoleGuard access={() => true} />}>
+              {/* Future vertical routes go here */}
+              <Route path="/forward" element={<ForwardTradingView />}>
+                <Route
+                  path="/create-children"
+                  element={<CreationEnfantView />}
+                />
+              </Route>
             </Route>
+
+            {/* Default Redirections: Explicit logic  */}
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
-        </Routes>
-      </AuthProvider>
-    </QueryClientProvider>
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 
