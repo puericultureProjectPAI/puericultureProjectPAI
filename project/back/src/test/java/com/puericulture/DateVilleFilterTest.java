@@ -164,6 +164,21 @@ public class DateVilleFilterTest {
     }
 
     @Test
+    void filter_throwsException_whenStartDateIsInThePast() {
+        LocalDate startDate = LocalDate.of(2020, 1, 1);
+        LocalDate endDate = LocalDate.of(2020, 1, 31);
+
+        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+
+        assertThatThrownBy(() -> productLeasingService.filter(filterRequest))
+                .isInstanceOf(InvalidFilterCriteriaException.class)
+                .hasMessage("La date de début ne peut pas être dans le passé");
+    }
+
+    @Test
     void getAvailableCities_returnsListOfCities() {
         List<String> cities = List.of("Paris", "Lyon", "Bordeaux");
         when(mockRepository.findAllAvailableCities()).thenReturn(cities);

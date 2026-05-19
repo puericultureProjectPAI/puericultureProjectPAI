@@ -26,6 +26,12 @@ public class LeasingFilterRequest {
         return !endDate.isBefore(startDate);
     }
 
+    /** Vérifie que la date de début n'est pas dans le passé. */
+    public boolean isStartDateInFuture() {
+        if (startDate == null) return true;
+        return !startDate.isBefore(LocalDate.now());
+    }
+
     public boolean hasAnyCriteria() {
         boolean hasCity = city != null && !city.isBlank();
         boolean hasDates = startDate != null && endDate != null;

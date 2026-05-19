@@ -47,6 +47,12 @@ public class ProductLeasingService {
                     "Au moins un critère de filtrage doit être fourni (ville et/ou dates)");
         }
 
+        if (!filterRequest.isStartDateInFuture()) {
+            log.warn("Date de début dans le passé: {}", filterRequest.getStartDate());
+            throw new InvalidFilterCriteriaException(
+                    "La date de début ne peut pas être dans le passé");
+        }
+
         if (!filterRequest.isValidDateRange()) {
             log.warn("Dates invalides: endDate < startDate");
             throw new InvalidFilterCriteriaException(
