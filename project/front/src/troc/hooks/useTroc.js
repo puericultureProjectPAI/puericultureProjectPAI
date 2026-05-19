@@ -12,6 +12,9 @@ export default function useTroc() {
     try {
       await createTroc(values);
       setSuccess("Annonce Troc publiée avec succès.");
+      setTimeout(() => {
+        setSuccess("");
+      }, 3000);
       return true;
     } catch (requestError) {
       setError("Impossible de publier l’annonce. Vérifiez les champs obligatoires.");
