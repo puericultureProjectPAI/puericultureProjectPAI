@@ -86,7 +86,7 @@ public class ProductLeasingController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Résultat du filtrage (peut être vide)",
-                    content = @Content(schema = @Schema(implementation = Map.class))
+                    content = @Content(schema = @Schema(implementation = ProductLeasingResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",

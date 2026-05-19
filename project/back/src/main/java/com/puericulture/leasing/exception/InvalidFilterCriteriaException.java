@@ -1,24 +1,14 @@
 package com.puericulture.leasing.exception;
 
-public class InvalidFilterCriteriaException extends RuntimeException {
+import com.puericulture.config.errormanager.exception.BadRequestException;
 
-    /**
-     * Constructeur avec message d'erreur
-     *
-     * @param message message descriptif de l'erreur
-     */
+/**
+ * Lancée quand les critères de filtrage leasing sont invalides (aucun critère, dates incohérentes).
+ * Hérite de BadRequestException pour retourner automatiquement un HTTP 400.
+ */
+public class InvalidFilterCriteriaException extends BadRequestException {
+
     public InvalidFilterCriteriaException(String message) {
         super(message);
     }
-
-    /**
-     * Constructeur avec message et cause
-     *
-     * @param message message descriptif de l'erreur
-     * @param cause exception originale
-     */
-    public InvalidFilterCriteriaException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
-

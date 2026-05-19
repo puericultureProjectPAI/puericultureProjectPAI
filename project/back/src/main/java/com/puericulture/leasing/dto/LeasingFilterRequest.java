@@ -1,66 +1,34 @@
 package com.puericulture.leasing.dto;
 
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.time.LocalDate;
 
-/**
- * DTO de filtrage avec CRITÈRES OPTIONNELS
- * Tous les champs sont nullable
- *
- * Cas d'usage:
- * - Juste ville: { "city": "Paris" }
- * - Juste dates: { "startDate": "2025-06-01", "endDate": "2025-06-30" }
- * - Ville + dates: { "city": "Paris", "startDate": "2025-06-01", "endDate": "2025-06-30" }
- * - Aucun critère: {} (retourne tous)
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(description = "Critères de filtrage des produits en location (au moins un obligatoire)")
 public class LeasingFilterRequest {
 
-    /**
-     * Optionnel: filtrer par ville
-     */
+    @Schema(description = "Ville de destination", example = "Paris")
     private String city;
 
-    /**
-     * Optionnel: date de début de la période
-     */
+    @Schema(description = "Date de début de la période de location", example = "2025-06-01")
     private LocalDate startDate;
 
-    /**
-     * Optionnel: date de fin de la période
-     */
+    @Schema(description = "Date de fin de la période de location", example = "2025-06-30")
     private LocalDate endDate;
 
-    /**
-     * Valide que endDate >= startDate (si les deux sont fournies)
-     */
     public boolean isValidDateRange() {
-        // Si aucune date = valide
-        if (startDate == null && endDate == null) {
-            return true;
-        }
-
-        // Si une seule date = valide
-        if (startDate == null || endDate == null) {
-            return true;
-        }
-
-        // Si les deux = endDate doit être >= startDate
+        if (startDate == null && endDate == null) return true;
+        if (startDate == null || endDate == null) return true;
         return !endDate.isBefore(startDate);
     }
 
-    /**
-     * Vérifie qu'au moins UN critère est fourni
-     */
     public boolean hasAnyCriteria() {
         boolean hasCity = city != null && !city.isBlank();
         boolean hasDates = startDate != null && endDate != null;
         return hasCity || hasDates;
     }
 }
-
-
