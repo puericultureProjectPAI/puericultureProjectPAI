@@ -16,7 +16,7 @@ export default function ImageUploader({ onImagesChange }) {
 
   useEffect(() => {
     onImagesChange?.(urls);
-  }, [urls]);
+  }, [urls, onImagesChange]);
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
