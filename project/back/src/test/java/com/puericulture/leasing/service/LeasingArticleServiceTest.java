@@ -38,6 +38,7 @@ class LeasingArticleServiceTest {
 
         assertThat(result).isEqualTo(dto);
         verify(leasingArticleRepository).findByIdWithImages(1L);
+        verify(leasingArticleMapper).toDetailDto(article);
     }
 
     @Test
