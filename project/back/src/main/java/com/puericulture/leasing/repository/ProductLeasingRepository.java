@@ -26,11 +26,11 @@ public interface ProductLeasingRepository extends JpaRepository<ProductLeasing, 
      * dont les dates chevauchent la période demandée.
      * Overlap : lo.start_date <= endDate ET lo.end_date >= startDate
      */
-    @Query(value = "SELECT pl.id FROM product_leasing pl " +
+    @Query(value = "SELECT pl.product_id FROM product_leasing pl " +
             "WHERE NOT EXISTS (" +
             "  SELECT 1 FROM client_products cp " +
             "  JOIN leasing_orders lo ON lo.client_product_id = cp.id " +
-            "  WHERE cp.product_id = pl.id " +
+            "  WHERE cp.product_id = pl.product_id " +
             "  AND lo.start_date <= :endDate " +
             "  AND lo.end_date >= :startDate" +
             ")",
@@ -43,13 +43,13 @@ public interface ProductLeasingRepository extends JpaRepository<ProductLeasing, 
     /**
      * Retourne les IDs des produits disponibles dans une ville sur la période donnée.
      */
-    @Query(value = "SELECT pl.id FROM product_leasing pl " +
-            "JOIN products p ON p.id = pl.id " +
+    @Query(value = "SELECT pl.product_id FROM product_leasing pl " +
+            "JOIN products p ON p.id = pl.product_id " +
             "WHERE LOWER(p.city) = LOWER(:city) " +
             "AND NOT EXISTS (" +
             "  SELECT 1 FROM client_products cp " +
             "  JOIN leasing_orders lo ON lo.client_product_id = cp.id " +
-            "  WHERE cp.product_id = pl.id " +
+            "  WHERE cp.product_id = pl.product_id " +
             "  AND lo.start_date <= :endDate " +
             "  AND lo.end_date >= :startDate" +
             ")",

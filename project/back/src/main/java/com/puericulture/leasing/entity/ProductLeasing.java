@@ -6,6 +6,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "product_leasing")
+@PrimaryKeyJoinColumn(name = "product_id")
 @Getter
 @Setter
 @NoArgsConstructor

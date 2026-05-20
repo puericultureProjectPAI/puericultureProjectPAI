@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -109,7 +108,8 @@ public class DateVilleFilterTest {
                 .endDate(endDate)
                 .build();
 
-        when(mockRepository.findByDateRange(startDate, endDate)).thenReturn(List.of(mockProduct));
+        when(mockRepository.findAvailableIdsByDateRange(startDate, endDate)).thenReturn(List.of(1L));
+        when(mockRepository.findAllById(List.of(1L))).thenReturn(List.of(mockProduct));
         when(mockMapper.toProductLeasingResponse(mockProduct)).thenReturn(mockDto);
 
         List<ProductLeasingResponse> result = productLeasingService.filter(filterRequest);
@@ -128,8 +128,9 @@ public class DateVilleFilterTest {
                 .endDate(endDate)
                 .build();
 
-        when(mockRepository.findByLocationAndDates("Paris", startDate, endDate))
-                .thenReturn(List.of(mockProduct));
+        when(mockRepository.findAvailableIdsByCityAndDateRange("Paris", startDate, endDate))
+                .thenReturn(List.of(1L));
+        when(mockRepository.findAllById(List.of(1L))).thenReturn(List.of(mockProduct));
         when(mockMapper.toProductLeasingResponse(mockProduct)).thenReturn(mockDto);
 
         List<ProductLeasingResponse> result = productLeasingService.filter(filterRequest);
