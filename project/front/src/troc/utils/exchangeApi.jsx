@@ -11,7 +11,7 @@ import { apiClient } from "../../common/utils/apiClient";
  * @returns {Promise} Response from the server
  */
 export const createExchange = (request) => {
-  return apiClient.post("/api/troc/exchanges", request);
+  return apiClient.post("/troc/exchanges", request);
 };
 
 /**
@@ -20,7 +20,7 @@ export const createExchange = (request) => {
  * @returns {Promise} Response from the server
  */
 export const deleteExchange = (exchangeId) => {
-  return apiClient.delete(`/api/troc/exchanges/${exchangeId}`);
+  return apiClient.delete(`/troc/exchanges/${exchangeId}`);
 };
 
 /**
@@ -28,7 +28,7 @@ export const deleteExchange = (exchangeId) => {
  * @returns {Promise} List of user's exchanges
  */
 export const getMyExchanges = () => {
-  return apiClient.get("/api/troc/exchanges/my-exchanges");
+  return apiClient.get("/troc/exchanges/my-exchanges");
 };
 
 /**
@@ -36,7 +36,7 @@ export const getMyExchanges = () => {
  * @returns {Promise} List of exchanges targeting user's products
  */
 export const getExchangesProposedToMe = () => {
-  return apiClient.get("/api/troc/exchanges/proposed-to-me");
+  return apiClient.get("/troc/exchanges/proposed-to-me");
 };
 
 /**
@@ -46,7 +46,7 @@ export const getExchangesProposedToMe = () => {
  * @returns {Promise} Response from the server
  */
 export const acceptExchange = (exchangeId) => {
-  return apiClient.post(`/api/troc/exchanges/${exchangeId}/accepted`);
+  return apiClient.post(`/troc/exchanges/${exchangeId}/accepted`);
 };
 
 /**
@@ -56,7 +56,7 @@ export const acceptExchange = (exchangeId) => {
  * @returns {Promise} Response from the server
  */
 export const confirmExchange = (exchangeId) => {
-  return apiClient.post(`/api/troc/exchanges/${exchangeId}/confirm`);
+  return apiClient.post(`/troc/exchanges/${exchangeId}/confirm`);
 };
 
 /**
@@ -65,7 +65,7 @@ export const confirmExchange = (exchangeId) => {
  * @returns {Promise} Response from the server
  */
 export const refuseExchange = (exchangeId) => {
-  return apiClient.post(`/api/troc/exchanges/${exchangeId}/refused`);
+  return apiClient.post(`/troc/exchanges/${exchangeId}/refused`);
 };
 
 /**
@@ -74,9 +74,7 @@ export const refuseExchange = (exchangeId) => {
  * @returns {Promise} List of exchanges targeting the product
  */
 export const getExchangesForProduct = (productId) => {
-  return apiClient.get(
-    `/api/troc/exchanges/product/proposed-to-me/${productId}`,
-  );
+  return apiClient.get(`/troc/exchanges/product/proposed-to-me/${productId}`);
 };
 
 /**
@@ -85,5 +83,5 @@ export const getExchangesForProduct = (productId) => {
  * @returns {Promise} Exchange status information
  */
 export const getExchangeStatusForProduct = (productId) => {
-  return apiClient.get(`/api/troc/exchanges/product/${productId}/status`);
+  return apiClient.get(`/troc/exchanges/product/${productId}/status`);
 };
