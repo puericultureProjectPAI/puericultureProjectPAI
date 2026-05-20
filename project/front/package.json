@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
-    "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-query": "^5.100.9",
     "axios": "^1.16.0",
     "devtools": "^8.42.0",
