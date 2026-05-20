@@ -7,6 +7,7 @@ import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
+import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -39,6 +40,10 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />
+            <Route
+              path="/second-hand/comparison/:ean"
+              element={<PriceComparisonView />}
+            />
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
