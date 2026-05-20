@@ -173,10 +173,6 @@ class ExchangeServiceTest {
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
 
-        when(exchangeRepository.existsByProductAndStatuses(eq(1L), anyList())).thenReturn(false);
-
-        when(exchangeRepository.existsByProductAndStatuses(eq(2L), anyList())).thenReturn(false);
-
         exchangeService.refuseExchange(1L, MOCK_USER_ID);
 
         assertEquals(ExchangeStatus.REFUSED, exchange.getStatus());

@@ -79,6 +79,13 @@ public class ExchangeService {
             throw new BadRequestException("One of the products is closed");
         }
 
+        if (proposerProduct.getStatus() == ProductTrocStatus.PENDING
+                || receiverProduct.getStatus() == ProductTrocStatus.PENDING) {
+
+            throw new BadRequestException(
+                    "One of the products is already involved in a pending exchange");
+        }
+
         Exchange exchange = new Exchange();
 
         exchange.setProposerProduct(proposerProduct);
@@ -158,17 +165,24 @@ public class ExchangeService {
                         exchange.getProposerProduct().getId(),
                         exchange.getReceiverProduct().getId());
 
-        for (Exchange conflictingExchange : conflictingExchanges) {
-
-            conflictingExchange.setStatus(ExchangeStatus.REFUSED);
-        }
-
-        exchangeRepository.saveAll(conflictingExchanges);
+        refuseConflictingExchanges(conflictingExchanges);
 
         productTrocRepository.save(exchange.getProposerProduct());
         productTrocRepository.save(exchange.getReceiverProduct());
 
         exchangeRepository.save(exchange);
+    }
+
+    /**
+     * Sets all conflicting exchanges to REFUSED status and persists them
+     *
+     * @param conflictingExchanges list of exchanges to refuse
+     */
+    private void refuseConflictingExchanges(List<Exchange> conflictingExchanges) {
+        for (Exchange conflictingExchange : conflictingExchanges) {
+            conflictingExchange.setStatus(ExchangeStatus.REFUSED);
+        }
+        exchangeRepository.saveAll(conflictingExchanges);
     }
 
     public void confirmExchange(
@@ -228,28 +242,12 @@ public class ExchangeService {
 
         exchange.setStatus(ExchangeStatus.REFUSED);
 
-        boolean proposerHasActiveExchange =
-                exchangeRepository.existsByProductAndStatuses(
-                        exchange.getProposerProduct().getId(),
-                        List.of(ExchangeStatus.PENDING, ExchangeStatus.ACCEPTED));
-
-        boolean receiverHasActiveExchange =
-                exchangeRepository.existsByProductAndStatuses(
-                        exchange.getReceiverProduct().getId(),
-                        List.of(ExchangeStatus.PENDING, ExchangeStatus.ACCEPTED));
-
-        if (!proposerHasActiveExchange) {
-
+        if (exchange.getProposerProduct().getStatus() != ProductTrocStatus.AVAILABLE) { //
             exchange.getProposerProduct().setStatus(ProductTrocStatus.AVAILABLE);
-
-            productTrocRepository.save(exchange.getProposerProduct());
         }
 
-        if (!receiverHasActiveExchange) {
-
+        if (exchange.getReceiverProduct().getStatus() != ProductTrocStatus.AVAILABLE) {
             exchange.getReceiverProduct().setStatus(ProductTrocStatus.AVAILABLE);
-
-            productTrocRepository.save(exchange.getReceiverProduct());
         }
 
         exchangeRepository.save(exchange);
