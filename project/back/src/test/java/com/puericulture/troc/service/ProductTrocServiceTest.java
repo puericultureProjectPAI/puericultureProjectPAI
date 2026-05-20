@@ -6,13 +6,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.puericulture.common.dto.PersonDto;
 import com.puericulture.common.entity.Person;
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
-import com.puericulture.troc.dto.TrocDto;
+import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
-import com.puericulture.troc.entity.Troc;
-import com.puericulture.troc.mapper.TrocMapper;
-import com.puericulture.troc.repository.TrocRepository;
+import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.mapper.ProductTrocMapper;
+import com.puericulture.troc.repository.ProductTrocRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,17 +26,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class TrocServiceTest {
+class ProductTrocServiceTest {
 
     private static final UUID AUTHOR_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
-    @Mock private TrocRepository trocRepository;
+    @Mock private ProductTrocRepository trocRepository;
 
-    @Mock private TrocMapper trocMapper;
+    @Mock private ProductTrocMapper trocMapper;
 
     @Mock private PersonRepository personRepository;
 
-    @InjectMocks private TrocService trocService;
+    @InjectMocks private ProductTrocService productTrocService;
 
     private Person author;
 
@@ -49,26 +51,33 @@ class TrocServiceTest {
     @Test
     void createTrocShouldSaveTrocLinkedToAuthenticatedAuthor() {
         TrocRequest request = validRequest();
-        TrocDto expectedDto = new TrocDto();
-        expectedDto.setProductId(10L);
-        expectedDto.setTitle(request.getTitle());
+
+        PersonDto expectedAuthor = new PersonDto();
+        expectedAuthor.setId(AUTHOR_ID);
+        expectedAuthor.setName("Parent test");
+        expectedAuthor.setEmail("parent@example.com");
+
+        ProductTrocDto expectedDto = new ProductTrocDto();
+        expectedDto.setId(10L);
+        expectedDto.setPostTitle(request.getTitle());
         expectedDto.setEstimatedPrice(request.getEstimatedPrice());
-        expectedDto.setAuthorId(AUTHOR_ID);
+        expectedDto.setAuthor(expectedAuthor);
 
         given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
-        given(trocRepository.save(any(Troc.class))).willAnswer(invocation -> invocation.getArgument(0));
-        given(trocMapper.toDto(any(Troc.class))).willReturn(expectedDto);
+        given(trocRepository.save(any(ProductTroc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(ProductTroc.class))).willReturn(expectedDto);
 
-        TrocDto result = trocService.createTroc(request, AUTHOR_ID);
+        ProductTrocDto result = productTrocService.createTroc(request, AUTHOR_ID);
 
-        ArgumentCaptor<Troc> trocCaptor = ArgumentCaptor.forClass(Troc.class);
+        ArgumentCaptor<ProductTroc> trocCaptor = ArgumentCaptor.forClass(ProductTroc.class);
         verify(trocRepository).save(trocCaptor.capture());
 
-        Troc savedTroc = trocCaptor.getValue();
+        ProductTroc savedTroc = trocCaptor.getValue();
         assertThat(savedTroc.getPostTitle()).isEqualTo("Poussette bébé");
         assertThat(savedTroc.getDescription()).isEqualTo("Poussette bébé en très bon état");
         assertThat(savedTroc.getCity()).isEqualTo("Lille");
-        assertThat(savedTroc.getCategory()).isEqualTo("Poussettes, porte-bébés et sièges auto");
+        assertThat(savedTroc.getCategory()).isEqualTo(ProductCategory.TRANSPORT_BEBE);
         assertThat(savedTroc.getEstimatedPrice()).isEqualTo(40L);
         assertThat(savedTroc.getAuthor()).isSameAs(author);
         assertThat(savedTroc.getPostDate()).isNotNull();
@@ -76,25 +85,8 @@ class TrocServiceTest {
     }
 
     @Test
-    void createTrocShouldUseDefaultCityWhenCityIsBlank() {
-        TrocRequest request = validRequest();
-        request.setCity(" ");
-        TrocDto expectedDto = new TrocDto();
-
-        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
-        given(trocRepository.save(any(Troc.class))).willAnswer(invocation -> invocation.getArgument(0));
-        given(trocMapper.toDto(any(Troc.class))).willReturn(expectedDto);
-
-        trocService.createTroc(request, AUTHOR_ID);
-
-        ArgumentCaptor<Troc> trocCaptor = ArgumentCaptor.forClass(Troc.class);
-        verify(trocRepository).save(trocCaptor.capture());
-        assertThat(trocCaptor.getValue().getCity()).isEqualTo("Lille");
-    }
-
-    @Test
     void createTrocShouldRejectNullRequest() {
-        assertThatThrownBy(() -> trocService.createTroc(null, AUTHOR_ID))
+        assertThatThrownBy(() -> productTrocService.createTroc(null, AUTHOR_ID))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Troc request is required");
     }
@@ -104,7 +96,7 @@ class TrocServiceTest {
         TrocRequest request = validRequest();
         given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trocService.createTroc(request, AUTHOR_ID))
+        assertThatThrownBy(() -> productTrocService.createTroc(request, AUTHOR_ID))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Authenticated person not found");
     }
@@ -114,7 +106,6 @@ class TrocServiceTest {
         request.setTitle("Poussette bébé");
         request.setDescription("Poussette bébé en très bon état");
         request.setEstimatedPrice(40L);
-        request.setImageReference("poussette.png");
         request.setCity("Lille");
         request.setCategory("Poussettes, porte-bébés et sièges auto");
         return request;

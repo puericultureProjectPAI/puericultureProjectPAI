@@ -26,18 +26,12 @@ public class TrocRequest {
             requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 
-    @NotNull
-    @PositiveOrZero
+    @NotNull @PositiveOrZero
     @Schema(
             description = "Estimated product value in euros.",
             example = "40",
             requiredMode = Schema.RequiredMode.REQUIRED)
     private Long estimatedPrice;
-
-    @Schema(
-            description = "Optional image reference or URL provided by the frontend.",
-            example = "https://example.com/image.jpg")
-    private String imageReference;
 
     @Schema(description = "City where the product is located.", example = "Lille")
     private String city;

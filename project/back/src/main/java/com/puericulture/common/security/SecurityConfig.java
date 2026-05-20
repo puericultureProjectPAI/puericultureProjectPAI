@@ -55,7 +55,11 @@ public class SecurityConfig {
                                                 "/actuator/health")
                                         .permitAll()
 
+                                        // .requestMatchers("/troc/**")
+                                        // .permitAll()
+
                                         // Admin-only routes
+
                                         .requestMatchers("/api/admin/**")
                                         .hasRole("ADMIN")
 

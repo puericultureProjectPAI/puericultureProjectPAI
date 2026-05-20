@@ -199,7 +199,8 @@
 					<java>
 						<googleJavaFormat>
 							<version>1.22.0</version>
-							<style>AOSP</style> </googleJavaFormat>
+							<style>AOSP</style>
+						</googleJavaFormat>
 
 						<removeUnusedImports/>
 						<formatAnnotations/>
