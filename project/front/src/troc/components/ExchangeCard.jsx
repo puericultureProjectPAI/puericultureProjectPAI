@@ -68,7 +68,10 @@ const ExchangeCard = ({
             Offered Product
           </p>
           <p className="font-semibold text-lg">
-            {exchange.proposerProduct?.title || "Product"}
+            {exchange.proposerProduct?.postTitle || "Product"}
+          </p>
+          <p className="text-sm text-gray-600">
+            Category: {exchange.proposerProduct?.category || "Unknown"}
           </p>
           <p className="text-sm text-gray-600">
             By: {exchange.proposerProduct?.author?.firstName}{" "}
@@ -89,7 +92,10 @@ const ExchangeCard = ({
             Requested Product
           </p>
           <p className="font-semibold text-lg">
-            {exchange.receiverProduct?.title || "Product"}
+            {exchange.receiverProduct?.postTitle || "Product"}
+          </p>
+          <p className="text-sm text-gray-600">
+            Category: {exchange.receiverProduct?.category || "Unknown"}
           </p>
           <p className="text-sm text-gray-600">
             By: {exchange.receiverProduct?.author?.firstName}{" "}

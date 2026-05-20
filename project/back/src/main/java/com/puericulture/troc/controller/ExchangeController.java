@@ -11,9 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,9 +51,11 @@ public class ExchangeController {
             })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ExchangeResponse createExchange(@RequestBody CreateExchangeRequest request) {
+    public ExchangeResponse createExchange(
+            @AuthenticationPrincipal String authenticatedPersonId,
+            @RequestBody CreateExchangeRequest request) {
 
-        return exchangeService.createExchange(request);
+        return exchangeService.createExchange(request, UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -67,9 +71,10 @@ public class ExchangeController {
             })
     @DeleteMapping("/{exchangeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteExchange(@PathVariable Long exchangeId) {
+    public void deleteExchange(
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long exchangeId) {
 
-        exchangeService.deleteExchange(exchangeId);
+        exchangeService.deleteExchange(exchangeId, UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -82,9 +87,10 @@ public class ExchangeController {
                         description = "Exchanges successfully retrieved.")
             })
     @GetMapping("/my-exchanges")
-    public List<ExchangeResponse> getAllExchanges() {
+    public List<ExchangeResponse> getAllExchanges(
+            @AuthenticationPrincipal String authenticatedPersonId) {
 
-        return exchangeService.getAllExchanges();
+        return exchangeService.getAllExchanges(UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -97,9 +103,11 @@ public class ExchangeController {
                         description = "Incoming exchanges successfully retrieved.")
             })
     @GetMapping("/proposed-to-me")
-    public List<ExchangeResponse> getExchangesProposedToConnectedUser() {
+    public List<ExchangeResponse> getExchangesProposedToConnectedUser(
+            @AuthenticationPrincipal String authenticatedPersonId) {
 
-        return exchangeService.getExchangesProposedToConnectedUser();
+        return exchangeService.getExchangesProposedToConnectedUser(
+                UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -118,9 +126,10 @@ public class ExchangeController {
                 @ApiResponse(responseCode = "404", description = "Exchange not found.")
             })
     @PostMapping("/{exchangeId}/accepted")
-    public void acceptExchange(@PathVariable Long exchangeId) {
+    public void acceptExchange(
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long exchangeId) {
 
-        exchangeService.acceptExchange(exchangeId);
+        exchangeService.acceptExchange(exchangeId, UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -142,9 +151,10 @@ public class ExchangeController {
                 @ApiResponse(responseCode = "404", description = "Exchange not found.")
             })
     @PostMapping("/{exchangeId}/confirm")
-    public void confirmExchange(@PathVariable Long exchangeId) {
+    public void confirmExchange(
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long exchangeId) {
 
-        exchangeService.confirmExchange(exchangeId);
+        exchangeService.confirmExchange(exchangeId, UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -163,9 +173,10 @@ public class ExchangeController {
                 @ApiResponse(responseCode = "404", description = "Exchange not found.")
             })
     @PostMapping("/{exchangeId}/refused")
-    public void refuseExchange(@PathVariable Long exchangeId) {
+    public void refuseExchange(
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long exchangeId) {
 
-        exchangeService.refuseExchange(exchangeId);
+        exchangeService.refuseExchange(exchangeId, UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -185,9 +196,10 @@ public class ExchangeController {
             })
     @GetMapping("/product/proposed-to-me/{productId}")
     public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
-            @PathVariable Long productId) {
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long productId) {
 
-        return exchangeService.getExchangesProposedToConnectedUserForProduct(productId);
+        return exchangeService.getExchangesProposedToConnectedUserForProduct(
+                productId, UUID.fromString(authenticatedPersonId));
     }
 
     @Operation(
@@ -214,9 +226,10 @@ public class ExchangeController {
             })
     @GetMapping("/product/{productId}/status")
     public ResponseEntity<ProductExchangeStatusResponse> getExchangeStatusForProduct(
-            @PathVariable Long productId) {
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long productId) {
 
         return ResponseEntity.ok(
-                exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(productId));
+                exchangeService.getIfIHaveProposedExchangeForSomeonesProduct(
+                        productId, UUID.fromString(authenticatedPersonId)));
     }
 }

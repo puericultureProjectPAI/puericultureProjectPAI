@@ -91,7 +91,7 @@ class ExchangeServiceTest {
 
         when(exchangeMapper.toResponse(any(Exchange.class))).thenReturn(response);
 
-        ExchangeResponse result = exchangeService.createExchange(request);
+        ExchangeResponse result = exchangeService.createExchange(request, MOCK_USER_ID);
 
         assertEquals(ExchangeStatus.PENDING, result.getStatus());
 
@@ -120,7 +120,7 @@ class ExchangeServiceTest {
         when(exchangeRepository.findConflictingPendingExchanges(ExchangeStatus.PENDING, 1L, 1L, 2L))
                 .thenReturn(List.of());
 
-        exchangeService.acceptExchange(1L);
+        exchangeService.acceptExchange(1L, MOCK_USER_ID);
 
         assertEquals(ExchangeStatus.ACCEPTED, exchange.getStatus());
 
@@ -145,7 +145,7 @@ class ExchangeServiceTest {
 
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(exchange));
 
-        exchangeService.confirmExchange(1L);
+        exchangeService.confirmExchange(1L, MOCK_USER_ID);
 
         assertEquals(ExchangeStatus.CONFIRMED, exchange.getStatus());
 
@@ -177,7 +177,7 @@ class ExchangeServiceTest {
 
         when(exchangeRepository.existsByProductAndStatuses(eq(2L), anyList())).thenReturn(false);
 
-        exchangeService.refuseExchange(1L);
+        exchangeService.refuseExchange(1L, MOCK_USER_ID);
 
         assertEquals(ExchangeStatus.REFUSED, exchange.getStatus());
 

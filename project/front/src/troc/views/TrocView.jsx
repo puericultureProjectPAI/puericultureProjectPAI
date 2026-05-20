@@ -13,67 +13,86 @@
 
 import { useEffect, useState } from "react";
 import { useExchangeManager } from "../hooks/useExchangeManager";
+import { useAuth } from "../../common/security/AuthContext";
 import ExchangeProposalForm from "../components/ExchangeProposalForm";
 import ExchangeList from "../components/ExchangeList";
 
-// Mock: Replace with actual user context
-const MOCK_CURRENT_USER_ID = "10814ed3-a02b-4b69-9d64-aa96ed92bceb";
-
-// Mock products - In real app, these would come from backend
-const MOCK_AVAILABLE_PRODUCTS = [
+// Mock products - In real app, these would come from backend and use the authenticated user's ID
+// For now, we generate mock products dynamically with the real user ID
+const getMockAvailableProducts = (userId, userFirstName, userLastName) => [
   {
     id: 1,
-    title: "Vintage High Chair",
+    postTitle: "Vintage High Chair",
+    category: "Meubles et décoration",
     status: "AVAILABLE",
-    author: { id: MOCK_CURRENT_USER_ID, firstName: "John", lastName: "Doe" },
+    author: { id: userId, firstName: userFirstName, lastName: userLastName },
   },
   {
     id: 2,
-    title: "Baby Stroller",
+    postTitle: "Baby Stroller",
+    category: "Poussettes, porte-bébés et sièges auto",
     status: "AVAILABLE",
-    author: { id: MOCK_CURRENT_USER_ID, firstName: "John", lastName: "Doe" },
+    author: { id: userId, firstName: userFirstName, lastName: userLastName },
   },
   {
     id: 3,
-    title: "Crib Set",
+    postTitle: "Crib Set",
+    category: "Meubles et décoration",
     status: "AVAILABLE",
-    author: { id: MOCK_CURRENT_USER_ID, firstName: "John", lastName: "Doe" },
+    author: { id: userId, firstName: userFirstName, lastName: userLastName },
   },
 ];
 
 const MOCK_OTHER_PRODUCTS = [
   {
     id: 101,
-    title: "Baby Car Seat",
+    postTitle: "Baby Car Seat",
+    category: "Sécurité bébé et enfant",
     status: "AVAILABLE",
     author: { id: "other-user-1", firstName: "Jane", lastName: "Smith" },
   },
   {
     id: 102,
-    title: "Playpen",
+    postTitle: "Playpen",
+    category: "Jeux et jouets",
     status: "AVAILABLE",
     author: { id: "other-user-2", firstName: "Bob", lastName: "Johnson" },
   },
   {
     id: 103,
-    title: "Changing Table",
+    postTitle: "Changing Table",
+    category: "Meubles et décoration",
     status: "AVAILABLE",
     author: { id: "other-user-1", firstName: "Jane", lastName: "Smith" },
   },
   {
     id: 104,
-    title: "Baby Monitor",
+    postTitle: "Baby Monitor",
+    category: "Santé et grossesse",
     status: "AVAILABLE",
     author: { id: "other-user-3", firstName: "Alice", lastName: "Williams" },
   },
 ];
 
 const TrocView = () => {
+  // Get authenticated user from context (replaces MOCK_CURRENT_USER_ID)
+  const { user } = useAuth();
+
   // Exchange manager hook for all exchange operations
   const exchangeManager = useExchangeManager();
 
   // Local component state
   const [activeSection, setActiveSection] = useState("overview");
+
+  /**
+   * Generate mock products with the authenticated user's real ID
+   * In production, these will come from backend API calls
+   */
+  const mockAvailableProducts = getMockAvailableProducts(
+    user?.id,
+    user?.user_metadata?.firstName || "User",
+    user?.user_metadata?.lastName || "",
+  );
 
   const { fetchMyExchanges, fetchExchangesProposedToMe } = exchangeManager;
 
@@ -345,7 +364,7 @@ const TrocView = () => {
         {activeSection === "propose" && (
           <div>
             <ExchangeProposalForm
-              availableProducts={MOCK_AVAILABLE_PRODUCTS}
+              availableProducts={mockAvailableProducts}
               otherUserProducts={MOCK_OTHER_PRODUCTS}
               onSubmit={handleCreateExchange}
               loading={exchangeManager.loading}
@@ -365,7 +384,7 @@ const TrocView = () => {
             <ExchangeList
               myExchanges={exchangeManager.myExchanges}
               proposedToMeExchanges={exchangeManager.proposedToMeExchanges}
-              currentUserId={MOCK_CURRENT_USER_ID}
+              currentUserId={user?.id}
               onAccept={exchangeManager.acceptExchangeProposal}
               onConfirm={exchangeManager.confirmExchangeProposal}
               onRefuse={exchangeManager.refuseExchangeProposal}

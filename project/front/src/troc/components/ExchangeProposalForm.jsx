@@ -129,7 +129,7 @@ const ExchangeProposalForm = ({
             </option>
             {availableProducts.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.title} - {product.status}
+                {product.postTitle} - {product.status}
               </option>
             ))}
           </select>
@@ -160,7 +160,7 @@ const ExchangeProposalForm = ({
             </option>
             {otherUserProducts.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.title} - By {product.author?.firstName}{" "}
+                {product.postTitle} - By {product.author?.firstName}{" "}
                 {product.author?.lastName}
               </option>
             ))}
@@ -178,7 +178,7 @@ const ExchangeProposalForm = ({
                   {
                     availableProducts.find(
                       (p) => p.id === parseInt(proposerProductId),
-                    )?.title
+                    )?.postTitle
                   }
                 </p>
               </div>
@@ -189,7 +189,7 @@ const ExchangeProposalForm = ({
                   {
                     otherUserProducts.find(
                       (p) => p.id === parseInt(receiverProductId),
-                    )?.title
+                    )?.postTitle
                   }
                 </p>
               </div>

@@ -26,8 +26,8 @@ public class ExchangeService {
     private final ProductTrocRepository productTrocRepository;
     private final ExchangeMapper exchangeMapper;
 
-    private static final UUID MOCK_USER_ID =
-            UUID.fromString("10814ed3-a02b-4b69-9d64-aa96ed92bceb");
+    // private static final UUID MOCK_USER_ID =
+    //         UUID.fromString("10814ed3-a02b-4b69-9d64-aa96ed92bceb");
 
     public ExchangeService(
             ExchangeRepository exchangeRepository,
@@ -40,8 +40,8 @@ public class ExchangeService {
     }
 
     public ExchangeResponse createExchange(
-            CreateExchangeRequest
-                    request) { // the connected user proposes an exchange between one of their
+            CreateExchangeRequest request,
+            UUID connectedUserId) { // the connected user proposes an exchange between one of their
         // products and another user's product
 
         ProductTroc proposerProduct =
@@ -68,7 +68,7 @@ public class ExchangeService {
             throw new BadRequestException("Exchange already exists");
         }
 
-        if (!proposerProduct.getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (!proposerProduct.getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException("You can only propose exchanges with your own product");
         }
@@ -90,14 +90,17 @@ public class ExchangeService {
         return exchangeMapper.toResponse(savedExchange);
     }
 
-    public void deleteExchange(Long exchangeId) {
+    public void deleteExchange(
+            Long exchangeId,
+            UUID connectedUserId) { // the connected user deletes an exchange proposal they
+        // created, which deletes the
 
         Exchange exchange =
                 exchangeRepository
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
 
-        if (!exchange.getProposerProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (!exchange.getProposerProduct().getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException("You can only delete exchanges that you have created");
         }
@@ -105,24 +108,27 @@ public class ExchangeService {
         exchangeRepository.delete(exchange);
     }
 
-    public List<ExchangeResponse> getAllExchanges() { // exchanges created by the connected user
+    public List<ExchangeResponse> getAllExchanges(
+            UUID connectedUserId) { // exchanges created by the connected user
 
-        return exchangeRepository.findByProposerProductAuthorId(MOCK_USER_ID).stream()
+        return exchangeRepository.findByProposerProductAuthorId(connectedUserId).stream()
                 .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<ExchangeResponse>
-            getExchangesProposedToConnectedUser() { // exchanges targeting products owned by the
+    public List<ExchangeResponse> getExchangesProposedToConnectedUser(
+            UUID connectedUserId) { // exchanges targeting products owned by the
         // connected user
 
-        return exchangeRepository.findByReceiverProductAuthorId(MOCK_USER_ID).stream()
+        return exchangeRepository.findByReceiverProductAuthorId(connectedUserId).stream()
                 .map(exchangeMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     public void acceptExchange(
-            Long exchangeId) { // the owner of the requested product accepts an exchange proposal
+            Long exchangeId,
+            UUID connectedUserId) { // the owner of the requested product accepts an exchange
+        // proposal
 
         Exchange exchange =
                 exchangeRepository
@@ -134,7 +140,7 @@ public class ExchangeService {
             throw new BadRequestException("Only pending exchanges can be accepted");
         }
 
-        if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (!exchange.getReceiverProduct().getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException("You can only accept exchanges proposed to you");
         }
@@ -166,7 +172,8 @@ public class ExchangeService {
     }
 
     public void confirmExchange(
-            Long exchangeId) { // the owner of the requested product confirms an accepted
+            Long exchangeId,
+            UUID connectedUserId) { // the owner of the requested product confirms an accepted
         // exchange proposal, which closes the exchange and both products
 
         Exchange exchange =
@@ -179,7 +186,7 @@ public class ExchangeService {
             throw new BadRequestException("Only accepted exchanges can be confirmed");
         }
 
-        if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (!exchange.getReceiverProduct().getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException("You can only confirm exchanges proposed to you");
         }
@@ -197,7 +204,8 @@ public class ExchangeService {
     }
 
     public void refuseExchange(
-            Long exchangeId) { // the owner of the requested product refuses a pending or
+            Long exchangeId,
+            UUID connectedUserId) { // the owner of the requested product refuses a pending or
         // accepted exchange proposal, which sets the exchange as refused
         // and makes both products available again if they are not
         // involved in any other pending or accepted exchange
@@ -213,7 +221,7 @@ public class ExchangeService {
             throw new BadRequestException("Only pending or accepted exchanges can be refused");
         }
 
-        if (!exchange.getReceiverProduct().getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (!exchange.getReceiverProduct().getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException("You can only refuse exchanges proposed to you");
         }
@@ -248,14 +256,16 @@ public class ExchangeService {
     }
 
     public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(
-            Long productId) { // exchanges targeting a specific product owned by the connected user
+            Long productId,
+            UUID connectedUserId) { // exchanges targeting a specific product owned by the
+        // connected user
 
         ProductTroc product =
                 productTrocRepository
                         .findById(productId)
                         .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        if (!product.getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (!product.getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException(
                     "You can only view exchanges proposed to your own products");
@@ -267,7 +277,8 @@ public class ExchangeService {
     }
 
     public ProductExchangeStatusResponse getIfIHaveProposedExchangeForSomeonesProduct(
-            Long productId) { // allows a user to verify whether they already proposed an
+            Long productId,
+            UUID connectedUserId) { // allows a user to verify whether they already proposed an
         // exchange for a product and retrieve its status
 
         ProductTroc product =
@@ -275,14 +286,14 @@ public class ExchangeService {
                         .findById(productId)
                         .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        if (product.getAuthor().getId().equals(MOCK_USER_ID)) {
+        if (product.getAuthor().getId().equals(connectedUserId)) {
 
             throw new ForbiddenException("You cannot check your own product");
         }
 
         Optional<Exchange> exchangeOptional =
                 exchangeRepository.findByReceiverProductIdAndProposerProductAuthorId(
-                        productId, MOCK_USER_ID);
+                        productId, connectedUserId);
 
         ProductExchangeStatusResponse response = new ProductExchangeStatusResponse();
 
