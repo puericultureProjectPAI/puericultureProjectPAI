@@ -52,9 +52,31 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Cache Supabase Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/supabase-docker-cache
+          key: supabase-${{ runner.os }}-${{ hashFiles('project/back/supabase/config.toml') }}
+          restore-keys: |
+            supabase-${{ runner.os }}-
+
+      - name: Load cached Docker images (if any)
+        run: |
+          if [ -d /tmp/supabase-docker-cache ] && [ "$(ls -A /tmp/supabase-docker-cache/*.tar 2>/dev/null)" ]; then
+            for tar in /tmp/supabase-docker-cache/*.tar; do docker load -i "$tar"; done
+          fi
+
       - name: Start Supabase Local
         working-directory: project/back
         run: npx supabase start -x edge-runtime,storage-api,studio,realtime,imgproxy,logflare,vector
+
+      - name: Save Docker images to cache
+        run: |
+          mkdir -p /tmp/supabase-docker-cache
+          docker images --format '{{.Repository}}:{{.Tag}}' | grep supabase | while read img; do
+            name=$(echo "$img" | tr '/:' '__')
+            docker save "$img" -o "/tmp/supabase-docker-cache/${name}.tar"
+          done
 
       - name: Check Backend Formatting (Spotless)
         working-directory: project/back
