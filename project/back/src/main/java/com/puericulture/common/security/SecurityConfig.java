@@ -52,9 +52,7 @@ public class SecurityConfig {
                                                 "/configuration/**",
                                                 "/webjars/**", // Required for the UI assets
                                                 // Spring Boot Actuator health endpoint
-                                                "/actuator/health",
-                                                "/common/**",
-                                                "/forward-trading/**")
+                                                "/actuator/health")
                                         .permitAll()
 
                                         // .requestMatchers("/troc/**")
