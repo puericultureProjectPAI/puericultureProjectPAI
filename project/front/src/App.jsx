@@ -9,6 +9,7 @@ import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
 import ProductDetailPage from "./leasing/views/ProductDetailPage";
+import TrocView from "./troc/views/TrocView";
 
 export default function App() {
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               <Route path="/forward" element={<ForwardTradingView />} />
+              <Route path="/troc" element={<TrocView />} />
             </Route>
 
             <Route path="/" element={<Navigate to="/home" replace />} />
