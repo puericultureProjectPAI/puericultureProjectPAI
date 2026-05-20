@@ -7,8 +7,6 @@ import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
-import CreateTrocView from "./troc/views/CreateTrocView";
-import TrocProductDetailView from "./troc/views/TrocProductDetailView";
 
 export default function App() {
   useEffect(() => {
@@ -45,8 +43,6 @@ export default function App() {
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
               <Route path="/forward" element={<ForwardTradingView />} />
-              <Route path="/troc/create" element={<CreateTrocView />} />
-              <Route path="/troc/:id" element={<TrocProductDetailView />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
