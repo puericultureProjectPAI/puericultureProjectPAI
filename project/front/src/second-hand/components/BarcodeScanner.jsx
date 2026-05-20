@@ -1,18 +1,14 @@
 import { useEffect } from "react";
 import { useBarcodeScanner } from "../hooks/useBarcodeScanner";
 
-export default function BarcodeScanner({ onDetected, isActive = true }) {
+export default function BarcodeScanner({ onDetected }) {
   const { isScanning, error, startScanner, stopScanner } =
     useBarcodeScanner(onDetected);
 
   useEffect(() => {
-    if (isActive) {
-      startScanner();
-    } else {
-      stopScanner();
-    }
+    startScanner();
     return () => stopScanner();
-  }, [isActive, startScanner, stopScanner]);
+  }, [startScanner, stopScanner]);
 
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col gap-3">
