@@ -94,7 +94,7 @@ export default function CatalogPage() {
               </span>
             </div>
 
-            <h3 className="mt-[5px] text-[8px] leading-none">
+            <h3 className="mt-[5px] truncate text-[8px] leading-none">
               {product.postTitle}
             </h3>
 
