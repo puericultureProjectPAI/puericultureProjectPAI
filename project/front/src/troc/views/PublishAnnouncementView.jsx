@@ -1,4 +1,4 @@
-import PublishAnnouncementForm from "../components/PublishAnnouncementForm";
+import PublishAnnouncementForm from "../../common/components/form/productCreation/PublishAnnouncementForm.jsx";
 import useTroc from "../hooks/useTroc";
 
 export default function PublishAnnouncementView() {

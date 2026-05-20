@@ -1,5 +1,5 @@
 import { Field } from "formik";
-import { CONDITION_OPTIONS } from "../constants/publicationOptions";
+import { CONDITION_OPTIONS } from "../../../../troc/constants/publicationOptions.js";
 
 export default function OptionalProductInfoStep() {
   return (

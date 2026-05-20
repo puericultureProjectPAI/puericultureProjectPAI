@@ -1,12 +1,12 @@
 import { Form, Formik } from "formik";
 import { useState } from "react";
 import * as Yup from "yup";
-import ModeSelectionStep from "./ModeSelectionStep";
-import OptionalProductInfoStep from "./OptionalProductInfoStep";
-import PublicationFormActions from "./PublicationFormActions";
-import PublicationMobileShell from "./PublicationMobileShell";
-import RequiredProductInfoStep from "./RequiredProductInfoStep";
-import TrocSpecificStep from "./TrocSpecificStep";
+import ModeSelectionStep from "./ModeSelectionStep.jsx";
+import OptionalProductInfoStep from "./OptionalProductInfoStep.jsx";
+import PublicationFormActions from "./PublicationFormActions.jsx";
+import PublicationMobileShell from "./PublicationMobileShell.jsx";
+import RequiredProductInfoStep from "./RequiredProductInfoStep.jsx";
+import TrocSpecificStep from "./TrocSpecificStep.jsx";
 
 const initialValues = {
   mode: "TROC",
@@ -70,7 +70,11 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
       }}
     >
       {({ isSubmitting, setFieldValue, setTouched, validateForm, values }) => (
-        <PublicationMobileShell currentStep={step} error={error} success={success}>
+        <PublicationMobileShell
+          currentStep={step}
+          error={error}
+          success={success}
+        >
           <Form>
             {step === 1 && <ModeSelectionStep setFieldValue={setFieldValue} />}
             {step === 2 && (

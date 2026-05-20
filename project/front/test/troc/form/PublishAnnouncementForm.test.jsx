@@ -3,7 +3,7 @@
 import "@testing-library/jest-dom/vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import PublishAnnouncementForm from "./PublishAnnouncementForm";
+import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
 
 describe("PublishAnnouncementForm", () => {
   it("submits the expected payload after the full Troc publication flow", async () => {

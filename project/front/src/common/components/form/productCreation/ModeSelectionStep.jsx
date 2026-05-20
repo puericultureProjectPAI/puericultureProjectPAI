@@ -1,4 +1,4 @@
-import { PUBLISH_MODES } from "../constants/publicationOptions";
+import { PUBLISH_MODES } from "../../../../troc/constants/publicationOptions.js";
 
 export default function ModeSelectionStep({ setFieldValue }) {
   return (

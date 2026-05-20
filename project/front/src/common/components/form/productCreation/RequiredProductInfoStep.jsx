@@ -1,7 +1,7 @@
 import { Field } from "formik";
 import { useRef } from "react";
-import { PRODUCT_CATEGORIES } from "../constants/publicationOptions";
-import FieldError from "./FieldError";
+import { PRODUCT_CATEGORIES } from "../../../../troc/constants/publicationOptions.js";
+import FieldError from "../FieldError.jsx";
 
 export default function RequiredProductInfoStep({ setFieldValue, values }) {
   const fileInputRef = useRef(null);

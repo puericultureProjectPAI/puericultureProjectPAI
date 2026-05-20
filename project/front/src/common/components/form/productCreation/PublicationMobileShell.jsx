@@ -1,4 +1,4 @@
-import PublicationStepper from "./PublicationStepper";
+import PublicationStepper from "./PublicationStepper.jsx";
 
 export default function PublicationMobileShell({
   children,
@@ -8,14 +8,6 @@ export default function PublicationMobileShell({
 }) {
   return (
     <section className="mx-auto max-w-[390px] overflow-hidden rounded-[1.6rem] border border-[#e6e6ef] bg-white shadow-sm">
-      <header className="flex h-14 items-center justify-between bg-[#080036] px-4 text-white">
-        <div className="text-2xl font-extrabold tracking-wide">KIABI</div>
-        <div className="flex items-center gap-3 text-xl" aria-hidden="true">
-          <span>⌘</span>
-          <span>♡</span>
-        </div>
-      </header>
-
       <div className="px-7 pb-4 pt-5">
         <div className="mb-1 flex items-center gap-4">
           <span className="text-3xl leading-none text-[#080036]">‹</span>
@@ -42,6 +34,7 @@ export default function PublicationMobileShell({
         {children}
       </div>
 
+      {/* Navbar -- footer sur mobile */}
       <nav className="grid grid-cols-5 border-t border-[#efedf5] bg-white px-4 pb-3 pt-2 text-[10px] text-[#7d7b93]">
         {[
           ["⌂", "Accueil"],
