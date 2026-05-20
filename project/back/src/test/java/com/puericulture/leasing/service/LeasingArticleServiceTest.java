@@ -40,7 +40,7 @@ class LeasingArticleServiceTest {
         verify(leasingArticleRepository).findByIdWithImages(1L);
         verify(leasingArticleMapper).toDetailDto(article);
     }
-
+//.
     @Test
     void getArticleDetail_shouldThrowNotFoundException_whenArticleDoesNotExist() {
         when(leasingArticleRepository.findByIdWithImages(99L)).thenReturn(Optional.empty());
