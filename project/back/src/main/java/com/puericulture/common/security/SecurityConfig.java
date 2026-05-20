@@ -52,7 +52,9 @@ public class SecurityConfig {
                                                 "/configuration/**",
                                                 "/webjars/**", // Required for the UI assets
                                                 // Spring Boot Actuator health endpoint
-                                                "/actuator/health")
+                                                "/actuator/health",
+                                                "/common/**",
+                                                "/forward-trading/**")
                                         .permitAll()
 
                                         // .requestMatchers("/troc/**")
@@ -78,10 +80,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Explicit origins mapped to development and deployment environments
-        configuration.setAllowedOrigins(
+
+        configuration.setAllowedOriginPatterns(
                 Arrays.asList(
-                        "http://localhost:5173", // Vite dev server
-                        "http://localhost:4173", // Vite preview
+                        "http://localhost:*", // Vite dev server
                         "https://puericultureprojectpai.vercel.app"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
