@@ -1,19 +1,13 @@
 package com.puericulture.troc.mapper;
 
+import com.puericulture.common.entity.ProductImage;
 import com.puericulture.troc.dto.ProductImageDto;
-import com.puericulture.troc.entity.ProductImage;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class ProductImageMapper {
+@Mapper(componentModel = "spring")
+public interface ProductImageMapper {
 
-    public ProductImageDto toDto(ProductImage entity) {
-        if (entity == null) return null;
-        ProductImageDto dto = new ProductImageDto();
-        dto.setId(entity.getId());
-        dto.setProductId(entity.getProduct().getId());
-        dto.setImageUrl(entity.getImageUrl());
-        dto.setPosition(entity.getPosition());
-        return dto;
-    }
+    @Mapping(source = "product.id", target = "productId")
+    ProductImageDto toDto(ProductImage entity);
 }

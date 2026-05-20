@@ -1,6 +1,5 @@
 package com.puericulture.common.entity;
 
-import com.puericulture.troc.entity.ProductImage;
 import jakarta.persistence.*;
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -84,6 +83,10 @@ public abstract class Product {
     @JoinColumn(name = "author_id", nullable = false)
     private Person author;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<ProductImage> images = new ArrayList<>();
 }

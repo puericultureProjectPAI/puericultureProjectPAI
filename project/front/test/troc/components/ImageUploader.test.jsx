@@ -6,17 +6,6 @@ import ImageUploader from "../../../src/troc/components/ImageUploader";
 
 expect.extend(matchers);
 
-vi.mock("../../../src/common/hooks/useImageManager", () => ({
-  useImageManager: () => ({
-    uploadImage: vi
-      .fn()
-      .mockResolvedValue("http://localhost:8081/mock-uploads/test.webp"),
-    deleteImage: vi.fn().mockResolvedValue(true),
-    isUploading: false,
-    error: null,
-  }),
-}));
-
 function makeFiles(count, type = "image/jpeg") {
   return Array.from({ length: count }, (_, i) =>
     Object.assign(new File(["content"], `photo${i}.jpg`, { type }), {}),
@@ -48,6 +37,22 @@ describe("ImageUploader", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Format non supporté/i)).toBeInTheDocument();
+    });
+  });
+
+  it("appelle onImagesChange avec les fichiers valides sélectionnés", async () => {
+    const onImagesChange = vi.fn();
+    render(<ImageUploader onImagesChange={onImagesChange} />);
+
+    const input = document.querySelector('input[type="file"]');
+    const files = makeFiles(2);
+
+    fireEvent.change(input, { target: { files } });
+
+    await waitFor(() => {
+      expect(onImagesChange).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.any(File)]),
+      );
     });
   });
 });

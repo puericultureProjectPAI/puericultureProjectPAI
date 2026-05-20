@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/troc/images")
+@RequestMapping("/api/product/images")
 @Tag(
         name = "Product Images",
         description = "Upload, retrieve and delete images for a product listing")

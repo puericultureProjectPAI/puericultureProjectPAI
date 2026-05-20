@@ -1,11 +1,11 @@
 import { apiClient } from "../../common/utils/apiClient";
 
 export async function getProductImages(productId) {
-  return apiClient.get(`/api/troc/images/product/${productId}`);
+  return apiClient.get(`/api/product/images/product/${productId}`);
 }
 
 export async function addProductImage(productId, imageUrl) {
-  return apiClient.post("/api/troc/images", null, {
+  return apiClient.post("/api/product/images", null, {
     params: { imageUrl, productId },
   });
 }
