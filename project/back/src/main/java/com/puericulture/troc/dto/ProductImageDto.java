@@ -1,9 +1,11 @@
 package com.puericulture.troc.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Schema(description = "Represents a single image associated to a product listing.")
 public class ProductImageDto {
 
