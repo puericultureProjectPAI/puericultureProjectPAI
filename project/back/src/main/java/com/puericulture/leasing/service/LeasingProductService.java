@@ -6,6 +6,7 @@ import com.puericulture.leasing.repository.LeasingProductSummary;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -13,6 +14,7 @@ public class LeasingProductService {
 
     private final LeasingProductRepository leasingProductRepository;
 
+    @Transactional(readOnly = true)
     public List<LeasingProductSummaryDto> findAll() {
         return leasingProductRepository.findAllWithAvailability().stream()
                 .map(this::toDto)
