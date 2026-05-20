@@ -16,13 +16,13 @@ public class Timelines {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "children_id", nullable = false)
     private ChildrenEntity children;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "timeline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimelineEvents> events;
 }

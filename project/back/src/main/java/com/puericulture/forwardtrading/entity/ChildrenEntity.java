@@ -16,7 +16,7 @@ public class ChildrenEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
     @Column(name = "name")
@@ -28,5 +28,6 @@ public class ChildrenEntity {
     @Column(name = "gender")
     private String gender;
 
-    @OneToMany private List<Timelines> timelines;
+    @OneToMany(mappedBy = "children")
+    private List<Timelines> timelines;
 }
