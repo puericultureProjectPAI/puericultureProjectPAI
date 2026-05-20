@@ -1,4 +1,4 @@
-package com.puericulture.leasing.repository;
+package com.puericulture.leasing.dto;
 
 public interface LeasingProductSummary {
     Long getId();

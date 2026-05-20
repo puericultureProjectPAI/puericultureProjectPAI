@@ -1,11 +1,12 @@
 package com.puericulture.leasing.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.puericulture.leasing.dto.LeasingProductSummary;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
 import com.puericulture.leasing.repository.LeasingProductRepository;
-import com.puericulture.leasing.repository.LeasingProductSummary;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ class LeasingProductServiceTest {
 
         List<LeasingProductSummaryDto> result = leasingProductService.findAll();
 
+        verify(leasingProductRepository).findAllWithAvailability();
         assertThat(result).hasSize(1);
         LeasingProductSummaryDto dto = result.get(0);
         assertThat(dto.getId()).isEqualTo(1L);
@@ -65,6 +67,7 @@ class LeasingProductServiceTest {
 
         List<LeasingProductSummaryDto> result = leasingProductService.findAll();
 
+        verify(leasingProductRepository).findAllWithAvailability();
         assertThat(result).hasSize(1);
         assertThat(result.get(0).isAvailable()).isFalse();
     }
@@ -75,6 +78,7 @@ class LeasingProductServiceTest {
 
         List<LeasingProductSummaryDto> result = leasingProductService.findAll();
 
+        verify(leasingProductRepository).findAllWithAvailability();
         assertThat(result).isEmpty();
     }
 }

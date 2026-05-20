@@ -1,5 +1,6 @@
 package com.puericulture.leasing.repository;
 
+import com.puericulture.leasing.dto.LeasingProductSummary;
 import com.puericulture.leasing.entity.LeasingArticle;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

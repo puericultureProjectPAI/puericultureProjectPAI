@@ -1,8 +1,8 @@
 package com.puericulture.leasing.service;
 
+import com.puericulture.leasing.dto.LeasingProductSummary;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
 import com.puericulture.leasing.repository.LeasingProductRepository;
-import com.puericulture.leasing.repository.LeasingProductSummary;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
