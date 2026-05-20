@@ -23,6 +23,6 @@ public class Timelines {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "timeline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimelineEvents> events;
 }
