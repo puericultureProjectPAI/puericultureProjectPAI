@@ -26,6 +26,8 @@ public abstract class ProductDto {
     private Integer maxAgeMonths;
     private String brand;
     private String model;
+    private String condition;
+    private Integer confidenceScore;
 
     private PersonDto author;
 }
