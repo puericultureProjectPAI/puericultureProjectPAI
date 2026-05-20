@@ -9,6 +9,7 @@ import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -48,6 +49,11 @@ export default function App() {
               <Route
                 path="/forward/create-children"
                 element={<CreationEnfantView />}
+              />
+              // Dans ton composant Routes
+              <Route
+                path="/second-hand/comparison/:ean"
+                element={<PriceComparisonView />}
               />
               <Route path="/troc" element={<TrocView />} />
             </Route>
