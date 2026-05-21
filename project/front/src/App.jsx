@@ -7,6 +7,9 @@ import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
+import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
+import TrocView from "./troc/views/TrocView";
+import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 
 export default function App() {
   useEffect(() => {
@@ -43,6 +46,15 @@ export default function App() {
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
               <Route path="/forward" element={<ForwardTradingView />} />
+              <Route
+                path="/forward/create-children"
+                element={<CreationEnfantView />}
+              />
+              <Route
+                path="/product/create"
+                element={<PublishAnnouncementView />}
+              />
+              <Route path="/troc" element={<TrocView />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
