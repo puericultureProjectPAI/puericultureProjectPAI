@@ -60,7 +60,7 @@ export default function ImageUploader({ onImagesChange }) {
 
       <div className="flex flex-wrap gap-2">
         {previews.map((preview, i) => (
-          <div key={i} className="relative w-20 h-20">
+          <div key={preview} className="relative w-20 h-20">
             <img
               src={preview}
               alt={`aperçu ${i + 1}`}
