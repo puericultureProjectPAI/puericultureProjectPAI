@@ -1,27 +1,34 @@
-package com.puericulture.troc.service;
+package com.puericulture.common.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.puericulture.common.dto.ProductImageDto;
+import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.Product;
 import com.puericulture.common.entity.ProductImage;
+import com.puericulture.common.mapper.ProductImageMapper;
+import com.puericulture.common.repository.ProductImageRepository;
 import com.puericulture.common.repository.ProductRepository;
 import com.puericulture.config.errormanager.exception.BadRequestException;
+import com.puericulture.config.errormanager.exception.ForbiddenException;
 import com.puericulture.config.errormanager.exception.NotFoundException;
-import com.puericulture.troc.dto.ProductImageDto;
-import com.puericulture.troc.mapper.ProductImageMapper;
-import com.puericulture.troc.repository.ProductImageRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class ProductImageServiceTest {
@@ -35,11 +42,28 @@ class ProductImageServiceTest {
     private Product product;
     private List<ProductImage> images;
 
+    private static final UUID OWNER_ID = UUID.randomUUID();
+
     @BeforeEach
     void setUp() {
         images = new ArrayList<>();
         product = mock(Product.class);
         when(product.getImages()).thenReturn(images);
+
+        Person author = mock(Person.class);
+        when(author.getId()).thenReturn(OWNER_ID);
+        when(product.getAuthor()).thenReturn(author);
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn(OWNER_ID.toString());
+        SecurityContext ctx = mock(SecurityContext.class);
+        when(ctx.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(ctx);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -81,6 +105,17 @@ class ProductImageServiceTest {
 
         assertThat(result.getImageUrl()).isEqualTo("https://example.com/new.jpg");
         verify(productImageRepository).save(any(ProductImage.class));
+    }
+
+    @Test
+    void addImage_throwsForbiddenException_whenCallerIsNotOwner() {
+        Person otherAuthor = mock(Person.class);
+        when(otherAuthor.getId()).thenReturn(UUID.randomUUID());
+        when(product.getAuthor()).thenReturn(otherAuthor);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+        assertThatThrownBy(() -> service.addImage("https://example.com/photo.jpg", 1L))
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test

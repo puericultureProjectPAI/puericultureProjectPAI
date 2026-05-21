@@ -1,7 +1,7 @@
-package com.puericulture.troc.mapper;
+package com.puericulture.common.mapper;
 
+import com.puericulture.common.dto.ProductImageDto;
 import com.puericulture.common.entity.ProductImage;
-import com.puericulture.troc.dto.ProductImageDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

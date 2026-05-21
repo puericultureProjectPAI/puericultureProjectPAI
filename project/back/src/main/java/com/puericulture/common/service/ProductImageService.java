@@ -1,15 +1,18 @@
-package com.puericulture.troc.service;
+package com.puericulture.common.service;
 
+import com.puericulture.common.dto.ProductImageDto;
 import com.puericulture.common.entity.Product;
 import com.puericulture.common.entity.ProductImage;
+import com.puericulture.common.mapper.ProductImageMapper;
+import com.puericulture.common.repository.ProductImageRepository;
 import com.puericulture.common.repository.ProductRepository;
 import com.puericulture.config.errormanager.exception.BadRequestException;
+import com.puericulture.config.errormanager.exception.ForbiddenException;
 import com.puericulture.config.errormanager.exception.NotFoundException;
-import com.puericulture.troc.dto.ProductImageDto;
-import com.puericulture.troc.mapper.ProductImageMapper;
-import com.puericulture.troc.repository.ProductImageRepository;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +52,13 @@ public class ProductImageService {
                         .findById(productId)
                         .orElseThrow(
                                 () -> new NotFoundException("Produit introuvable : " + productId));
+
+        String principalId =
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        if (!product.getAuthor().getId().equals(UUID.fromString(principalId))) {
+            throw new ForbiddenException(
+                    "Vous n'êtes pas autorisé à modifier les images de ce produit.");
+        }
 
         int currentCount = product.getImages().size();
         if (currentCount >= MAX_IMAGES_PER_PRODUCT) {
