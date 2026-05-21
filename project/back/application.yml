@@ -53,6 +53,7 @@ management:
 logging:
   level:
     root: INFO
+    web: TRACE
     org.springframework.security: INFO
     # Correction du nom de package pour correspondre à tes classes Java
     com.puericulture: DEBUG
