@@ -1,0 +1,105 @@
+import { useField, useFormikContext } from "formik";
+import { useImageManager } from "../../hooks/useImageManager";
+
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const DEFAULT_MAX = 5;
+
+/**
+ * Formik-integrated image upload field backed by Cloudinary (or the local mock).
+ *
+ * Field value in Formik: string[] of uploaded image URLs.
+ *
+ * Props:
+ *  - name        (required) Formik field name
+ *  - label       Display label
+ *  - maxImages   Max images allowed (default 5)
+ */
+export default function MyImageInput({
+  label,
+  maxImages = DEFAULT_MAX,
+  ...props
+}) {
+  const [field, meta] = useField(props);
+  const { setFieldValue } = useFormikContext();
+
+  const { uploadImage, isUploading, error: uploadError } = useImageManager();
+
+  // field.value is always string[]
+  const urls = Array.isArray(field.value) ? field.value : [];
+
+  const handleFileChange = async (e) => {
+    const selected = Array.from(e.target.files);
+    e.target.value = "";
+
+    const remaining = maxImages - urls.length;
+    if (remaining <= 0) return;
+
+    const toUpload = selected.slice(0, remaining);
+
+    const newUrls = [];
+    for (const file of toUpload) {
+      if (!ALLOWED_TYPES.includes(file.type)) continue;
+      const url = await uploadImage(file);
+      if (url) newUrls.push(url);
+    }
+
+    setFieldValue(field.name, [...urls, ...newUrls]);
+  };
+
+  const removeImage = (index) => {
+    const updated = urls.filter((_, i) => i !== index);
+    setFieldValue(field.name, updated);
+  };
+
+  return (
+    <div className="mt-4">
+      {label && (
+        <p className="text-sm font-medium text-gray-700 mb-1">
+          {label} ({urls.length}/{maxImages})
+        </p>
+      )}
+
+      {(uploadError || (meta.touched && meta.error)) && (
+        <p className="text-red-500 text-sm mb-2">{uploadError || meta.error}</p>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        {urls.map((url, i) => (
+          <div key={url} className="relative w-20 h-20">
+            <img
+              src={url}
+              alt={`aperçu ${i + 1}`}
+              className="w-full h-full object-cover rounded-lg"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(i)}
+              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+
+        {isUploading && (
+          <div className="w-20 h-20 border-2 border-dashed border-blue-300 rounded-lg flex items-center justify-center bg-blue-50">
+            <span className="text-xs text-blue-400">...</span>
+          </div>
+        )}
+
+        {!isUploading && urls.length < maxImages && (
+          <label className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 transition-colors">
+            <span className="text-2xl text-gray-400">+</span>
+            <input
+              type="file"
+              accept={ALLOWED_TYPES.join(",")}
+              multiple
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+        )}
+      </div>
+    </div>
+  );
+}

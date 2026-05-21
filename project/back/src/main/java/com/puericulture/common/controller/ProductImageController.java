@@ -1,7 +1,7 @@
-package com.puericulture.troc.controller;
+package com.puericulture.common.controller;
 
-import com.puericulture.troc.dto.ProductImageDto;
-import com.puericulture.troc.service.ProductImageService;
+import com.puericulture.common.dto.ProductImageDto;
+import com.puericulture.common.service.ProductImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/product/images")
+@RequestMapping("/api/common/product/images")
 @Tag(
         name = "Product Images",
         description = "Upload, retrieve and delete images for a product listing")

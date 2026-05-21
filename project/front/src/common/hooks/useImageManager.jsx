@@ -1,20 +1,15 @@
 import { useState } from "react";
-import { optimizeImage } from "../utils/imageOptimizer";
-import { apiClient } from "../utils/apiClient"; // ← authenticated Axios instance
+import { apiClient } from "../utils/apiClient";
+import { uploadImageToCloudinary } from "../utils/productImageApi";
 
 export const useImageManager = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Environment detection (Vite uses import.meta.env)
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-  const isLocalMock = !cloudName || !uploadPreset;
-  const uploadUrl = isLocalMock
-    ? `http://localhost:8081/v1_1/local_mock/image/upload`
-    : `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+  const isLocalMock =
+    !import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ||
+    !import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   /**
    * Uploads an image to Cloudinary (or the local mock) after optimizing it.
@@ -26,25 +21,7 @@ export const useImageManager = () => {
     setError(null);
 
     try {
-      // Mandatory: compress + convert to WebP before sending
-      const optimizedFile = await optimizeImage(rawFile);
-
-      const formData = new FormData();
-      formData.append("file", optimizedFile);
-      if (!isLocalMock) {
-        formData.append("upload_preset", uploadPreset);
-      }
-
-      const response = await fetch(uploadUrl, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok)
-        throw new Error(`Upload failed (Status: ${response.status})`);
-
-      const data = await response.json();
-      return data.secure_url;
+      return await uploadImageToCloudinary(rawFile);
     } catch (err) {
       setError(err.message);
       return null;
