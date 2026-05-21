@@ -56,13 +56,22 @@ export default defineConfig(({ mode }) => {
           globPatterns: ["**/*.{js,css,html,ico,png,svg}"], // Cache all front-end assets
           cleanupOutdatedCaches: true,
           sourcemap: true,
+
+          // CRITICAL: Never intercept /api calls — let them reach the network (Vercel proxy → Render)
+          navigateFallbackDenylist: [/^\/api\/.*/],
+          runtimeCaching: [
+            {
+              urlPattern: /^\/api\/.*/,
+              handler: "NetworkOnly",
+            },
+          ],
         },
       }),
     ],
     server: {
       proxy: {
         "/api": {
-          target: env.VITE_API_URL || "/api",
+          target: env.VITE_API_URL || "http://localhost:8080",
           changeOrigin: true,
         },
       },
