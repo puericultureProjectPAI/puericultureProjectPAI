@@ -26,8 +26,7 @@ public class TrocRequest {
             requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 
-    @NotNull
-    @PositiveOrZero
+    @NotNull @PositiveOrZero
     @Schema(
             description = "Estimated product value in euros.",
             example = "40",

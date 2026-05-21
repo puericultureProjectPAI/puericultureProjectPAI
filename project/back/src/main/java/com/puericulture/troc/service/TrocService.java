@@ -1,6 +1,7 @@
 package com.puericulture.troc.service;
 
 import com.puericulture.common.entity.Person;
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.troc.dto.TrocDto;
 import com.puericulture.troc.dto.TrocRequest;
@@ -17,7 +18,7 @@ public class TrocService {
 
     private static final String DEFAULT_CITY = "Lille";
 
-    private static final String DEFAULT_CATEGORY = "0";
+    private static final String DEFAULT_CATEGORY = "Autres articles pour bébé et enfant";
 
     private final TrocRepository trocRepository;
 
@@ -53,7 +54,8 @@ public class TrocService {
         troc.setDescription(request.getDescription());
         troc.setPostDate(LocalDateTime.now());
         troc.setCity(defaultIfBlank(request.getCity(), DEFAULT_CITY));
-        troc.setCategory(defaultIfBlank(request.getCategory(), DEFAULT_CATEGORY));
+        troc.setCategory(
+                ProductCategory.fromLabel(defaultIfBlank(request.getCategory(), DEFAULT_CATEGORY)));
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
 

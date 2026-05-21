@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.puericulture.common.entity.Person;
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.troc.dto.TrocDto;
 import com.puericulture.troc.dto.TrocRequest;
@@ -56,7 +57,8 @@ class TrocServiceTest {
         expectedDto.setAuthorId(AUTHOR_ID);
 
         given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
-        given(trocRepository.save(any(Troc.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(trocRepository.save(any(Troc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
         given(trocMapper.toDto(any(Troc.class))).willReturn(expectedDto);
 
         TrocDto result = trocService.createTroc(request, AUTHOR_ID);
@@ -68,7 +70,7 @@ class TrocServiceTest {
         assertThat(savedTroc.getPostTitle()).isEqualTo("Poussette bébé");
         assertThat(savedTroc.getDescription()).isEqualTo("Poussette bébé en très bon état");
         assertThat(savedTroc.getCity()).isEqualTo("Lille");
-        assertThat(savedTroc.getCategory()).isEqualTo("Poussettes, porte-bébés et sièges auto");
+        assertThat(savedTroc.getCategory()).isEqualTo(ProductCategory.TRANSPORT_BEBE);
         assertThat(savedTroc.getEstimatedPrice()).isEqualTo(40L);
         assertThat(savedTroc.getAuthor()).isSameAs(author);
         assertThat(savedTroc.getPostDate()).isNotNull();
@@ -82,7 +84,8 @@ class TrocServiceTest {
         TrocDto expectedDto = new TrocDto();
 
         given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
-        given(trocRepository.save(any(Troc.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(trocRepository.save(any(Troc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
         given(trocMapper.toDto(any(Troc.class))).willReturn(expectedDto);
 
         trocService.createTroc(request, AUTHOR_ID);
