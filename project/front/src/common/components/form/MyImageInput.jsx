@@ -1,30 +1,30 @@
 import { useField, useFormikContext } from "formik";
-import { useImageManager } from "../../hooks/useImageManager";
+import { useProductImage } from "../../hooks/useProductImage";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const DEFAULT_MAX = 5;
 
 /**
- * Formik-integrated image upload field backed by Cloudinary (or the local mock).
+ * Champ Formik pour l'upload d'images vers Cloudinary.
  *
- * Field value in Formik: string[] of uploaded image URLs.
+ * Valeur Formik : string[] d'URLs uploadées.
  *
- * Props:
- *  - name        (required) Formik field name
- *  - label       Display label
- *  - maxImages   Max images allowed (default 5)
+ * Props :
+ *  - name        (requis) Nom du champ Formik
+ *  - label       Libellé affiché
+ *  - maxImages   Nombre max d'images (défaut 5)
+ *  - productId   Si fourni, sauvegarde l'URL en base dès l'upload
  */
 export default function MyImageInput({
   label,
   maxImages = DEFAULT_MAX,
+  productId,
   ...props
 }) {
   const [field, meta] = useField(props);
   const { setFieldValue } = useFormikContext();
+  const { uploadImage, isUploading, error: uploadError } = useProductImage();
 
-  const { uploadImage, isUploading, error: uploadError } = useImageManager();
-
-  // field.value is always string[]
   const urls = Array.isArray(field.value) ? field.value : [];
 
   const handleFileChange = async (e) => {
@@ -34,12 +34,13 @@ export default function MyImageInput({
     const remaining = maxImages - urls.length;
     if (remaining <= 0) return;
 
-    const toUpload = selected.slice(0, remaining);
+    const toUpload = selected
+      .filter((f) => ALLOWED_TYPES.includes(f.type))
+      .slice(0, remaining);
 
     const newUrls = [];
     for (const file of toUpload) {
-      if (!ALLOWED_TYPES.includes(file.type)) continue;
-      const url = await uploadImage(file);
+      const url = await uploadImage(file, productId);
       if (url) newUrls.push(url);
     }
 
@@ -47,8 +48,10 @@ export default function MyImageInput({
   };
 
   const removeImage = (index) => {
-    const updated = urls.filter((_, i) => i !== index);
-    setFieldValue(field.name, updated);
+    setFieldValue(
+      field.name,
+      urls.filter((_, i) => i !== index),
+    );
   };
 
   return (
