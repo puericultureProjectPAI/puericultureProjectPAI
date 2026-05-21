@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import PriceComparisonResult from "../../../../src/second-hand/components/PriceComparisonResult.jsx";
+import PriceComparisonResult from "../../src/second-hand/components/PriceComparisonResult.jsx";
 
 // Liaison des matchers pour Vitest
 expect.extend(matchers);

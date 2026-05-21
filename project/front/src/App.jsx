@@ -50,7 +50,6 @@ export default function App() {
                 path="/forward/create-children"
                 element={<CreationEnfantView />}
               />
-              // Dans ton composant Routes
               <Route
                 path="/second-hand/comparison/:ean"
                 element={<PriceComparisonView />}
