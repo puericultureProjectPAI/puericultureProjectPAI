@@ -1,5 +1,6 @@
 package com.puericulture.forwardtrading.service;
 
+import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.forwardtrading.dto.TimelinePeriodDto;
 import com.puericulture.forwardtrading.entity.TimelineEvents;
 import com.puericulture.forwardtrading.entity.TimelinePeriods;
@@ -26,6 +27,9 @@ public class TimelineService {
     public List<TimelinePeriodDto> getTimeline(Long timelineId) {
         List<TimelineEvents> events = timelineEventRepository.findByTimelineId(timelineId);
 
+        if (events.isEmpty()) {
+            throw new NotFoundException("Timeline not found for ID : " + timelineId);
+        }
         // Grouping events by their associated period
         Map<TimelinePeriods, List<TimelineEvents>> eventsByPeriod =
                 events.stream().collect(Collectors.groupingBy(TimelineEvents::getPeriod));
