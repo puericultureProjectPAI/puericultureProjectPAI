@@ -37,7 +37,7 @@ export default function App() {
         {/* Public Route */}
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
-
+        <Route path="/forward" element={<ForwardTradingView />} />
         {/* Security: Protected Shell*/}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
@@ -45,7 +45,7 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
-              <Route path="/forward" element={<ForwardTradingView />} />
+
               <Route
                 path="/forward/create-children"
                 element={<CreationEnfantView />}
