@@ -49,3 +49,7 @@ export async function addProductImage(productId, imageUrl) {
 export async function addProductImages(productId, imageUrls) {
   return Promise.all(imageUrls.map((url) => addProductImage(productId, url)));
 }
+
+export async function deleteProductImage(imageId) {
+  return apiClient.delete(`/api/common/product/images/${imageId}`);
+}
