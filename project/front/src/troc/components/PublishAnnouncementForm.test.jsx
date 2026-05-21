@@ -36,9 +36,33 @@ describe("PublishAnnouncementForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
-    await screen.findByText(/informations complémentaires/i);
+    await screen.findByText(/informations optionnelles/i);
     fireEvent.change(screen.getByLabelText(/État/i), {
       target: { value: "Très bon état" },
+    });
+    fireEvent.change(screen.getByLabelText(/Marque/i), {
+      target: { value: "Kiabi" },
+    });
+    fireEvent.change(screen.getByLabelText(/Modèle/i), {
+      target: { value: "Lullaby" },
+    });
+    fireEvent.change(screen.getByLabelText(/Dimensions/i), {
+      target: { value: "60 x 40 cm" },
+    });
+    fireEvent.change(screen.getByLabelText(/Dernier contrôle/i), {
+      target: { value: "2026-05-21" },
+    });
+    fireEvent.change(screen.getByLabelText(/Poids max/i), {
+      target: { value: "15" },
+    });
+    fireEvent.change(screen.getByLabelText(/Norme de sécurité/i), {
+      target: { value: "EN 1888" },
+    });
+    fireEvent.change(screen.getByLabelText(/Âge min/i), {
+      target: { value: "0" },
+    });
+    fireEvent.change(screen.getByLabelText(/Âge max/i), {
+      target: { value: "36" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
@@ -64,6 +88,15 @@ describe("PublishAnnouncementForm", () => {
       imageReference: "poussette.png",
       city: "Lille",
       category: "Poussettes, porte-bébés et sièges auto",
+      condition: "Très bon état",
+      brand: "Kiabi",
+      model: "Lullaby",
+      dimensions: "60 x 40 cm",
+      lastCheckDate: "2026-05-21",
+      securityStandard: "EN 1888",
+      maxWeightKg: 15,
+      minAgeMonths: 0,
+      maxAgeMonths: 36,
     });
   });
 });

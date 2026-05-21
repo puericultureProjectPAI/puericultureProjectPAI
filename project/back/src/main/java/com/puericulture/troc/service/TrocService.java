@@ -58,6 +58,15 @@ public class TrocService {
                 ProductCategory.fromLabel(defaultIfBlank(request.getCategory(), DEFAULT_CATEGORY)));
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
+        troc.setCondition(blankToNull(request.getCondition()));
+        troc.setBrand(blankToNull(request.getBrand()));
+        troc.setModel(blankToNull(request.getModel()));
+        troc.setDimensions(blankToNull(request.getDimensions()));
+        troc.setLastCheckDate(request.getLastCheckDate());
+        troc.setSecurityStandard(blankToNull(request.getSecurityStandard()));
+        troc.setMaxWeightKg(request.getMaxWeightKg());
+        troc.setMinAgeMonths(request.getMinAgeMonths());
+        troc.setMaxAgeMonths(request.getMaxAgeMonths());
 
         Troc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);
@@ -65,5 +74,9 @@ public class TrocService {
 
     private String defaultIfBlank(String value, String defaultValue) {
         return value == null || value.isBlank() ? defaultValue : value;
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value;
     }
 }

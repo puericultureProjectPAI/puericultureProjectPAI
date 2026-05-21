@@ -8,6 +8,10 @@ import PublicationMobileShell from "./PublicationMobileShell";
 import RequiredProductInfoStep from "./RequiredProductInfoStep";
 import TrocSpecificStep from "./TrocSpecificStep";
 
+const emptyToNull = (value) => (value === "" ? null : value);
+
+const numberOrNull = (value) => (value === "" ? null : Number(value));
+
 const initialValues = {
   mode: "TROC",
   imageReference: "",
@@ -19,6 +23,11 @@ const initialValues = {
   brand: "",
   model: "",
   dimensions: "",
+  lastCheckDate: "",
+  securityStandard: "",
+  maxWeightKg: "",
+  minAgeMonths: "",
+  maxAgeMonths: "",
   radius: "",
   wantedArticle: "",
   estimatedPrice: "",
@@ -59,6 +68,15 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           imageReference: values.imageReference,
           city: values.city,
           category: values.category,
+          condition: emptyToNull(values.condition),
+          brand: emptyToNull(values.brand),
+          model: emptyToNull(values.model),
+          dimensions: emptyToNull(values.dimensions),
+          lastCheckDate: emptyToNull(values.lastCheckDate),
+          securityStandard: emptyToNull(values.securityStandard),
+          maxWeightKg: numberOrNull(values.maxWeightKg),
+          minAgeMonths: numberOrNull(values.minAgeMonths),
+          maxAgeMonths: numberOrNull(values.maxAgeMonths),
         };
 
         const isCreated = await onSubmit(payload);
@@ -70,7 +88,11 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
       }}
     >
       {({ isSubmitting, setFieldValue, setTouched, validateForm, values }) => (
-        <PublicationMobileShell currentStep={step} error={error} success={success}>
+        <PublicationMobileShell
+          currentStep={step}
+          error={error}
+          success={success}
+        >
           <Form>
             {step === 1 && <ModeSelectionStep setFieldValue={setFieldValue} />}
             {step === 2 && (

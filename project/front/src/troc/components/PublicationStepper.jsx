@@ -1,8 +1,8 @@
 export default function PublicationStepper({ currentStep }) {
   return (
-    <div className="mb-8 mt-6 flex items-center justify-center gap-7">
+    <div className="mb-8 mt-6 flex items-center justify-center">
       {[1, 2, 3, 4].map((step) => (
-        <div key={step} className="flex items-center">
+        <div className="flex items-center" key={step}>
           <div
             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${
               currentStep === step
@@ -12,6 +12,8 @@ export default function PublicationStepper({ currentStep }) {
           >
             {step}
           </div>
+
+          {step < 4 && <div className="h-px w-9 bg-[#e3e1ee]" />}
         </div>
       ))}
     </div>

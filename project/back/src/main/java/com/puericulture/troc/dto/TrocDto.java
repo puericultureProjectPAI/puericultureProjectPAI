@@ -1,6 +1,7 @@
 package com.puericulture.troc.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.sql.Date;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,9 +32,38 @@ public class TrocDto {
     @Schema(description = "City where the product is located.", example = "Lille")
     private String city;
 
-    @Schema(description = "Product category identifier.", example = "3")
+    @Schema(
+            description = "Product category label.",
+            example = "Poussettes, porte-bébés et sièges auto")
     private String category;
 
     @Schema(description = "Current troc publication status.", example = "AVAILABLE")
     private String status;
+
+    @Schema(description = "Current visible condition of the product.", example = "Bon état")
+    private String condition;
+
+    @Schema(description = "Product brand.", example = "Kiabi")
+    private String brand;
+
+    @Schema(description = "Product model.", example = "Lullaby")
+    private String model;
+
+    @Schema(description = "Product dimensions.", example = "60 x 40 cm")
+    private String dimensions;
+
+    @Schema(description = "Last safety check date.", example = "2026-05-21")
+    private Date lastCheckDate;
+
+    @Schema(description = "Safety standard associated with the product.", example = "EN 1888")
+    private String securityStandard;
+
+    @Schema(description = "Maximum supported weight in kilograms.", example = "15")
+    private Integer maxWeightKg;
+
+    @Schema(description = "Minimum recommended age in months.", example = "0")
+    private Integer minAgeMonths;
+
+    @Schema(description = "Maximum recommended age in months.", example = "36")
+    private Integer maxAgeMonths;
 }

@@ -14,6 +14,7 @@ import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.Troc;
 import com.puericulture.troc.mapper.TrocMapper;
 import com.puericulture.troc.repository.TrocRepository;
+import java.sql.Date;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,6 +73,15 @@ class TrocServiceTest {
         assertThat(savedTroc.getCity()).isEqualTo("Lille");
         assertThat(savedTroc.getCategory()).isEqualTo(ProductCategory.TRANSPORT_BEBE);
         assertThat(savedTroc.getEstimatedPrice()).isEqualTo(40L);
+        assertThat(savedTroc.getCondition()).isEqualTo("Très bon état");
+        assertThat(savedTroc.getBrand()).isEqualTo("Kiabi");
+        assertThat(savedTroc.getModel()).isEqualTo("Lullaby");
+        assertThat(savedTroc.getDimensions()).isEqualTo("60 x 40 cm");
+        assertThat(savedTroc.getLastCheckDate()).isEqualTo(Date.valueOf("2026-05-21"));
+        assertThat(savedTroc.getSecurityStandard()).isEqualTo("EN 1888");
+        assertThat(savedTroc.getMaxWeightKg()).isEqualTo(15);
+        assertThat(savedTroc.getMinAgeMonths()).isEqualTo(0);
+        assertThat(savedTroc.getMaxAgeMonths()).isEqualTo(36);
         assertThat(savedTroc.getAuthor()).isSameAs(author);
         assertThat(savedTroc.getPostDate()).isNotNull();
         assertThat(result).isSameAs(expectedDto);
@@ -93,6 +103,24 @@ class TrocServiceTest {
         ArgumentCaptor<Troc> trocCaptor = ArgumentCaptor.forClass(Troc.class);
         verify(trocRepository).save(trocCaptor.capture());
         assertThat(trocCaptor.getValue().getCity()).isEqualTo("Lille");
+    }
+
+    @Test
+    void createTrocShouldUseDefaultCategoryWhenCategoryIsBlank() {
+        TrocRequest request = validRequest();
+        request.setCategory(" ");
+        TrocDto expectedDto = new TrocDto();
+
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
+        given(trocRepository.save(any(Troc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(Troc.class))).willReturn(expectedDto);
+
+        trocService.createTroc(request, AUTHOR_ID);
+
+        ArgumentCaptor<Troc> trocCaptor = ArgumentCaptor.forClass(Troc.class);
+        verify(trocRepository).save(trocCaptor.capture());
+        assertThat(trocCaptor.getValue().getCategory()).isEqualTo(ProductCategory.AUTRES);
     }
 
     @Test
@@ -120,6 +148,15 @@ class TrocServiceTest {
         request.setImageReference("poussette.png");
         request.setCity("Lille");
         request.setCategory("Poussettes, porte-bébés et sièges auto");
+        request.setCondition("Très bon état");
+        request.setBrand("Kiabi");
+        request.setModel("Lullaby");
+        request.setDimensions("60 x 40 cm");
+        request.setLastCheckDate(Date.valueOf("2026-05-21"));
+        request.setSecurityStandard("EN 1888");
+        request.setMaxWeightKg(15);
+        request.setMinAgeMonths(0);
+        request.setMaxAgeMonths(36);
         return request;
     }
 }

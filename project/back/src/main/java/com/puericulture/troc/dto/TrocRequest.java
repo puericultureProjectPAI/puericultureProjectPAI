@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.sql.Date;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +44,37 @@ public class TrocRequest {
 
     @Schema(
             description =
-                    "Product category identifier. It is not the business type; Troc is represented by the product_troc specialization.",
-            example = "3")
+                    "Functional product category label. It is not the business type; Troc is represented by the product_troc specialization.",
+            example = "Poussettes, porte-bébés et sièges auto")
     private String category;
+
+    @Schema(description = "Current visible condition of the product.", example = "Bon état")
+    private String condition;
+
+    @Schema(description = "Product brand.", example = "Kiabi")
+    private String brand;
+
+    @Schema(description = "Product model.", example = "Lullaby")
+    private String model;
+
+    @Schema(description = "Product dimensions.", example = "60 x 40 cm")
+    private String dimensions;
+
+    @Schema(description = "Last safety check date.", example = "2026-05-21")
+    private Date lastCheckDate;
+
+    @Schema(description = "Safety standard associated with the product.", example = "EN 1888")
+    private String securityStandard;
+
+    @PositiveOrZero
+    @Schema(description = "Maximum supported weight in kilograms.", example = "15")
+    private Integer maxWeightKg;
+
+    @PositiveOrZero
+    @Schema(description = "Minimum recommended age in months.", example = "0")
+    private Integer minAgeMonths;
+
+    @PositiveOrZero
+    @Schema(description = "Maximum recommended age in months.", example = "36")
+    private Integer maxAgeMonths;
 }

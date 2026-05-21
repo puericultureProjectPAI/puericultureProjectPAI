@@ -35,7 +35,7 @@ export default function ModeSelectionStep({ setFieldValue }) {
         ))}
       </div>
 
-      <div className="mt-5 rounded-md border border-[#b9c5ff] bg-[#f7f9ff] px-3 py-3 text-center text-xs font-medium text-[#36336a]">
+      <div className="mt-5 rounded-md border border-[#bfdbfe] bg-[#eff6ff] px-3 py-3 text-center text-xs font-medium text-[#1e3a8a]">
         ⓘ Les autres modes seront disponibles prochainement
       </div>
     </div>
