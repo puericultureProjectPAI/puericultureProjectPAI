@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://puericultureprojectpai-backend-latest.onrender.com/api/:path*"
+    }
+  ]
+}
