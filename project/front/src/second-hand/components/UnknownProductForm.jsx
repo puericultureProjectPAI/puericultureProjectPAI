@@ -14,7 +14,7 @@ const categories = [
   "Autres articles pour bébé et enfant",
 ];
 
-const UnknownProductForm = ({ ean, onSubmitSuccess }) => {
+export default function UnknownProductForm({ ean, onSubmitSuccess }) {
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -23,47 +23,47 @@ const UnknownProductForm = ({ ean, onSubmitSuccess }) => {
     },
 
     validationSchema: Yup.object({
-      name: Yup.string().required("Le nom du produit est requis"),
-
-      category: Yup.string().required("La catégorie est requise"),
-
+      name: Yup.string().required("Nom requis"),
+      category: Yup.string().required("Catégorie requise"),
       price: Yup.number()
-        .typeError("Le prix doit être un nombre")
-        .required("Le prix est requis")
-        .min(0.01, "Le prix doit être supérieur ou égal à 0.01"),
+        .typeError("Prix invalide")
+        .required("Prix requis")
+        .min(0.01, "Minimum 0.01€"),
     }),
 
     onSubmit: async (values, { setSubmitting, setStatus }) => {
-      setSubmitting(true);
       setStatus(null);
 
       try {
-        const payload = {
-          ean,
-          name: values.name,
-          category: values.category,
-          price: Number(values.price),
-        };
-
-        const response = await fetch("/api/v1/products", {
+        const res = await fetch("/api/v1/products", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            ean,
+            name: values.name,
+            category: values.category,
+            price: Number(values.price),
+            brand: null,
+            imageUrl: null,
+          }),
         });
 
-        if (response.status === 201) {
-          setStatus({ success: "Produit créé avec succès !" });
-          if (onSubmitSuccess) onSubmitSuccess();
+        if (res.status === 201) {
+          setStatus({ success: "Produit ajouté avec succès !" });
+
+          setTimeout(() => {
+            onSubmitSuccess?.();
+          }, 600);
         } else {
           setStatus({
-            error: "Une erreur est survenue lors de la création du produit.",
+            error: "Erreur lors de la création du produit.",
           });
         }
       } catch {
         setStatus({
-          error: "Une erreur est survenue lors de la création du produit.",
+          error: "Erreur réseau.",
         });
       } finally {
         setSubmitting(false);
@@ -72,99 +72,87 @@ const UnknownProductForm = ({ ean, onSubmitSuccess }) => {
   });
 
   return (
-    <form onSubmit={formik.handleSubmit} className="space-y-4">
+    <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
       {/* NAME */}
       <div>
-        <label htmlFor="name">Nom du produit</label>
+        <label className="text-sm text-gray-600">Nom du produit</label>
         <input
-          id="name"
           name="name"
-          type="text"
           onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
           value={formik.values.name}
-          className="border p-2 w-full"
+          className="w-full border border-gray-200 rounded-lg p-2"
         />
-        {formik.touched.name && formik.errors.name && (
-          <div className="text-red-500 text-sm">{formik.errors.name}</div>
+        {formik.errors.name && formik.touched.name && (
+          <p className="text-red-500 text-xs mt-1">{formik.errors.name}</p>
         )}
       </div>
 
       {/* CATEGORY */}
       <div>
-        <label htmlFor="category">Catégorie</label>
+        <label className="text-sm text-gray-600">Catégorie</label>
         <select
-          id="category"
           name="category"
           onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
           value={formik.values.category}
-          className="border p-2 w-full"
+          className="w-full border border-gray-200 rounded-lg p-2"
         >
-          <option value="">Sélectionnez une catégorie</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
+          <option value="">Choisir...</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
             </option>
           ))}
         </select>
 
-        {formik.touched.category && formik.errors.category && (
-          <div className="text-red-500 text-sm">{formik.errors.category}</div>
+        {formik.errors.category && formik.touched.category && (
+          <p className="text-red-500 text-xs mt-1">{formik.errors.category}</p>
         )}
       </div>
 
       {/* PRICE */}
       <div>
-        <label htmlFor="price">Prix estimé neuf (€)</label>
+        <label className="text-sm text-gray-600">Prix neuf estimé (€)</label>
         <input
-          id="price"
-          name="price"
           type="number"
           step="0.01"
+          name="price"
           onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
           value={formik.values.price}
-          className="border p-2 w-full"
+          className="w-full border border-gray-200 rounded-lg p-2"
         />
 
-        {formik.touched.price && formik.errors.price && (
-          <div className="text-red-500 text-sm">{formik.errors.price}</div>
+        {formik.errors.price && formik.touched.price && (
+          <p className="text-red-500 text-xs mt-1">{formik.errors.price}</p>
         )}
       </div>
 
       {/* EAN */}
       <div>
-        <label htmlFor="ean">EAN</label>
+        <label className="text-sm text-gray-600">EAN</label>
         <input
-          id="ean"
-          name="ean"
-          type="text"
           value={ean}
-          readOnly
-          className="border p-2 w-full bg-gray-100"
+          disabled
+          className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2 text-gray-500"
         />
       </div>
 
       {/* STATUS */}
       {formik.status?.error && (
-        <div className="text-red-500 text-sm">{formik.status.error}</div>
+        <p className="text-red-500 text-sm">{formik.status.error}</p>
       )}
 
       {formik.status?.success && (
-        <div className="text-green-500 text-sm">{formik.status.success}</div>
+        <p className="text-green-600 text-sm">{formik.status.success}</p>
       )}
 
       {/* SUBMIT */}
       <button
         type="submit"
-        disabled={formik.isSubmitting || !formik.isValid}
-        className="bg-blue-500 text-white p-2 rounded disabled:opacity-50"
+        disabled={formik.isSubmitting}
+        className="bg-blue-600 text-white rounded-lg p-2 text-sm"
       >
-        {formik.isSubmitting ? "Envoi en cours..." : "Créer le produit"}
+        {formik.isSubmitting ? "Envoi..." : "Créer le produit"}
       </button>
     </form>
   );
-};
-
-export default UnknownProductForm;
+}
