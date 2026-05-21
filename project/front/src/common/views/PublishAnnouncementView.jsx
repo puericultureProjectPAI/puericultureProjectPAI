@@ -1,5 +1,5 @@
-import PublishAnnouncementForm from "../../common/components/form/productCreation/PublishAnnouncementForm.jsx";
-import useTroc from "../hooks/useTroc";
+import PublishAnnouncementForm from "../components/form/productCreation/PublishAnnouncementForm.jsx";
+import useTroc from "../../troc/hooks/useTroc.js";
 
 export default function PublishAnnouncementView() {
   const { error, publishTroc, success } = useTroc();

@@ -7,7 +7,7 @@ import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
-import PublishAnnouncementView from "./troc/views/PublishAnnouncementView";
+import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 
 export default function App() {
