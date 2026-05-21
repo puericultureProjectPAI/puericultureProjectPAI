@@ -47,12 +47,6 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.change(screen.getByLabelText(/Prix estimé/i), {
       target: { value: "40" },
     });
-    fireEvent.change(screen.getByLabelText(/Rayon/i), {
-      target: { value: "10" },
-    });
-    fireEvent.change(screen.getByLabelText(/Je cherche/i), {
-      target: { value: "Lit parapluie" },
-    });
 
     fireEvent.click(screen.getByRole("button", { name: /publier/i }));
 
