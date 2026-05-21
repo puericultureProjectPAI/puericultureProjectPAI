@@ -48,14 +48,18 @@ describe("useTroc", () => {
   });
 
   it("returns false and exposes an error message when publication fails", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     createTroc.mockRejectedValueOnce(new Error("API error"));
 
     const { result } = renderHook(() => useTroc());
 
     let publicationResult;
     await act(async () => {
-      publicationResult = await result.current.publishTroc({ title: "Poussette bébé" });
+      publicationResult = await result.current.publishTroc({
+        title: "Poussette bébé",
+      });
     });
 
     expect(publicationResult).toBe(false);

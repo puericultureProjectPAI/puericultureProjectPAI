@@ -17,7 +17,9 @@ export default function useTroc() {
       }, 3000);
       return true;
     } catch (requestError) {
-      setError("Impossible de publier l’annonce. Vérifiez les champs obligatoires.");
+      setError(
+        "Impossible de publier l’annonce. Vérifiez les champs obligatoires.",
+      );
       console.error("Erreur publication annonce", requestError);
       return false;
     }

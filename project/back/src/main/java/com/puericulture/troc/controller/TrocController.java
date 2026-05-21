@@ -1,8 +1,8 @@
 package com.puericulture.troc.controller;
 
-import com.puericulture.troc.dto.TrocDto;
+import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
-import com.puericulture.troc.service.TrocService;
+import com.puericulture.troc.service.ProductTrocService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Troc", description = "Endpoints for publishing troc products.")
 public class TrocController {
 
-    private final TrocService trocService;
+    private final ProductTrocService productTrocService;
 
-    public TrocController(TrocService trocService) {
-        this.trocService = trocService;
+    public TrocController(ProductTrocService productTrocService) {
+        this.productTrocService = productTrocService;
     }
 
     @Operation(
@@ -42,7 +42,7 @@ public class TrocController {
                         content =
                                 @Content(
                                         mediaType = "application/json",
-                                        schema = @Schema(implementation = TrocDto.class))),
+                                        schema = @Schema(implementation = ProductTrocDto.class))),
                 @ApiResponse(
                         responseCode = "400",
                         description = "Invalid troc creation payload.",
@@ -54,9 +54,9 @@ public class TrocController {
             })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TrocDto createTroc(
+    public ProductTrocDto createTroc(
             @AuthenticationPrincipal String authenticatedPersonId,
             @Valid @RequestBody TrocRequest request) {
-        return trocService.createTroc(request, UUID.fromString(authenticatedPersonId));
+        return productTrocService.createTroc(request, UUID.fromString(authenticatedPersonId));
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/common/images") // ← fixed: was "common/images" (missing /api prefix)
+@RequestMapping("/common/images") // ← fixed: was "common/images" (missing /api prefix)
 @RequiredArgsConstructor
 @Tag(name = "Gestion des Images", description = "API transverse pour la manipulation des médias")
 public class ImageController {

@@ -1,0 +1,168 @@
+package com.puericulture.troc.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import com.puericulture.common.dto.PersonDto;
+import com.puericulture.common.entity.Person;
+import com.puericulture.common.entity.ProductCategory;
+import com.puericulture.common.repository.PersonRepository;
+import com.puericulture.troc.dto.ProductTrocDto;
+import com.puericulture.troc.dto.TrocRequest;
+import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.mapper.ProductTrocMapper;
+import com.puericulture.troc.repository.ProductTrocRepository;
+import java.sql.Date;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class ProductTrocServiceTest {
+
+    private static final UUID AUTHOR_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+    @Mock private ProductTrocRepository trocRepository;
+
+    @Mock private ProductTrocMapper trocMapper;
+
+    @Mock private PersonRepository personRepository;
+
+    @InjectMocks private ProductTrocService productTrocService;
+
+    private Person author;
+
+    @BeforeEach
+    void setUp() {
+        author = new Person();
+        author.setId(AUTHOR_ID);
+        author.setEmail("parent@example.com");
+        author.setName("Parent test");
+    }
+
+    @Test
+    void createTrocShouldSaveTrocLinkedToAuthenticatedAuthor() {
+        TrocRequest request = validRequest();
+
+        PersonDto expectedAuthor = new PersonDto();
+        expectedAuthor.setId(AUTHOR_ID);
+        expectedAuthor.setName("Parent test");
+        expectedAuthor.setEmail("parent@example.com");
+
+        ProductTrocDto expectedDto = new ProductTrocDto();
+        expectedDto.setId(10L);
+        expectedDto.setPostTitle(request.getTitle());
+        expectedDto.setEstimatedPrice(request.getEstimatedPrice());
+        expectedDto.setAuthor(expectedAuthor);
+
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
+        given(trocRepository.save(any(ProductTroc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(ProductTroc.class))).willReturn(expectedDto);
+
+        ProductTrocDto result = productTrocService.createTroc(request, AUTHOR_ID);
+
+        ArgumentCaptor<ProductTroc> trocCaptor = ArgumentCaptor.forClass(ProductTroc.class);
+        verify(trocRepository).save(trocCaptor.capture());
+
+        ProductTroc savedTroc = trocCaptor.getValue();
+        assertThat(savedTroc.getPostTitle()).isEqualTo("Poussette bébé");
+        assertThat(savedTroc.getDescription()).isEqualTo("Poussette bébé en très bon état");
+        assertThat(savedTroc.getCity()).isEqualTo("Lille");
+        assertThat(savedTroc.getCategory()).isEqualTo(ProductCategory.TRANSPORT_BEBE);
+        assertThat(savedTroc.getEstimatedPrice()).isEqualTo(40L);
+        assertThat(savedTroc.getCondition()).isEqualTo("Très bon état");
+        assertThat(savedTroc.getBrand()).isEqualTo("Kiabi");
+        assertThat(savedTroc.getModel()).isEqualTo("Lullaby");
+        assertThat(savedTroc.getDimensions()).isEqualTo("60 x 40 cm");
+        assertThat(savedTroc.getLastCheckDate()).isEqualTo(Date.valueOf("2026-05-21"));
+        assertThat(savedTroc.getSecurityStandard()).isEqualTo("EN 1888");
+        assertThat(savedTroc.getMaxWeightKg()).isEqualTo(15);
+        assertThat(savedTroc.getMinAgeMonths()).isEqualTo(0);
+        assertThat(savedTroc.getMaxAgeMonths()).isEqualTo(36);
+        assertThat(savedTroc.getAuthor()).isSameAs(author);
+        assertThat(savedTroc.getPostDate()).isNotNull();
+        assertThat(result).isSameAs(expectedDto);
+    }
+
+    @Test
+    void createTrocShouldUseDefaultCityWhenCityIsBlank() {
+        TrocRequest request = validRequest();
+        request.setCity(" ");
+        ProductTrocDto expectedDto = new ProductTrocDto();
+
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
+        given(trocRepository.save(any(ProductTroc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(ProductTroc.class))).willReturn(expectedDto);
+
+        productTrocService.createTroc(request, AUTHOR_ID);
+
+        ArgumentCaptor<ProductTroc> trocCaptor = ArgumentCaptor.forClass(ProductTroc.class);
+        verify(trocRepository).save(trocCaptor.capture());
+        assertThat(trocCaptor.getValue().getCity()).isEqualTo("Lille");
+    }
+
+    @Test
+    void createTrocShouldUseDefaultCategoryWhenCategoryIsBlank() {
+        TrocRequest request = validRequest();
+        request.setCategory(" ");
+        ProductTrocDto expectedDto = new ProductTrocDto();
+
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
+        given(trocRepository.save(any(ProductTroc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(ProductTroc.class))).willReturn(expectedDto);
+
+        productTrocService.createTroc(request, AUTHOR_ID);
+
+        ArgumentCaptor<ProductTroc> trocCaptor = ArgumentCaptor.forClass(ProductTroc.class);
+        verify(trocRepository).save(trocCaptor.capture());
+        assertThat(trocCaptor.getValue().getCategory()).isEqualTo(ProductCategory.AUTRES);
+    }
+
+    @Test
+    void createTrocShouldRejectNullRequest() {
+        assertThatThrownBy(() -> productTrocService.createTroc(null, AUTHOR_ID))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Troc request is required");
+    }
+
+    @Test
+    void createTrocShouldRejectUnknownAuthenticatedAuthor() {
+        TrocRequest request = validRequest();
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> productTrocService.createTroc(request, AUTHOR_ID))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Authenticated person not found");
+    }
+
+    private TrocRequest validRequest() {
+        TrocRequest request = new TrocRequest();
+        request.setTitle("Poussette bébé");
+        request.setDescription("Poussette bébé en très bon état");
+        request.setEstimatedPrice(40L);
+        request.setCity("Lille");
+        request.setCategory("Poussettes, porte-bébés et sièges auto");
+        request.setCondition("Très bon état");
+        request.setBrand("Kiabi");
+        request.setModel("Lullaby");
+        request.setDimensions("60 x 40 cm");
+        request.setLastCheckDate(Date.valueOf("2026-05-21"));
+        request.setSecurityStandard("EN 1888");
+        request.setMaxWeightKg(15);
+        request.setMinAgeMonths(0);
+        request.setMaxAgeMonths(36);
+        return request;
+    }
+}

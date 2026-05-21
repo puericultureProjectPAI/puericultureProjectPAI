@@ -34,11 +34,6 @@ public class TrocRequest {
             requiredMode = Schema.RequiredMode.REQUIRED)
     private Long estimatedPrice;
 
-    @Schema(
-            description = "Optional image reference or URL provided by the frontend.",
-            example = "https://example.com/image.jpg")
-    private String imageReference;
-
     @Schema(description = "City where the product is located.", example = "Lille")
     private String city;
 
