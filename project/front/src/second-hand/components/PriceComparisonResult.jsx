@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router";
 import ProductCard from "./ProductCard";
+import { useNavigate } from "react-router-dom";
 
 const PriceComparisonResult = ({ product, comparison, status }) => {
   const navigate = useNavigate();
