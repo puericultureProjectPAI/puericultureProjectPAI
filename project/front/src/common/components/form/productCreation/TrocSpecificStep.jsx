@@ -24,7 +24,7 @@ export default function TrocSpecificStep() {
           min="0"
           name="estimatedPrice"
           placeholder="0,00"
-          step="1"
+          step="0.01"
           type="number"
         />
         <span className="absolute right-3 top-2 text-sm text-[#080036]">€</span>
