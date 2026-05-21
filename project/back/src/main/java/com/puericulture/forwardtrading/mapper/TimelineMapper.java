@@ -11,15 +11,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface TimelineMapper {
 
-    @Mapping(target = "id", expression = "java(\"t\" + period.getId())")
+    @Mapping(target = "id", source = "period.id")
     @Mapping(target = "products", source = "events")
     TimelinePeriodDto toTimelinePeriodDto(TimelinePeriods period, List<TimelineEvents> events);
 
     @Mapping(target = "name", source = "articleName")
-    @Mapping(
-            target = "price",
-            expression =
-                    "java(event.getArticlePrice() != null ? event.getArticlePrice().toPlainString() + \"€\" : \"0€\")")
+    @Mapping(target = "price", source = "articlePrice")
     @Mapping(target = "tag", source = "articleTag")
     TimelineArticleDto toProductDto(TimelineEvents event);
 }
