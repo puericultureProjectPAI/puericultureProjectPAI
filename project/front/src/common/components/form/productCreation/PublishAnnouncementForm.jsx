@@ -10,7 +10,7 @@ import TrocSpecificStep from "./TrocSpecificStep.jsx";
 
 const initialValues = {
   mode: "TROC",
-  imageReference: "",
+  images: [],
   title: "",
   description: "",
   category: "",
@@ -29,7 +29,7 @@ const validationSchemas = {
     mode: Yup.string().oneOf(["TROC"]).required(),
   }),
   2: Yup.object({
-    imageReference: Yup.string().required("Une image est obligatoire"),
+    images: Yup.array().min(1, "Au moins une image est obligatoire"),
     title: Yup.string().required("Le nom de l'article est obligatoire"),
     description: Yup.string().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
@@ -56,7 +56,7 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           title: values.title,
           description: values.description,
           estimatedPrice: Number(values.estimatedPrice),
-          imageReference: values.imageReference,
+          images: values.images,
           city: values.city,
           category: values.category,
         };
@@ -69,7 +69,7 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         helpers.setSubmitting(false);
       }}
     >
-      {({ isSubmitting, setFieldValue, setTouched, validateForm, values }) => (
+      {({ isSubmitting, setFieldValue, setTouched, validateForm }) => (
         <PublicationMobileShell
           currentStep={step}
           error={error}
@@ -77,12 +77,7 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         >
           <Form>
             {step === 1 && <ModeSelectionStep setFieldValue={setFieldValue} />}
-            {step === 2 && (
-              <RequiredProductInfoStep
-                setFieldValue={setFieldValue}
-                values={values}
-              />
-            )}
+            {step === 2 && <RequiredProductInfoStep />}
             {step === 3 && <OptionalProductInfoStep />}
             {step === 4 && <TrocSpecificStep />}
 
