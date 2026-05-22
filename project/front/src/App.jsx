@@ -37,7 +37,7 @@ export default function App() {
         {/* Public Route */}
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
-        <Route path="/forward" element={<ForwardTradingView />} />
+
         {/* Security: Protected Shell*/}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
@@ -55,6 +55,7 @@ export default function App() {
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
+              <Route path="/forward" element={<ForwardTradingView />} />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
