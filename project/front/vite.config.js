@@ -1,11 +1,8 @@
-/* global process */
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-
+export default defineConfig(() => {
   return {
     plugins: [
       react(),
@@ -56,16 +53,17 @@ export default defineConfig(({ mode }) => {
           globPatterns: ["**/*.{js,css,html,ico,png,svg}"], // Cache all front-end assets
           cleanupOutdatedCaches: true,
           sourcemap: true,
+
+          // CRITICAL: Never intercept /api calls — let them reach the network (Vercel proxy → Render)
+          navigateFallbackDenylist: [/^\/api\/.*/],
+          runtimeCaching: [
+            {
+              urlPattern: /^\/api\/.*/,
+              handler: "NetworkOnly",
+            },
+          ],
         },
       }),
     ],
-    server: {
-      proxy: {
-        "/api": {
-          target: env.VITE_API_URL || "/api",
-          changeOrigin: true,
-        },
-      },
-    },
   };
 });
