@@ -12,7 +12,6 @@ import com.puericulture.config.errormanager.exception.NotFoundException;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,16 +45,14 @@ public class ProductImageService {
     }
 
     @Transactional
-    public ProductImageDto addImage(String imageUrl, Long productId) {
+    public ProductImageDto addImage(String imageUrl, Long productId, UUID authorId) {
         Product product =
                 productRepository
                         .findById(productId)
                         .orElseThrow(
                                 () -> new NotFoundException("Produit introuvable : " + productId));
 
-        String principalId =
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        if (!product.getAuthor().getId().equals(UUID.fromString(principalId))) {
+        if (!product.getAuthor().getId().equals(authorId)) {
             throw new ForbiddenException(
                     "Vous n'êtes pas autorisé à modifier les images de ce produit.");
         }

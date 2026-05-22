@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -76,8 +78,12 @@ public class ProductImageController {
             })
     @PostMapping
     public ResponseEntity<ProductImageDto> addImage(
-            @RequestParam("imageUrl") String imageUrl, @RequestParam("productId") Long productId) {
-        return ResponseEntity.ok(productImageService.addImage(imageUrl, productId));
+            @AuthenticationPrincipal String authenticatedPersonId,
+            @RequestParam("imageUrl") String imageUrl,
+            @RequestParam("productId") Long productId) {
+        return ResponseEntity.ok(
+                productImageService.addImage(
+                        imageUrl, productId, UUID.fromString(authenticatedPersonId)));
     }
 
     @Operation(

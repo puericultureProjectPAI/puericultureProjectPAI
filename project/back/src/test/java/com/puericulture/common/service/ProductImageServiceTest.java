@@ -19,16 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class ProductImageServiceTest {
@@ -53,17 +49,6 @@ class ProductImageServiceTest {
         Person author = mock(Person.class);
         when(author.getId()).thenReturn(OWNER_ID);
         when(product.getAuthor()).thenReturn(author);
-
-        Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(OWNER_ID.toString());
-        SecurityContext ctx = mock(SecurityContext.class);
-        when(ctx.getAuthentication()).thenReturn(auth);
-        SecurityContextHolder.setContext(ctx);
-    }
-
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -101,7 +86,7 @@ class ProductImageServiceTest {
         when(productImageRepository.save(any(ProductImage.class))).thenReturn(saved);
         when(productImageMapper.toDto(saved)).thenReturn(dto);
 
-        ProductImageDto result = service.addImage("https://example.com/new.jpg", 1L);
+        ProductImageDto result = service.addImage("https://example.com/new.jpg", 1L, OWNER_ID);
 
         assertThat(result.getImageUrl()).isEqualTo("https://example.com/new.jpg");
         verify(productImageRepository).save(any(ProductImage.class));
@@ -114,7 +99,10 @@ class ProductImageServiceTest {
         when(product.getAuthor()).thenReturn(otherAuthor);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        assertThatThrownBy(() -> service.addImage("https://example.com/photo.jpg", 1L))
+        assertThatThrownBy(
+                        () ->
+                                service.addImage(
+                                        "https://example.com/photo.jpg", 1L, UUID.randomUUID()))
                 .isInstanceOf(ForbiddenException.class);
     }
 
@@ -122,7 +110,7 @@ class ProductImageServiceTest {
     void addImage_throwsNotFoundException_whenProductNotFound() {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.addImage("https://example.com/photo.jpg", 99L))
+        assertThatThrownBy(() -> service.addImage("https://example.com/photo.jpg", 99L, OWNER_ID))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -133,7 +121,7 @@ class ProductImageServiceTest {
         }
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        assertThatThrownBy(() -> service.addImage("https://example.com/extra.jpg", 1L))
+        assertThatThrownBy(() -> service.addImage("https://example.com/extra.jpg", 1L, OWNER_ID))
                 .isInstanceOf(BadRequestException.class);
     }
 
