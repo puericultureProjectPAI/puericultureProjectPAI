@@ -3,6 +3,7 @@ package com.puericulture.secondhand.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+/** */
 @Entity
 @Table(name = "external_products")
 @Getter
