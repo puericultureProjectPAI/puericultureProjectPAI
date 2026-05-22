@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.puericulture.leasing.dto.LeasingProductSummary;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
+import com.puericulture.leasing.mapper.LeasingProductMapper;
 import com.puericulture.leasing.repository.LeasingProductRepository;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -18,56 +19,51 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LeasingProductServiceTest {
 
     @Mock private LeasingProductRepository leasingProductRepository;
-
+    @Mock private LeasingProductMapper leasingProductMapper;
     @InjectMocks private LeasingProductService leasingProductService;
 
     @Mock private LeasingProductSummary mockSummary;
 
     @Test
     void findAll_returnsMappedDto_whenProductIsAvailable() {
-        when(mockSummary.getId()).thenReturn(1L);
-        when(mockSummary.getPostTitle()).thenReturn("Poussette Yoyo");
-        when(mockSummary.getCategory()).thenReturn("Poussette");
-        when(mockSummary.getCity()).thenReturn("Paris");
-        when(mockSummary.getPricePerDay()).thenReturn(5L);
-        when(mockSummary.getPricePerMonth()).thenReturn(90L);
-        when(mockSummary.getCondition()).thenReturn("Très bon état");
-        when(mockSummary.getFirstImageUrl()).thenReturn("https://example.com/img.jpg");
-        when(mockSummary.getAvailable()).thenReturn(true);
+        LeasingProductSummaryDto dto =
+                LeasingProductSummaryDto.builder()
+                        .id(1L)
+                        .postTitle("Poussette Yoyo")
+                        .category("Poussette")
+                        .city("Paris")
+                        .pricePerDay(5L)
+                        .pricePerMonth(90L)
+                        .condition("Très bon état")
+                        .firstImageUrl("https://example.com/img.jpg")
+                        .available(true)
+                        .build();
         when(leasingProductRepository.findAllWithAvailability()).thenReturn(List.of(mockSummary));
+        when(leasingProductMapper.toDto(mockSummary)).thenReturn(dto);
 
         List<LeasingProductSummaryDto> result = leasingProductService.findAll();
 
         verify(leasingProductRepository).findAllWithAvailability();
+        verify(leasingProductMapper).toDto(mockSummary);
         assertThat(result).hasSize(1);
-        LeasingProductSummaryDto dto = result.get(0);
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getPostTitle()).isEqualTo("Poussette Yoyo");
-        assertThat(dto.getCategory()).isEqualTo("Poussette");
-        assertThat(dto.getCity()).isEqualTo("Paris");
-        assertThat(dto.getPricePerDay()).isEqualTo(5L);
-        assertThat(dto.getPricePerMonth()).isEqualTo(90L);
-        assertThat(dto.getCondition()).isEqualTo("Très bon état");
-        assertThat(dto.getFirstImageUrl()).isEqualTo("https://example.com/img.jpg");
-        assertThat(dto.isAvailable()).isTrue();
+        assertThat(result.get(0)).isEqualTo(dto);
     }
 
     @Test
-    void findAll_setsAvailableFalse_whenProductIsUnavailable() {
-        when(mockSummary.getId()).thenReturn(6L);
-        when(mockSummary.getPostTitle()).thenReturn("Baignoire bébé ergonomique");
-        when(mockSummary.getCategory()).thenReturn("Bain");
-        when(mockSummary.getCity()).thenReturn("Nantes");
-        when(mockSummary.getPricePerDay()).thenReturn(1L);
-        when(mockSummary.getPricePerMonth()).thenReturn(18L);
-        when(mockSummary.getCondition()).thenReturn("Excellent état");
-        when(mockSummary.getFirstImageUrl()).thenReturn("https://example.com/baignoire.jpg");
-        when(mockSummary.getAvailable()).thenReturn(false);
+    void findAll_returnsMappedDto_whenProductIsUnavailable() {
+        LeasingProductSummaryDto dto =
+                LeasingProductSummaryDto.builder()
+                        .id(6L)
+                        .postTitle("Baignoire bébé ergonomique")
+                        .available(false)
+                        .build();
         when(leasingProductRepository.findAllWithAvailability()).thenReturn(List.of(mockSummary));
+        when(leasingProductMapper.toDto(mockSummary)).thenReturn(dto);
 
         List<LeasingProductSummaryDto> result = leasingProductService.findAll();
 
         verify(leasingProductRepository).findAllWithAvailability();
+        verify(leasingProductMapper).toDto(mockSummary);
         assertThat(result).hasSize(1);
         assertThat(result.get(0).isAvailable()).isFalse();
     }

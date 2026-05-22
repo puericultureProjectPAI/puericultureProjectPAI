@@ -1,7 +1,7 @@
 package com.puericulture.leasing.service;
 
-import com.puericulture.leasing.dto.LeasingProductSummary;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
+import com.puericulture.leasing.mapper.LeasingProductMapper;
 import com.puericulture.leasing.repository.LeasingProductRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,25 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class LeasingProductService {
 
     private final LeasingProductRepository leasingProductRepository;
+    private final LeasingProductMapper leasingProductMapper;
 
     @Transactional(readOnly = true)
     public List<LeasingProductSummaryDto> findAll() {
         return leasingProductRepository.findAllWithAvailability().stream()
-                .map(this::toDto)
+                .map(leasingProductMapper::toDto)
                 .toList();
-    }
-
-    private LeasingProductSummaryDto toDto(LeasingProductSummary s) {
-        return LeasingProductSummaryDto.builder()
-                .id(s.getId())
-                .postTitle(s.getPostTitle())
-                .category(s.getCategory())
-                .city(s.getCity())
-                .pricePerDay(s.getPricePerDay())
-                .pricePerMonth(s.getPricePerMonth())
-                .condition(s.getCondition())
-                .firstImageUrl(s.getFirstImageUrl())
-                .available(Boolean.TRUE.equals(s.getAvailable()))
-                .build();
     }
 }
