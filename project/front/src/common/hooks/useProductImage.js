@@ -1,9 +1,5 @@
-import { useState } from "react";
-import {
-  uploadImageToCloudinary,
-  addProductImage,
-  deleteProductImage,
-} from "../utils/productImageApi";
+import { useImageManager } from "./useImageManager";
+import { addProductImage, deleteProductImage } from "../utils/productImageApi";
 import { apiClient } from "../utils/apiClient";
 
 const isLocalUrl = (url) =>
@@ -11,14 +7,17 @@ const isLocalUrl = (url) =>
 
 /**
  * Hook centralisant toutes les opérations sur les images d'un produit :
- *  - upload vers Cloudinary
+ *  - upload vers Cloudinary (via useImageManager)
  *  - sauvegarde de l'URL en base via productImageApi
  *  - suppression (base + Cloudinary)
  */
 export const useProductImage = () => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState(null);
+  const {
+    uploadImage: uploadToCloudinary,
+    isUploading,
+    isDeleting,
+    error,
+  } = useImageManager();
 
   /**
    * Uploade un fichier vers Cloudinary et retourne son URL.
@@ -28,20 +27,11 @@ export const useProductImage = () => {
    * @returns {Promise<string|null>}
    */
   const uploadImage = async (rawFile, productId) => {
-    setIsUploading(true);
-    setError(null);
-    try {
-      const url = await uploadImageToCloudinary(rawFile);
-      if (productId) {
-        await addProductImage(productId, url);
-      }
-      return url;
-    } catch (err) {
-      setError(err.message);
-      return null;
-    } finally {
-      setIsUploading(false);
+    const url = await uploadToCloudinary(rawFile);
+    if (url && productId) {
+      await addProductImage(productId, url);
     }
+    return url;
   };
 
   /**
@@ -51,8 +41,6 @@ export const useProductImage = () => {
    * @returns {Promise<boolean>}
    */
   const deleteImage = async (imageId, imageUrl) => {
-    setIsDeleting(true);
-    setError(null);
     try {
       await deleteProductImage(imageId);
       if (imageUrl && !isLocalUrl(imageUrl)) {
@@ -61,11 +49,8 @@ export const useProductImage = () => {
         });
       }
       return true;
-    } catch (err) {
-      setError(err.message);
+    } catch {
       return false;
-    } finally {
-      setIsDeleting(false);
     }
   };
 
