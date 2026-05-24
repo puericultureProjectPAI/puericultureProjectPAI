@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "second_hand_products")
+@Table(name = "second_hand_product")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,9 +17,6 @@ public class SecondHandProduct extends Product {
 
     @Column(name = "new_price")
     private Double newPrice;
-
-    @Column(name = "ean", length = 13)
-    private String ean;
 
     @Column(name = "condition", length = 50)
     private String condition;
