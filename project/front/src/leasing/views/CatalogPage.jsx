@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import {
-  House,
-  Search,
-  CirclePlus,
-  Mail,
-  User,
-  QrCode,
-  Heart,
-} from "lucide-react";
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
@@ -35,19 +26,30 @@ export default function CatalogPage() {
         <span className="text-[14px] font-bold tracking-widest">KIABI</span>
 
         <div className="flex items-center gap-[10px]">
-          <QrCode size={15} strokeWidth={2} />
-          <Heart size={15} strokeWidth={2} />
+          <span className="material-symbols-rounded text-[17px]">
+            qr_code_scanner
+          </span>
+
+          <span className="material-symbols-rounded text-[17px]">favorite</span>
         </div>
       </header>
 
       <section className="px-[8px] pt-[10px]">
-        <h2 className="text-[11px] font-bold leading-none">
-          Articles disponibles à la location
-        </h2>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-[11px] font-bold leading-none">
+              Articles disponibles à la location
+            </h2>
 
-        <p className="mt-[4px] text-[9px] leading-none text-[#7C7A8A]">
-          {loading ? "…" : `${products.length} articles`}
-        </p>
+            <p className="mt-[4px] text-[9px] leading-none text-[#7C7A8A]">
+              {loading ? "…" : `${products.length} articles`}
+            </p>
+          </div>
+
+          <span className="material-symbols-rounded text-[18px]">
+            filter_alt
+          </span>
+        </div>
       </section>
 
       <section className="grid grid-cols-2 gap-x-[10px] gap-y-[8px] px-[14px] pt-[12px] pb-[70px]">
@@ -111,26 +113,25 @@ export default function CatalogPage() {
 
       <nav className="fixed bottom-0 left-1/2 flex h-[42px] w-[260px] -translate-x-1/2 items-center justify-around border-t border-[#E6E6E6] bg-white">
         {[
-          { icon: House, label: "Accueil", active: true },
-          { icon: Search, label: "Rechercher" },
-          { icon: CirclePlus, label: "Publier" },
-          { icon: Mail, label: "Messages" },
-          { icon: User, label: "Profil" },
-        ].map((item) => {
-          const Icon = item.icon;
+          { icon: "home", label: "Accueil", active: true },
+          { icon: "search", label: "Rechercher" },
+          { icon: "add_circle", label: "Publier" },
+          { icon: "mail", label: "Messages" },
+          { icon: "person", label: "Profil" },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className={`flex flex-col items-center justify-center gap-[2px] text-[7px] leading-none ${
+              item.active ? "text-[#040037]" : "text-[#7C7A8A]"
+            }`}
+          >
+            <span className="material-symbols-rounded text-[16px]">
+              {item.icon}
+            </span>
 
-          return (
-            <div
-              key={item.label}
-              className={`flex flex-col items-center justify-center gap-[2px] text-[7px] leading-none ${
-                item.active ? "text-[#040037]" : "text-[#7C7A8A]"
-              }`}
-            >
-              <Icon size={15} strokeWidth={1.8} />
-              <span>{item.label}</span>
-            </div>
-          );
-        })}
+            <span>{item.label}</span>
+          </div>
+        ))}
       </nav>
     </main>
   );
