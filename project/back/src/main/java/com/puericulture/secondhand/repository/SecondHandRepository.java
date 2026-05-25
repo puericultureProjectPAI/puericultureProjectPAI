@@ -8,11 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface SecondHandRepository extends JpaRepository<SecondHand, Long> {
 
-    @Query("SELECT AVG(s.price) FROM SecondHand s " +
-           "WHERE s.category = :category")
+    @Query("SELECT AVG(s.price) FROM SecondHand s " + "WHERE s.category = :category")
     Double findAveragePriceByCategory(@Param("category") ProductCategory category);
 
-    @Query("SELECT COUNT(s) FROM SecondHand s " +
-           "WHERE s.category = :category")
+    @Query("SELECT COUNT(s) FROM SecondHand s " + "WHERE s.category = :category")
     Long countActiveListingsByCategory(@Param("category") ProductCategory category);
 }
