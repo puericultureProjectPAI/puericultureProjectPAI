@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "product_second_hand")
+@Table(name = "product_sell")
 @PrimaryKeyJoinColumn(name = "product_id", referencedColumnName = "id")
 @Getter
 @Setter

@@ -7,7 +7,7 @@ import com.puericulture.secondhand.dto.PriceComparisonDTO;
 import com.puericulture.secondhand.dto.ProductResponseDTO;
 import com.puericulture.secondhand.entity.ExternalProduct;
 import com.puericulture.secondhand.repository.ExternalProductRepository;
-import com.puericulture.secondhand.repository.SecondHandProductRepository;
+import com.puericulture.secondhand.repository.SecondHandRepository;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductService {
 
-    private final SecondHandProductRepository secondHandProductRepository;
+    private final SecondHandRepository secondHandRepository;
     private final ExternalProductRepository externalProductRepository;
     private final ExternalProductMapper externalProductMapper;
 
     public ProductService(
-            SecondHandProductRepository secondHandProductRepository,
+            SecondHandRepository secondHandRepository,
             ExternalProductRepository externalProductRepository,
             ExternalProductMapper externalProductMapper) {
-        this.secondHandProductRepository = secondHandProductRepository;
+        this.secondHandRepository = secondHandRepository;
         this.externalProductRepository = externalProductRepository;
         this.externalProductMapper = externalProductMapper;
     }
@@ -57,7 +57,7 @@ public class ProductService {
             return dto;
         }
 
-        Long count = secondHandProductRepository.countActiveListingsByCategory(productCategory);
+        Long count = secondHandRepository.countActiveListingsByCategory(productCategory);
         if (count == 0) {
             PriceComparisonDTO dto = new PriceComparisonDTO();
             dto.setCategory(category);
@@ -65,7 +65,7 @@ public class ProductService {
             return dto;
         }
 
-        Double rawAverage = secondHandProductRepository.findAveragePriceByCategory(productCategory);
+        Double rawAverage = secondHandRepository.findAveragePriceByCategory(productCategory);
         Double averageOccasionPrice = Math.round(rawAverage * 100.0) / 100.0;
 
         Double savingsAmount = null;
