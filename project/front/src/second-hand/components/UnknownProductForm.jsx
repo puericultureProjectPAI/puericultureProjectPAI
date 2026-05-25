@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useAuth } from "../../common/security/AuthContext";
 
 const categories = [
   "Vêtements (filles & garçons)",
@@ -15,6 +16,8 @@ const categories = [
 ];
 
 export default function UnknownProductForm({ ean, onSubmitSuccess }) {
+  const { session } = useAuth();
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -34,36 +37,69 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
     onSubmit: async (values, { setSubmitting, setStatus }) => {
       setStatus(null);
 
+      if (!session?.access_token) {
+        setStatus({
+          error: " Session non disponible. Veuillez vous reconnecter.",
+        });
+        setSubmitting(false);
+        return;
+      }
+
       try {
-        const res = await fetch("/api/v1/products", {
+        const payload = {
+          ean,
+          name: values.name,
+          category: values.category,
+          price: Number(values.price),
+        };
+
+        // console.log(" PAYLOAD ENVOYÉ :", payload);
+        //console.log(" TOKEN UTILISÉ :", session.access_token.substring(0, 20) + "...");
+
+        const res = await fetch("http://localhost:8080/api/api/v1/products", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({
-            ean,
-            name: values.name,
-            category: values.category,
-            price: Number(values.price),
-            brand: null,
-            imageUrl: null,
-          }),
+          body: JSON.stringify(payload),
         });
 
-        if (res.status === 201) {
-          setStatus({ success: "Produit ajouté avec succès !" });
+        // console.log(" STATUS :", res.status);
 
+        const text = await res.text();
+        // console.log(" RAW RESPONSE :", text);
+
+        //  SUCCESS (201 Created)
+        if (res.status === 201) {
+          setStatus({ success: " Produit ajouté avec succès !" });
           setTimeout(() => {
             onSubmitSuccess?.();
           }, 600);
-        } else {
-          setStatus({
-            error: "Erreur lors de la création du produit.",
-          });
+          return;
         }
-      } catch {
+
+        // 403 (Token manquant ou invalide)
+        if (res.status === 403) {
+          setStatus({
+            error: " Accès refusé (403). Token invalide ou expiré.",
+          });
+          return;
+        }
+
+        //  Autres erreurs
+        let errorMsg = `Erreur backend (${res.status})`;
+        try {
+          const errorData = JSON.parse(text);
+          errorMsg = errorData.message || errorMsg;
+        } catch {
+          // Response is not JSON, use default message
+        }
+        setStatus({ error: ` ${errorMsg}` });
+      } catch (err) {
+        console.error(" Erreur réseau :", err);
         setStatus({
-          error: "Erreur réseau.",
+          error: "Erreur réseau / serveur injoignable",
         });
       } finally {
         setSubmitting(false);
@@ -79,6 +115,7 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
         <input
           name="name"
           onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
           value={formik.values.name}
           className="w-full border border-gray-200 rounded-lg p-2"
         />
@@ -93,6 +130,7 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
         <select
           name="category"
           onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
           value={formik.values.category}
           className="w-full border border-gray-200 rounded-lg p-2"
         >
@@ -103,7 +141,6 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
             </option>
           ))}
         </select>
-
         {formik.errors.category && formik.touched.category && (
           <p className="text-red-500 text-xs mt-1">{formik.errors.category}</p>
         )}
@@ -117,16 +154,16 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
           step="0.01"
           name="price"
           onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
           value={formik.values.price}
           className="w-full border border-gray-200 rounded-lg p-2"
         />
-
         {formik.errors.price && formik.touched.price && (
           <p className="text-red-500 text-xs mt-1">{formik.errors.price}</p>
         )}
       </div>
 
-      {/* EAN */}
+      {/* EAN (read-only) */}
       <div>
         <label className="text-sm text-gray-600">EAN</label>
         <input
@@ -136,22 +173,26 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
         />
       </div>
 
-      {/* STATUS */}
+      {/* STATUS MESSAGES */}
       {formik.status?.error && (
-        <p className="text-red-500 text-sm">{formik.status.error}</p>
+        <p className="text-red-600 text-sm mt-2 p-2 bg-red-50 rounded">
+          {formik.status.error}
+        </p>
       )}
 
       {formik.status?.success && (
-        <p className="text-green-600 text-sm">{formik.status.success}</p>
+        <p className="text-green-600 text-sm mt-2 p-2 bg-green-50 rounded">
+          {formik.status.success}
+        </p>
       )}
 
-      {/* SUBMIT */}
+      {/* SUBMIT BUTTON */}
       <button
         type="submit"
         disabled={formik.isSubmitting}
-        className="bg-blue-600 text-white rounded-lg p-2 text-sm"
+        className="bg-blue-600 text-white rounded-lg p-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {formik.isSubmitting ? "Envoi..." : "Créer le produit"}
+        {formik.isSubmitting ? " Envoi..." : "Créer le produit"}
       </button>
     </form>
   );
