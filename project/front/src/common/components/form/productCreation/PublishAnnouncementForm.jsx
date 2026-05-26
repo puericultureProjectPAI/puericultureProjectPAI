@@ -7,6 +7,7 @@ import PublicationFormActions from "./PublicationFormActions.jsx";
 import PublicationMobileShell from "./PublicationMobileShell.jsx";
 import RequiredProductInfoStep from "./RequiredProductInfoStep.jsx";
 import TrocSpecificStep from "./TrocSpecificStep.jsx";
+import SecondHandSpecificStep from "../../../../second-hand/components/SecondHandSpecificStep.jsx";
 
 const initialValues = {
   mode: "TROC",
@@ -22,11 +23,12 @@ const initialValues = {
   radius: "",
   wantedArticle: "",
   estimatedPrice: "",
+  price: "",
 };
 
 const validationSchemas = {
   1: Yup.object({
-    mode: Yup.string().oneOf(["TROC"]).required(),
+    mode: Yup.string().oneOf(["TROC", "SECOND_HAND"]).required(),
   }),
   2: Yup.object({
     imageReference: Yup.string().required("Une image est obligatoire"),
@@ -40,8 +42,13 @@ const validationSchemas = {
     estimatedPrice: Yup.number()
       .typeError("Le prix estimé doit être un nombre")
       .min(0, "Le prix estimé doit être positif")
-      .required("Le prix estimé est obligatoire"),
+      .when("mode", {
+        is: "TROC",
+        then: (schema) => schema.required("Le prix estimé est obligatoire"),
+        otherwise: (schema) => schema.optional(),
+      }),
   }),
+  5: Yup.object({}),
 };
 
 export default function PublishAnnouncementForm({ error, onSubmit, success }) {
@@ -56,12 +63,14 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           title: values.title,
           description: values.description,
           estimatedPrice: Number(values.estimatedPrice),
+          price: values.price ? Number(values.price) : 0,
           imageReference: values.imageReference,
           city: values.city,
           category: values.category,
+          condition: values.condition,
         };
 
-        const isCreated = await onSubmit(payload);
+        const isCreated = await onSubmit(values.mode, payload);
         if (isCreated) {
           helpers.resetForm();
           setStep(1);
@@ -84,14 +93,17 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
               />
             )}
             {step === 3 && <OptionalProductInfoStep />}
-            {step === 4 && <TrocSpecificStep />}
-
+            {step === 4 && values.mode === "TROC" && <TrocSpecificStep />}
+            {step === 4 && values.mode === "SECOND_HAND" && (
+              <SecondHandSpecificStep />
+            )}
             <PublicationFormActions
               isSubmitting={isSubmitting}
               setStep={setStep}
               setTouched={setTouched}
               step={step}
               validateForm={validateForm}
+              values={values}
             />
           </Form>
         </PublicationMobileShell>
