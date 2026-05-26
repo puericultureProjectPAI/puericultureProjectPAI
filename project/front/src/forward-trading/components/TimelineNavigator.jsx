@@ -1,54 +1,74 @@
 import { useState } from "react";
 
 export default function TimelineNavigator({
-  periods,
+  periods = [],
   activePeriodId,
   onSelectPeriod,
 }) {
   const itemsPerPage = 3;
 
-  const activeIdx = periods.findIndex((p) => p.id === activePeriodId);
-  const safeActiveIdx = activeIdx !== -1 ? activeIdx : 0;
+  const totalItems = periods?.length || 0;
+  const maxPage = totalItems > 0 ? Math.ceil(totalItems / itemsPerPage) - 1 : 0;
 
+  const activeIdx = periods
+    ? periods.findIndex((p) => p.id === activePeriodId)
+    : -1;
+  const safeActiveIdx = activeIdx !== -1 ? activeIdx : 0;
   const targetPage = Math.floor(safeActiveIdx / itemsPerPage);
 
-  let idealStartIndex = targetPage * itemsPerPage;
-  if (idealStartIndex + itemsPerPage > periods.length) {
-    idealStartIndex = Math.max(0, periods.length - itemsPerPage);
+  const [currentPage, setCurrentPage] = useState(targetPage);
+  const [prevTargetPage, setPrevTargetPage] = useState(targetPage);
+
+  if (targetPage !== prevTargetPage) {
+    setCurrentPage(targetPage);
+    setPrevTargetPage(targetPage);
   }
 
-  const [manualOffset, setManualOffset] = useState(0);
-
-  const currentIndex = Math.max(
-    0,
-    Math.min(idealStartIndex + manualOffset, periods.length - itemsPerPage),
-  );
-
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setManualOffset((prev) => prev - 1);
+    if (currentPage > 0 && totalItems > 0) {
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+
+      const targetIdx = newPage * itemsPerPage;
+      if (periods[targetIdx]) {
+        onSelectPeriod(periods[targetIdx].id);
+      }
     }
   };
 
   const handleNext = () => {
-    if (currentIndex + itemsPerPage < periods.length) {
-      setManualOffset((prev) => prev + 1);
+    if (currentPage < maxPage && totalItems > 0) {
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+
+      const targetIdx = newPage * itemsPerPage;
+      if (periods[targetIdx]) {
+        onSelectPeriod(periods[targetIdx].id);
+      }
     }
   };
 
-  const visiblePeriods = periods.slice(
-    currentIndex,
-    currentIndex + itemsPerPage,
-  );
+  const currentIndex = currentPage * itemsPerPage;
+  const visiblePeriods = periods
+    ? periods.slice(currentIndex, currentIndex + itemsPerPage)
+    : [];
+
+  if (totalItems === 0) {
+    return (
+      <div className="text-center text-xs text-gray-400 my-4">
+        Loading timeline...
+      </div>
+    );
+  }
 
   return (
     <div className="relative px-12 mb-10 flex items-center justify-between gap-2">
       <button
         type="button"
         onClick={handlePrev}
-        disabled={currentIndex === 0}
+        disabled={currentPage === 0}
         className={`w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100 text-gray-600 font-bold transition-all ${
-          currentIndex === 0
+          currentPage === 0
             ? "opacity-30 cursor-not-allowed"
             : "hover:bg-gray-50 active:scale-95"
         }`}
@@ -66,10 +86,7 @@ export default function TimelineNavigator({
               <button
                 key={item.id}
                 type="button"
-                onClick={() => {
-                  setManualOffset(0);
-                  onSelectPeriod(item.id);
-                }}
+                onClick={() => onSelectPeriod(item.id)}
                 className="flex flex-col items-center gap-2 min-w-[60px]"
               >
                 <div
@@ -99,13 +116,12 @@ export default function TimelineNavigator({
         </div>
       </div>
 
-      {/* BOUTON SUIVANT */}
       <button
         type="button"
         onClick={handleNext}
-        disabled={currentIndex + itemsPerPage >= periods.length}
+        disabled={currentPage === maxPage}
         className={`w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100 text-gray-600 font-bold transition-all ${
-          currentIndex + itemsPerPage >= periods.length
+          currentPage === maxPage
             ? "opacity-30 cursor-not-allowed"
             : "hover:bg-gray-50 active:scale-95"
         }`}
