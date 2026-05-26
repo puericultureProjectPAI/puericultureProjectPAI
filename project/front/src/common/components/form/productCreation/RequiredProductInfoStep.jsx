@@ -1,22 +1,29 @@
 import { Field } from "formik";
 import { useRef } from "react";
 import { PRODUCT_CATEGORIES } from "../../../../troc/constants/publicationOptions.js";
+import { useImageManager } from "../../../hooks/useImageManager.jsx";
 import FieldError from "../FieldError.jsx";
 
 export default function RequiredProductInfoStep({ setFieldValue, values }) {
   const fileInputRef = useRef(null);
+  const { uploadImage, isUploading, error: uploadError } = useImageManager();
+
+  const handleFileChange = async (event) => {
+    const [file] = event.target.files;
+    if (file) {
+      const url = await uploadImage(file);
+      if (url) {
+        setFieldValue("imageReference", url);
+      }
+    }
+  };
 
   return (
     <div>
       <input
         accept="image/png,image/jpeg"
         className="hidden"
-        onChange={(event) => {
-          const [file] = event.target.files;
-          if (file) {
-            setFieldValue("imageReference", file.name);
-          }
-        }}
+        onChange={handleFileChange}
         ref={fileInputRef}
         type="file"
       />
@@ -28,17 +35,25 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
         className="mb-4 flex min-h-20 w-full items-center rounded-xl border border-[#9b99b5] bg-[#f5f4fb] px-4 text-left"
         onClick={() => fileInputRef.current?.click()}
         type="button"
+        disabled={isUploading}
       >
         <span className="flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-dashed border-[#9b99b5] bg-white text-[#080036]">
           <span className="text-lg">＋</span>
-          <span className="text-sm font-semibold">Ajouter</span>
+          <span className="text-sm font-semibold">
+            {isUploading ? "Upload..." : "Ajouter"}
+          </span>
         </span>
         {values.imageReference && (
-          <span className="ml-4 text-xs font-medium text-[#5f5b78]">
-            {values.imageReference}
-          </span>
+          <img
+            src={values.imageReference}
+            alt="aperçu"
+            className="ml-4 h-12 w-12 rounded-lg object-cover"
+          />
         )}
       </button>
+      {uploadError && (
+        <p className="text-xs text-red-500 mb-2">{uploadError}</p>
+      )}
       <FieldError name="imageReference" />
 
       <label
@@ -66,7 +81,7 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
         className="mb-1 min-h-16 w-full rounded-md border border-[#b8b6c7] px-3 py-2 text-sm outline-none focus:border-[#080036]"
         id="description"
         name="description"
-        placeholder="Décrivez l’article..."
+        placeholder="Décrivez l'article..."
       />
       <FieldError name="description" />
 
