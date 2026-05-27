@@ -4,9 +4,11 @@ import com.puericulture.troc.entity.ExchangeReport;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 @Service
 public class NotificationService {
@@ -42,7 +44,7 @@ public class NotificationService {
             helper.setSubject(subject);
             helper.setText(body, true);
             mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException | MailException e) {
             // log only — a notification failure must not block the business flow
         }
     }
@@ -55,7 +57,7 @@ public class NotificationService {
                 + report.getType()
                 + "</p>"
                 + "<p><strong>Description :</strong> "
-                + report.getDescription()
+                + HtmlUtils.htmlEscape(report.getDescription())
                 + "</p>"
                 + "<p>Connectez-vous au back-office pour traiter ce signalement.</p>";
     }
@@ -75,7 +77,7 @@ public class NotificationService {
                 + "</p>"
                 + (report.getModerationComment() != null
                         ? "<p><strong>Commentaire :</strong> "
-                                + report.getModerationComment()
+                                + HtmlUtils.htmlEscape(report.getModerationComment())
                                 + "</p>"
                         : "");
     }
