@@ -1,6 +1,9 @@
 package com.puericulture.common.entity;
 
+import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import jakarta.persistence.*;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,4 +54,9 @@ public class Person {
      * point to THIS Person entity, not the native Supabase 'users' table. * @OneToMany(mappedBy =
      * "author") private List<Product> products;
      */
+    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
+    private List<ChildrenEntity> children;
+
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
 }
