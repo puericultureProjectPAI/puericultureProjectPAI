@@ -2,6 +2,7 @@ import { useState } from "react";
 import kiabiLogo from "../../../src/assets/Logo_Kiabi_(2025).svg.png";
 import eyeIcon from "../../../src/assets/eye.svg";
 import eyeOffIcon from "../../../src/assets/eye-off.svg";
+import { NavLink } from "react-router";
 
 export default function LoginForm({
   email,
@@ -88,14 +89,14 @@ export default function LoginForm({
             {status === "Logging in..." ? "Connexion..." : "Me connecter"}
           </button>
 
-          <div className="text-center mt-3">
+          <NavLink className="text-center mt-3" to="../register">
             <button
               type="button"
               className="text-xs text-gray-400 font-medium cursor-pointer hover:underline focus:outline-none"
             >
               Créer mon compte
             </button>
-          </div>
+          </NavLink>
         </form>
       </div>
     </div>
