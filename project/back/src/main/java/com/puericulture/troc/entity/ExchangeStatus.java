@@ -4,5 +4,6 @@ public enum ExchangeStatus {
     PENDING,
     ACCEPTED,
     CONFIRMED,
-    REFUSED
+    REFUSED,
+    BLOCKED
 }
