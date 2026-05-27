@@ -21,7 +21,10 @@ public class ExchangeReport {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "exchange_id", nullable = false)
+    @JoinColumn(
+            name = "exchange_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_report_exchange"))
     private Exchange exchange;
 
     @ManyToOne
@@ -29,22 +32,22 @@ public class ExchangeReport {
     private Person reportedBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private ReportType type;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private ReportStatus status = ReportStatus.OPEN;
 
     @ElementCollection
     @CollectionTable(
             name = "exchange_report_attachment_urls",
             schema = "public",
-            joinColumns = @JoinColumn(name = "exchange_report_id"))
-    @Column(name = "attachment_url", columnDefinition = "TEXT")
+            joinColumns = @JoinColumn(name = "exchange_report_id", nullable = false))
+    @Column(name = "attachment_url", columnDefinition = "TEXT", nullable = false)
     private List<String> attachmentUrls = new ArrayList<>();
 
     @Column(name = "moderation_comment", columnDefinition = "TEXT")

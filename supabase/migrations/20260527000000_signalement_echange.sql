@@ -7,7 +7,7 @@ ALTER TABLE public.exchanges
 -- Table principale des signalements
 CREATE TABLE IF NOT EXISTS public.exchange_reports (
     id                 BIGSERIAL    PRIMARY KEY,
-    exchange_id        BIGINT       NOT NULL REFERENCES public.exchanges(id),
+    exchange_id        BIGINT       NOT NULL REFERENCES public.exchanges(id) ON DELETE CASCADE,
     reported_by_id     UUID         NOT NULL REFERENCES public.persons(id),
     type               VARCHAR(50)  NOT NULL,
     description        TEXT         NOT NULL,
@@ -21,5 +21,6 @@ CREATE TABLE IF NOT EXISTS public.exchange_reports (
 CREATE TABLE IF NOT EXISTS public.exchange_report_attachment_urls (
     exchange_report_id BIGINT NOT NULL
         REFERENCES public.exchange_reports(id) ON DELETE CASCADE,
-    attachment_url     TEXT   NOT NULL
+    attachment_url     TEXT   NOT NULL,
+    PRIMARY KEY (exchange_report_id, attachment_url)
 );

@@ -34,7 +34,7 @@ public class Exchange {
     private ExchangeStatus status = ExchangeStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status_before_block")
+    @Column(name = "status_before_block", length = 50)
     private ExchangeStatus statusBeforeBlock;
 
     @Column(name = "created_at", nullable = false)
