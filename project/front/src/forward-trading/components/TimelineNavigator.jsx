@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TimelineNavigatorButton from "./TimelineNavigatorButton";
 
 export default function TimelineNavigator({
   periods = [],
@@ -80,39 +81,14 @@ export default function TimelineNavigator({
         <div className="absolute top-5 left-4 right-4 h-0.5 bg-gray-200"></div>
 
         <div className="flex justify-between relative z-10">
-          {visiblePeriods.map((item) => {
-            const isActive = activePeriodId === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onSelectPeriod(item.id)}
-                className="flex flex-col items-center gap-2 min-w-[60px]"
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-300 ${
-                    isActive
-                      ? "bg-blue-600 border-blue-100 scale-110 shadow-md shadow-blue-100"
-                      : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"
-                  }`}
-                >
-                  <span
-                    className={`text-xs font-bold ${isActive ? "text-white" : "text-gray-500"}`}
-                  >
-                    {item.type}
-                  </span>
-                </div>
-
-                <span
-                  className={`text-[10px] font-bold uppercase tracking-wider text-center transition-colors ${
-                    isActive ? "text-blue-600" : "text-gray-400"
-                  }`}
-                >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+          {visiblePeriods.map((item) => (
+            <TimelineNavigatorButton
+              key={item.id}
+              item={item}
+              isActive={activePeriodId === item.id}
+              onSelectPeriod={onSelectPeriod}
+            />
+          ))}
         </div>
       </div>
 
