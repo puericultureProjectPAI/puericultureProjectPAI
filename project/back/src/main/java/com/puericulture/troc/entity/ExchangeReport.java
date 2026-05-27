@@ -3,8 +3,8 @@ package com.puericulture.troc.entity;
 import com.puericulture.common.entity.Person;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,7 +48,7 @@ public class ExchangeReport {
             schema = "public",
             joinColumns = @JoinColumn(name = "exchange_report_id", nullable = false))
     @Column(name = "attachment_url", columnDefinition = "TEXT", nullable = false)
-    private List<String> attachmentUrls = new ArrayList<>();
+    private Set<String> attachmentUrls = new HashSet<>();
 
     @Column(name = "moderation_comment", columnDefinition = "TEXT")
     private String moderationComment;

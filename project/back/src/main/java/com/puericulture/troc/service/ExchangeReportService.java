@@ -84,7 +84,7 @@ public class ExchangeReportService {
         report.setDescription(request.getDescription());
         report.setStatus(ReportStatus.OPEN);
         if (request.getAttachmentUrls() != null) {
-            report.setAttachmentUrls(request.getAttachmentUrls());
+            report.setAttachmentUrls(new java.util.HashSet<>(request.getAttachmentUrls()));
         }
 
         exchange.setStatusBeforeBlock(exchange.getStatus());
