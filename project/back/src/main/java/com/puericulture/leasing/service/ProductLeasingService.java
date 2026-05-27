@@ -2,35 +2,35 @@ package com.puericulture.leasing.service;
 
 import com.puericulture.leasing.dto.LeasingFilterRequest;
 import com.puericulture.leasing.dto.ProductLeasingResponse;
-import com.puericulture.leasing.entity.ProductLeasing;
+import com.puericulture.leasing.entity.LeasingArticle;
 import com.puericulture.leasing.exception.InvalidFilterCriteriaException;
 import com.puericulture.leasing.mapper.ProductLeasingMapper;
 import com.puericulture.leasing.repository.ProductLeasingRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class ProductLeasingService {
 
-    @Autowired
-    private ProductLeasingRepository productLeasingRepository;
+    private final ProductLeasingRepository productLeasingRepository;
+    private final ProductLeasingMapper productLeasingMapper;
 
-    @Autowired
-    private ProductLeasingMapper productLeasingMapper;
-
+    @Transactional(readOnly = true)
     public List<ProductLeasingResponse> findAll() {
-        log.info("Récupération de tous les produits en location");
-        return productLeasingRepository.findAllWithLeasing()
+        List<ProductLeasingResponse> results = productLeasingRepository.findAllWithLeasing()
                 .stream()
                 .map(productLeasingMapper::toProductLeasingResponse)
-                .collect(Collectors.toList());
+                .toList();
+        log.info("{} produits retournés", results.size());
+        return results;
     }
 
     /**
@@ -40,52 +40,59 @@ public class ProductLeasingService {
      *
      * @throws InvalidFilterCriteriaException si aucun critère ou dates invalides
      */
+    @Transactional(readOnly = true)
     public List<ProductLeasingResponse> filter(LeasingFilterRequest filterRequest) {
-        if (!filterRequest.hasAnyCriteria()) {
+        String city = filterRequest.getCity();
+        LocalDate startDate = filterRequest.getStartDate();
+        LocalDate endDate = filterRequest.getEndDate();
+
+        boolean hasCity = city != null && !city.isBlank();
+        boolean hasDates = startDate != null && endDate != null;
+
+        if (!hasCity && !hasDates) {
             log.warn("Tentative de filtrage sans critère");
             throw new InvalidFilterCriteriaException(
                     "Au moins un critère de filtrage doit être fourni (ville et/ou dates)");
         }
 
-        if (!filterRequest.isStartDateInFuture()) {
-            log.warn("Date de début dans le passé: {}", filterRequest.getStartDate());
+        if (startDate != null && startDate.isBefore(LocalDate.now())) {
+            log.warn("Date de début dans le passé: {}", startDate);
             throw new InvalidFilterCriteriaException(
                     "La date de début ne peut pas être dans le passé");
         }
 
-        if (!filterRequest.isValidDateRange()) {
+        if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
             log.warn("Dates invalides: endDate < startDate");
             throw new InvalidFilterCriteriaException(
                     "La date de fin doit être après la date de début");
         }
 
-        String city = filterRequest.getCity();
-        LocalDate startDate = filterRequest.getStartDate();
-        LocalDate endDate = filterRequest.getEndDate();
-
-        if (city != null && !city.isBlank() && startDate != null && endDate != null) {
+        if (hasCity && hasDates) {
             log.debug("Filtre: VILLE + DATES (disponibilité)");
-            return findAvailableByIds(
+            List<ProductLeasingResponse> results = findAvailableByIds(
                     productLeasingRepository.findAvailableIdsByCityAndDateRange(city, startDate, endDate));
+            log.info("Filtrage effectué: {} produits trouvés", results.size());
+            return results;
         }
 
-        if (city != null && !city.isBlank()) {
+        if (hasCity) {
             log.debug("Filtre: VILLE SEULEMENT");
-            return productLeasingRepository.findByCity(city)
+            List<ProductLeasingResponse> results = productLeasingRepository.findByCity(city)
                     .stream()
                     .map(productLeasingMapper::toProductLeasingResponse)
-                    .collect(Collectors.toList());
+                    .toList();
+            log.info("Filtrage effectué: {} produits trouvés", results.size());
+            return results;
         }
 
-        if (startDate != null && endDate != null) {
-            log.debug("Filtre: DATES SEULEMENT (disponibilité)");
-            return findAvailableByIds(
-                    productLeasingRepository.findAvailableIdsByDateRange(startDate, endDate));
-        }
-
-        throw new InvalidFilterCriteriaException("Critères de filtrage invalides");
+        log.debug("Filtre: DATES SEULEMENT (disponibilité)");
+        List<ProductLeasingResponse> results = findAvailableByIds(
+                productLeasingRepository.findAvailableIdsByDateRange(startDate, endDate));
+        log.info("Filtrage effectué: {} produits trouvés", results.size());
+        return results;
     }
 
+    @Transactional(readOnly = true)
     public List<String> getAvailableCities() {
         return productLeasingRepository.findAllAvailableCities();
     }
@@ -96,8 +103,8 @@ public class ProductLeasingService {
         }
         return productLeasingRepository.findAllById(ids)
                 .stream()
-                .sorted(Comparator.comparing(ProductLeasing::getPricePerDay))
+                .sorted(Comparator.comparing(LeasingArticle::getPricePerDay))
                 .map(productLeasingMapper::toProductLeasingResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

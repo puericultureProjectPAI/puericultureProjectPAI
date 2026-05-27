@@ -1,7 +1,7 @@
 package com.puericulture.leasing.mapper;
 
 import com.puericulture.leasing.dto.ProductLeasingResponse;
-import com.puericulture.leasing.entity.ProductLeasing;
+import com.puericulture.leasing.entity.LeasingArticle;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
@@ -10,5 +10,5 @@ import org.mapstruct.NullValueCheckStrategy;
 public interface ProductLeasingMapper {
 
     @Mapping(target = "productId", source = "id")
-    ProductLeasingResponse toProductLeasingResponse(ProductLeasing product);
+    ProductLeasingResponse toProductLeasingResponse(LeasingArticle product);
 }

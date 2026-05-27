@@ -1,6 +1,6 @@
 package com.puericulture.leasing.repository;
 
-import com.puericulture.leasing.entity.ProductLeasing;
+import com.puericulture.leasing.entity.LeasingArticle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,15 +10,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ProductLeasingRepository extends JpaRepository<ProductLeasing, Long> {
+public interface ProductLeasingRepository extends JpaRepository<LeasingArticle, Long> {
 
-    @Query("SELECT p FROM ProductLeasing p ORDER BY p.pricePerDay ASC")
-    List<ProductLeasing> findAllWithLeasing();
+    @Query("SELECT p FROM LeasingArticle p ORDER BY p.pricePerDay ASC")
+    List<LeasingArticle> findAllWithLeasing();
 
-    @Query("SELECT p FROM ProductLeasing p " +
+    @Query("SELECT p FROM LeasingArticle p " +
             "WHERE LOWER(p.city) = LOWER(:city) " +
             "ORDER BY p.pricePerDay ASC")
-    List<ProductLeasing> findByCity(@Param("city") String city);
+    List<LeasingArticle> findByCity(@Param("city") String city);
 
     /**
      * Retourne les IDs des produits disponibles sur la période donnée.

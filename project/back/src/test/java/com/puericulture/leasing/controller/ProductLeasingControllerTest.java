@@ -1,8 +1,8 @@
-package com.puericulture.leasing;
+package com.puericulture.leasing.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.puericulture.leasing.controller.ProductLeasingController;
+import com.puericulture.config.errormanager.CustomGlobalExceptionHandler;
 import com.puericulture.leasing.dto.LeasingFilterRequest;
 import com.puericulture.leasing.dto.ProductLeasingResponse;
 import com.puericulture.leasing.exception.InvalidFilterCriteriaException;
@@ -42,7 +42,9 @@ class ProductLeasingControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(productLeasingController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(productLeasingController)
+                .setControllerAdvice(new CustomGlobalExceptionHandler())
+                .build();
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 

@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductLeasing extends Product {
+public class LeasingArticle extends Product {
 
     @Column(name = "price_per_month", nullable = false)
     private Long pricePerMonth;
