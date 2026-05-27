@@ -11,8 +11,17 @@ export default function LoginForm({
   setPassword,
   onLogin,
   status,
+  error,
 }) {
   const [showPassword, setShowPassword] = useState(false);
+  const hasError = !!error;
+
+  const inputClass = (extra = "") =>
+    `w-full px-4 py-2.5 ${extra} border rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none transition-all shadow-sm ${
+      hasError
+        ? "border-feedback-background-alert-bold focus:border-feedback-background-alert-bold"
+        : "border-gray-300 focus:border-[#000040]"
+    }`;
 
   return (
     <div className="w-full min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
@@ -39,7 +48,8 @@ export default function LoginForm({
               placeholder="example@kiabi.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#000040] transition-all shadow-sm"
+              aria-invalid={hasError}
+              className={inputClass()}
               required
             />
           </div>
@@ -54,7 +64,8 @@ export default function LoginForm({
                 placeholder="******"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#000040] transition-all shadow-sm"
+                aria-invalid={hasError}
+                className={inputClass("pr-11")}
                 required
               />
 
@@ -71,6 +82,15 @@ export default function LoginForm({
               </button>
             </div>
           </div>
+
+          {hasError && (
+            <div
+              role="alert"
+              className="bg-feedback-background-alert border border-feedback-background-alert-bold text-feedback-background-alert-bold rounded-xl px-4 py-3 text-sm text-center"
+            >
+              {error}
+            </div>
+          )}
 
           <div className="text-center my-1">
             <button
