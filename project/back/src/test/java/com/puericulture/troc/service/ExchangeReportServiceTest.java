@@ -135,6 +135,20 @@ class ExchangeReportServiceTest {
     }
 
     @Test
+    void reportExchange_blockedExchange_throwsBadRequest() {
+        pendingExchange.setStatus(ExchangeStatus.BLOCKED);
+        when(exchangeRepository.findById(10L)).thenReturn(Optional.of(pendingExchange));
+
+        CreateReportRequest request = new CreateReportRequest();
+        request.setType(ReportType.AUTRE);
+        request.setDescription("Problème");
+
+        assertThrows(
+                BadRequestException.class,
+                () -> reportService.reportExchange(10L, PROPOSER_ID, request));
+    }
+
+    @Test
     void reportExchange_confirmedExchange_throwsBadRequest() {
         pendingExchange.setStatus(ExchangeStatus.CONFIRMED);
         when(exchangeRepository.findById(10L)).thenReturn(Optional.of(pendingExchange));

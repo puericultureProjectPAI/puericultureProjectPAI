@@ -63,6 +63,10 @@ public class ExchangeReportService {
             throw new ForbiddenException("Only exchange participants can file a report");
         }
 
+        if (exchange.getStatus() == ExchangeStatus.BLOCKED) {
+            throw new BadRequestException("Exchange is already frozen due to an active report");
+        }
+
         if (exchange.getStatus() == ExchangeStatus.CONFIRMED
                 || exchange.getStatus() == ExchangeStatus.REFUSED) {
             throw new BadRequestException("Cannot report a closed exchange");

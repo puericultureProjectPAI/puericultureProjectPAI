@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExchangeReportRepository extends JpaRepository<ExchangeReport, Long> {
 
-    List<ExchangeReport> findByExchangeId(Long exchangeId);
+    List<ExchangeReport> findByExchange_Id(Long exchangeId);
 
     List<ExchangeReport> findAllByOrderByCreatedAtDesc();
 
