@@ -13,6 +13,7 @@ import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
+import Profile from "./common/views/Profile.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />
-
+            <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
               {/* Second-hand : scan de code-barres */}
