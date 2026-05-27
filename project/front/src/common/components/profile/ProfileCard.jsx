@@ -2,7 +2,6 @@ import { getMonth } from "../../utils/month";
 import orangeProfile from "../../../assets/icons/profile/profile-picture-orange.svg";
 import editIcon from "../../../assets/icons/edit.svg";
 export default function ProdileCard({ person }) {
-  console.log(person);
   return (
     <div className="w-[96%] m-2 p-3 bg-bg-alternate rounded-lg outline outline-1 outline-offset-[-1px] outline-black/0 inline-flex flex-col justify-start items-start gap-3 font-figtree">
       <div className="justify-start text-neutral text-xl font-bold font-figtree">

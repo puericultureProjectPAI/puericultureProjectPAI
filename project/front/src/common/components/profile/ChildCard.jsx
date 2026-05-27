@@ -1,8 +1,17 @@
 import ChildIcon from "../../../assets/icons/profile/profile-picture-blue.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function ChildCard({ child }) {
+  const navigate = useNavigate();
   return (
-    <div className="self-stretch px-4 py-[3px] bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-black/10 inline-flex justify-start items-center gap-3">
+    <div
+      className="self-stretch px-4 py-[3px] bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-black/10 inline-flex justify-start items-center gap-3"
+      onClick={() =>
+        child.timelineId
+          ? navigate(`/forward/timeline/${child.timelineId}`)
+          : () => {}
+      }
+    >
       <div className="size-8  bg-feedback-background-neutral rounded-[32px] outline outline-1 outline-feedback-background-info flex justify-center items-center gap-2.5 overflow-hidden">
         <img className="size-7 " src={ChildIcon} />
       </div>

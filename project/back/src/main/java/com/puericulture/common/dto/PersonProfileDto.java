@@ -34,5 +34,6 @@ public class PersonProfileDto {
 
         Integer age;
         LocalDate birthDate;
+        Long timelineId;
     }
 }

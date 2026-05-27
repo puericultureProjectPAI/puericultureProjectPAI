@@ -51,7 +51,10 @@ export default function App() {
               {/* Future vertical routes go here */}
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
-              <Route path="/forward" element={<ForwardTradingView />} />
+              <Route
+                path="/forward/timeline/:id"
+                element={<ForwardTradingView />}
+              />
               <Route
                 path="/forward/create-children"
                 element={<CreationEnfantView />}

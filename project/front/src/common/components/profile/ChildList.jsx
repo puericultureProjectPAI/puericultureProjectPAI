@@ -8,7 +8,7 @@ export default function ChildList({ children }) {
       </div>
 
       {children.map((child) => (
-        <ChildCard child={child} />
+        <ChildCard key={child.firstName} child={child} />
       ))}
     </div>
   );

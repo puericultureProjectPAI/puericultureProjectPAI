@@ -3,6 +3,7 @@ package com.puericulture.forwardtrading.mapper;
 import com.puericulture.common.dto.PersonProfileDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
+import com.puericulture.forwardtrading.entity.Timelines;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Collections;
@@ -30,7 +31,16 @@ public abstract class ChildrenMapper {
     @Mapping(target = "firstName", source = "name")
     @Mapping(target = "age", source = "birthDate", qualifiedByName = "getAge")
     @Mapping(target = "birthDate", source = "birthDate")
+    @Mapping(target = "timelineId", source = "timelines", qualifiedByName = "getTimelineId")
     abstract PersonProfileDto.ChildPersonProfileDto toChildPersonProfileDto(ChildrenEntity child);
+
+    @Named("getTimelineId")
+    public Long getTimelineId(List<Timelines> timelines) {
+        if (timelines == null || timelines.isEmpty()) return null;
+        Timelines timeline = timelines.get(0);
+        if (timeline == null) return null;
+        return timeline.getId();
+    }
 
     @Named("getAge")
     public Integer getAge(LocalDate birthDate) {
