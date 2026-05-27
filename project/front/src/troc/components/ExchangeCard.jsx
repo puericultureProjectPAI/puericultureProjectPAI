@@ -4,6 +4,9 @@
  * User journey step: viewing and managing exchange proposals
  */
 
+import { useState } from "react";
+import ReportFormModal from "./ReportFormModal";
+
 const ExchangeCard = ({
   exchange,
   isProposer = false,
@@ -14,6 +17,8 @@ const ExchangeCard = ({
   onDelete,
   loading = false,
 }) => {
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
   /**
    * Get status color based on exchange status
    * PENDING: yellow/orange (awaiting response)
@@ -27,6 +32,7 @@ const ExchangeCard = ({
       ACCEPTED: "bg-blue-100 text-blue-800 border-blue-300",
       CONFIRMED: "bg-green-100 text-green-800 border-green-300",
       REFUSED: "bg-red-100 text-red-800 border-red-300",
+      BLOCKED: "bg-orange-100 text-orange-800 border-orange-300",
     };
     return colors[status] || "bg-gray-100 text-gray-800 border-gray-300";
   };
@@ -172,7 +178,38 @@ const ExchangeCard = ({
               : "Exchange Refused"}
           </span>
         )}
+
+        {/* Report button — available to participants while the exchange is active */}
+        {(isProposer || isReceiver) &&
+          exchange.status !== "CONFIRMED" &&
+          exchange.status !== "REFUSED" &&
+          exchange.status !== "BLOCKED" &&
+          !reportSubmitted && (
+            <button
+              onClick={() => setShowReportModal(true)}
+              disabled={loading}
+              className="ml-auto px-4 py-2 bg-orange-100 text-orange-700 border border-orange-300 rounded hover:bg-orange-200 transition-colors text-sm"
+            >
+              Signaler un problème
+            </button>
+          )}
       </div>
+
+      {/* BLOCKED banner */}
+      {exchange.status === "BLOCKED" && (
+        <div className="mt-3 rounded border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-800">
+          Échange gelé — un signalement est en cours d'examen par l'équipe de
+          modération.
+        </div>
+      )}
+
+      {/* Report submitted confirmation */}
+      {reportSubmitted && (
+        <div className="mt-3 rounded border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-800">
+          Signalement soumis. L'échange est maintenant gelé en attente de
+          modération.
+        </div>
+      )}
 
       {/* Help text for current status */}
       <div className="mt-3 pt-3 border-t border-gray-200">
@@ -185,8 +222,22 @@ const ExchangeCard = ({
             "This exchange is complete and both products are now closed."}
           {exchange.status === "REFUSED" &&
             "This exchange was refused. The products are now available again."}
+          {exchange.status === "BLOCKED" &&
+            "This exchange is frozen pending moderation of a report."}
         </p>
       </div>
+
+      {/* Report modal */}
+      {showReportModal && (
+        <ReportFormModal
+          exchangeId={exchange.id}
+          onClose={() => setShowReportModal(false)}
+          onSuccess={() => {
+            setShowReportModal(false);
+            setReportSubmitted(true);
+          }}
+        />
+      )}
     </div>
   );
 };

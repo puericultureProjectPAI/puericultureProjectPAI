@@ -10,6 +10,8 @@ import RegisterView from "./common/views/RegisterView";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import AdminReportsView from "./admin/views/AdminReportsView";
+import AdminReportDetailView from "./admin/views/AdminReportDetailView";
 
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
@@ -64,6 +66,23 @@ export default function App() {
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
+            </Route>
+
+            {/* Admin routes — restricted to users with role ADMIN */}
+            <Route
+              element={
+                <RoleGuard
+                  access={(user) =>
+                    user.user_metadata?.role?.toUpperCase() === "ADMIN"
+                  }
+                />
+              }
+            >
+              <Route path="/admin/reports" element={<AdminReportsView />} />
+              <Route
+                path="/admin/reports/:reportId"
+                element={<AdminReportDetailView />}
+              />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
