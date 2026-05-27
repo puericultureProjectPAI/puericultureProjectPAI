@@ -1,8 +1,11 @@
 import axios from "axios";
 import { supabase } from "./supabaseClient";
 
+const apiHost = import.meta.env.VITE_API_URL || "";
+
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  // Appends the mandatory context-path expected by the Spring Boot backend
+  baseURL: `${apiHost}/api`,
 });
 
 apiClient.interceptors.request.use(
