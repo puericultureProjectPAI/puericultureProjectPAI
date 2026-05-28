@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * understanding the business goal in 30 seconds without reading the underlying service logic.
  */
 @RestController
-@RequestMapping("/api/public/health")
+@RequestMapping("/public/health")
 @Tag(
         name = "System Diagnostics",
         description =
