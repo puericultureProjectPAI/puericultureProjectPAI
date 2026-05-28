@@ -1,9 +1,8 @@
-package com.puericulture.troc;
+package com.puericulture.troc.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.puericulture.troc.controller.ExchangeController;
 import com.puericulture.troc.dto.CreateExchangeRequest;
 import com.puericulture.troc.dto.ExchangeResponse;
 import com.puericulture.troc.dto.ProductExchangeStatusResponse;
