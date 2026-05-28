@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate, NavLink } from "react-router";
+import { useNavigate } from "react-router";
 import { supabase } from "../utils/supabaseClient";
+import LoginForm from "../components/LoginForm";
 
 /**
  * Minimalist Connection Component
@@ -30,33 +31,13 @@ export default function Connection() {
   };
 
   return (
-    <div>
-      <h2>Auth Test Page</h2>
-
-      <form onSubmit={(e) => e.preventDefault()}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br />
-        <button onClick={handleLogin}>Login</button>
-        <NavLink to="../register">Register</NavLink>
-      </form>
-
-      {status && (
-        <p>
-          <strong>Status:</strong> {status}
-        </p>
-      )}
-    </div>
+    <LoginForm
+      email={email}
+      setEmail={setEmail}
+      password={password}
+      setPassword={setPassword}
+      onLogin={handleLogin}
+      status={status}
+    />
   );
 }

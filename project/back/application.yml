@@ -1,17 +1,14 @@
 server:
-  port: ${SERVER_PORT:8080}
+  # On écoute sur PORT (standard Render) et on tombe sur 8080 en local
+  port: ${PORT:8080}
   servlet:
-    context-path: /api
+    # Définit /api par défaut, mais laisse la priorité à la variable d'environnement
+    context-path: ${SERVER_SERVLET_CONTEXT_PATH:/api}
+
 spring:
   application:
     name: projet-puericulture
 
-  # Configuration de l'IA (OpenRouter / Ollama)
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-
-  # Configuration PostgreSQL (Supabase)
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL}
@@ -20,21 +17,23 @@ spring:
 
   jpa:
     hibernate:
-      # CRITIQUE EN LOCAL : Autorise Hibernate à créer/mettre à jour tes tables métier
-      ddl-auto: update
+      # DANGEREUX EN PROD. Doit être écrasé par SPRING_JPA_HIBERNATE_DDL_AUTO=validate sur Render
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: true # Pratique pour le debug en local
+    show-sql: ${SHOW_SQL:true}
 
-# Configuration Supabase (Correspond EXACTEMENT aux @Value de ton JwtService)
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
 supabase:
   url: ${SUPABASE_URL}
   service:
     key: ${SUPABASE_SERVICE_KEY}
 
-# Documentation API (Swagger)
 springdoc:
   api-docs:
     path: /api-docs
@@ -42,17 +41,15 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
-# Monitoring
 management:
   endpoints:
     web:
       exposure:
         include: health,info
 
-# Gestion des logs
 logging:
   level:
     root: INFO
+    web: TRACE
     org.springframework.security: INFO
-    # Correction du nom de package pour correspondre à tes classes Java
     com.puericulture: DEBUG
