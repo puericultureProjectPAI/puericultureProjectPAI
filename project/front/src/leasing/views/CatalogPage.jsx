@@ -16,29 +16,6 @@ import {
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
-const initialProducts = [
-  {
-    id: 1,
-    postTitle: "Pyjama gris",
-    category: "Pyjama",
-    condition: "Excellent état",
-    pricePerMonth: 8.9,
-    city: "Paris",
-    available: true,
-    firstImageUrl: "",
-  },
-  {
-    id: 2,
-    postTitle: "Pyjama gris",
-    category: "Pyjama",
-    condition: "Excellent état",
-    pricePerMonth: 8.9,
-    city: "Paris",
-    available: true,
-    firstImageUrl: "",
-  },
-];
-
 const getTodayFrance = () =>
   new Date(
     new Date().toLocaleString("en-US", {
@@ -51,10 +28,9 @@ const getTodayFrance = () =>
 export default function CatalogPage() {
   const navigate = useNavigate();
 
-  const [products, setProducts] = useState(initialProducts);
-  const [allProducts] = useState(initialProducts);
-  const [loading] = useState(false);
-  const [error] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [city, setCity] = useState("Paris");
   const [startDate, setStartDate] = useState(getTodayFrance());
@@ -73,18 +49,31 @@ export default function CatalogPage() {
     }
 
     setDateError("");
+    setLoading(true);
+    setError("");
 
-    const filtered = allProducts.filter((product) => {
-      const productCity = product.city || "Paris";
-
-      return productCity.toLowerCase() === city.toLowerCase();
+    const params = new URLSearchParams({
+      city,
+      startDate,
+      endDate,
     });
 
-    setProducts(filtered);
+    fetch(
+      `${import.meta.env.VITE_API_URL}/api/public/leasing/products/filter?${params}`,
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => {
+        setProducts(data);
 
-    if (filtered.length === 0) {
-      setShowNoResultModal(true);
-    }
+        if (data.length === 0) {
+          setShowNoResultModal(true);
+        }
+      })
+      .catch(() => setError("Impossible de charger les articles."))
+      .finally(() => setLoading(false));
   };
   return (
     <main className="relative mx-auto h-screen w-[320px] overflow-y-auto bg-white text-[#040037]">
