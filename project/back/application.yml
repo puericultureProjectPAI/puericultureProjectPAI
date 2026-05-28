@@ -28,8 +28,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -42,7 +42,7 @@ spring:
       api-key: ${OPENAI_API_KEY}
 
 moderation:
-  admin-email: ${ADMIN_EMAIL}
+  admin-email: ${ADMIN_EMAIL:}
 
 supabase:
   url: ${SUPABASE_URL}

@@ -3,6 +3,8 @@ package com.puericulture.common.service;
 import com.puericulture.troc.entity.ExchangeReport;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,6 +14,8 @@ import org.springframework.web.util.HtmlUtils;
 
 @Service
 public class NotificationService {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
 
     private final JavaMailSender mailSender;
 
@@ -23,6 +27,7 @@ public class NotificationService {
     }
 
     public void notifyAdminNewReport(ExchangeReport report) {
+        if (adminEmail == null || adminEmail.isBlank()) return;
         sendEmail(
                 adminEmail,
                 "[Modération] Nouveau signalement #" + report.getId(),
@@ -45,7 +50,11 @@ public class NotificationService {
             helper.setText(body, true);
             mailSender.send(message);
         } catch (MessagingException | MailException e) {
-            // log only — a notification failure must not block the business flow
+            log.warn(
+                    "Failed to send email to '{}' (subject: '{}'): {}",
+                    to,
+                    subject,
+                    e.getMessage());
         }
     }
 

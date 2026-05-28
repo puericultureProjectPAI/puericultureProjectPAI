@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS public.exchange_reports (
     updated_at         TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
+-- Index pour les requêtes fréquentes sur exchange_reports
+CREATE INDEX IF NOT EXISTS idx_exchange_reports_exchange_id
+    ON public.exchange_reports (exchange_id);
+
+CREATE INDEX IF NOT EXISTS idx_exchange_reports_status_created_at
+    ON public.exchange_reports (status, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_exchange_reports_reported_by_id
+    ON public.exchange_reports (reported_by_id);
+
 -- Table des URLs de pièces jointes (ElementCollection JPA)
 CREATE TABLE IF NOT EXISTS public.exchange_report_attachment_urls (
     exchange_report_id BIGINT NOT NULL

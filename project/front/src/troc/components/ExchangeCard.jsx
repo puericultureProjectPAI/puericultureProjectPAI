@@ -19,6 +19,9 @@ const ExchangeCard = ({
 }) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportSubmitted, setReportSubmitted] = useState(false);
+
+  const effectiveStatus = reportSubmitted ? "BLOCKED" : exchange.status;
+
   /**
    * Get status color based on exchange status
    * PENDING: yellow/orange (awaiting response)
@@ -55,10 +58,10 @@ const ExchangeCard = ({
       <div className="flex justify-between items-start mb-3">
         <div
           className={`px-3 py-1 rounded-full border text-sm font-semibold ${getStatusColor(
-            exchange.status,
+            effectiveStatus,
           )}`}
         >
-          {exchange.status}
+          {effectiveStatus}
         </div>
         <span className="text-gray-500 text-sm">
           {/* Exchange ID for reference */}
@@ -120,7 +123,7 @@ const ExchangeCard = ({
       {/* Action Buttons - varies by user role and exchange status */}
       <div className="flex flex-wrap gap-2">
         {/* Receiver actions: Accept, Confirm, Refuse (only if this exchange is proposed to this user) */}
-        {isReceiver && exchange.status === "PENDING" && (
+        {isReceiver && effectiveStatus === "PENDING" && (
           <>
             <button
               onClick={() => onAccept(exchange.id)}
@@ -140,7 +143,7 @@ const ExchangeCard = ({
         )}
 
         {/* Receiver can confirm after acceptance (negotiation phase complete) */}
-        {isReceiver && exchange.status === "ACCEPTED" && (
+        {isReceiver && effectiveStatus === "ACCEPTED" && (
           <>
             <button
               onClick={() => onConfirm(exchange.id)}
@@ -160,7 +163,7 @@ const ExchangeCard = ({
         )}
 
         {/* Proposer can delete (only if still pending) */}
-        {isProposer && exchange.status === "PENDING" && (
+        {isProposer && effectiveStatus === "PENDING" && (
           <button
             onClick={() => onDelete(exchange.id)}
             disabled={loading}
@@ -171,9 +174,9 @@ const ExchangeCard = ({
         )}
 
         {/* View only for completed or refused exchanges */}
-        {(exchange.status === "CONFIRMED" || exchange.status === "REFUSED") && (
+        {(effectiveStatus === "CONFIRMED" || effectiveStatus === "REFUSED") && (
           <span className="px-4 py-2 bg-gray-200 text-gray-600 rounded text-sm">
-            {exchange.status === "CONFIRMED"
+            {effectiveStatus === "CONFIRMED"
               ? "Exchange Completed"
               : "Exchange Refused"}
           </span>
@@ -181,10 +184,9 @@ const ExchangeCard = ({
 
         {/* Report button — available to participants while the exchange is active */}
         {(isProposer || isReceiver) &&
-          exchange.status !== "CONFIRMED" &&
-          exchange.status !== "REFUSED" &&
-          exchange.status !== "BLOCKED" &&
-          !reportSubmitted && (
+          effectiveStatus !== "CONFIRMED" &&
+          effectiveStatus !== "REFUSED" &&
+          effectiveStatus !== "BLOCKED" && (
             <button
               onClick={() => setShowReportModal(true)}
               disabled={loading}
@@ -196,33 +198,26 @@ const ExchangeCard = ({
       </div>
 
       {/* BLOCKED banner */}
-      {exchange.status === "BLOCKED" && (
+      {effectiveStatus === "BLOCKED" && (
         <div className="mt-3 rounded border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-800">
-          Échange gelé — un signalement est en cours d'examen par l'équipe de
-          modération.
-        </div>
-      )}
-
-      {/* Report submitted confirmation */}
-      {reportSubmitted && (
-        <div className="mt-3 rounded border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-800">
-          Signalement soumis. L'échange est maintenant gelé en attente de
-          modération.
+          {reportSubmitted
+            ? "Signalement soumis. L'échange est maintenant gelé en attente de modération."
+            : "Échange gelé — un signalement est en cours d'examen par l'équipe de modération."}
         </div>
       )}
 
       {/* Help text for current status */}
       <div className="mt-3 pt-3 border-t border-gray-200">
         <p className="text-xs text-gray-500 italic">
-          {exchange.status === "PENDING" &&
+          {effectiveStatus === "PENDING" &&
             "Awaiting response from the product owner..."}
-          {exchange.status === "ACCEPTED" &&
+          {effectiveStatus === "ACCEPTED" &&
             "Exchange accepted! Start negotiating via chat before confirming."}
-          {exchange.status === "CONFIRMED" &&
+          {effectiveStatus === "CONFIRMED" &&
             "This exchange is complete and both products are now closed."}
-          {exchange.status === "REFUSED" &&
+          {effectiveStatus === "REFUSED" &&
             "This exchange was refused. The products are now available again."}
-          {exchange.status === "BLOCKED" &&
+          {effectiveStatus === "BLOCKED" &&
             "This exchange is frozen pending moderation of a report."}
         </p>
       </div>

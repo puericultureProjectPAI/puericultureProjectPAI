@@ -69,6 +69,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
           </h2>
           <button
             onClick={onClose}
+            aria-label="Fermer"
             className="text-gray-500 hover:text-gray-700 text-xl leading-none"
           >
             ✕
@@ -166,6 +167,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                         <button
                           type="button"
                           onClick={() => removeAttachment(i)}
+                          aria-label={`Supprimer la pièce jointe ${i + 1}`}
                           className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white"
                         >
                           ×
