@@ -10,6 +10,7 @@ import RegisterView from "./common/views/RegisterView";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
 
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
@@ -48,6 +49,10 @@ export default function App() {
 
             <Route element={<RoleGuard access={() => true} />}>
               {/* Future vertical routes go here */}
+              <Route
+                path="/leasing/product/:id"
+                element={<LeasingProductDetailView />}
+              />
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
               <Route path="/forward" element={<ForwardTradingView />} />
