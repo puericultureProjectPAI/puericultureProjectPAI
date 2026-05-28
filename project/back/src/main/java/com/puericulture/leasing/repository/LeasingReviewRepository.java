@@ -44,4 +44,25 @@ public interface LeasingReviewRepository extends JpaRepository<LeasingReview, Lo
                 """,
             nativeQuery = true)
     List<LeasingReviewSummary> findAllByLeasingId(@Param("leasingId") Long leasingId);
+
+    /**
+     * Verifies if a leasing order exists, belongs to the specified person, and is for the specified
+     * product. This acts as an API security guard before letting a client write a review.
+     */
+    @Query(
+            value =
+                    """
+                SELECT EXISTS (
+                    SELECT 1 FROM public.leasing_orders lo
+                    INNER JOIN public.client_products cp ON cp.id = lo.client_product_id
+                    WHERE lo.client_product_id = :leasingOrderId
+                      AND cp.client_id = CAST(:clientId AS uuid)
+                      AND cp.product_id = :leasingId
+                )
+                """,
+            nativeQuery = true)
+    boolean isOrderEligibleForReview(
+            @Param("leasingOrderId") Long leasingOrderId,
+            @Param("clientId") String clientId,
+            @Param("leasingId") Long leasingId);
 }
