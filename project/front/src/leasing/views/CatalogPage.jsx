@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { apiClient } from "../../common/utils/apiClient";
 import "../leasing.css";
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
@@ -11,12 +12,9 @@ export default function CatalogPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/public/leasing/products`)
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => setProducts(data))
+    apiClient
+      .get("/public/leasing/products")
+      .then((res) => setProducts(res.data))
       .catch(() => setError("Impossible de charger les articles."))
       .finally(() => setLoading(false));
   }, []);
