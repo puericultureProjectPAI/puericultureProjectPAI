@@ -154,8 +154,8 @@ class ExchangeReportServiceTest {
         when(exchangeRepository.findById(10L)).thenReturn(Optional.of(pendingExchange));
 
         CreateReportRequest request = new CreateReportRequest();
-        request.setType(ReportType.ARTICLE_NON_RECU);
-        request.setDescription("Article non reçu");
+        request.setType(ReportType.AUTRE);
+        request.setDescription("Problème avec l'échange");
 
         assertThrows(
                 BadRequestException.class,

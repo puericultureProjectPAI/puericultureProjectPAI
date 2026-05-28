@@ -6,7 +6,6 @@ import * as reportApi from "../utils/reportApi";
 
 const REPORT_TYPES = [
   { value: "ARTICLE_NON_CONFORME", label: "Article non conforme" },
-  { value: "ARTICLE_NON_RECU", label: "Article non reçu" },
   { value: "ARTICLE_ENDOMMAGE", label: "Article endommagé" },
   { value: "DESACCORD_ECHANGE", label: "Désaccord sur l'échange" },
   { value: "COMPORTEMENT_INAPPROPRIE", label: "Comportement inapproprié" },
