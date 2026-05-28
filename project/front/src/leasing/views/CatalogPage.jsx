@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import "../leasing.css";
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
