@@ -61,14 +61,14 @@ class ProductLeasingControllerTest {
     }
 
     // -------------------------------------------------------------------------
-    // GET /product-leasing
+    // GET /leasing/products
     // -------------------------------------------------------------------------
 
     @Test
     void findAll_returns200_withProductList() throws Exception {
         when(productLeasingService.findAll()).thenReturn(List.of(sampleProduct));
 
-        mockMvc.perform(get("/product-leasing"))
+        mockMvc.perform(get("/leasing/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.count").value(1))
@@ -80,14 +80,14 @@ class ProductLeasingControllerTest {
     void findAll_returns200_withEmptyList_whenNoProducts() throws Exception {
         when(productLeasingService.findAll()).thenReturn(List.of());
 
-        mockMvc.perform(get("/product-leasing"))
+        mockMvc.perform(get("/leasing/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(0))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
     // -------------------------------------------------------------------------
-    // POST /product-leasing/filter
+    // POST /leasing/products/filter
     // -------------------------------------------------------------------------
 
     @Test
@@ -97,7 +97,7 @@ class ProductLeasingControllerTest {
         when(productLeasingService.filter(any())).thenReturn(List.of(sampleProduct));
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -117,7 +117,7 @@ class ProductLeasingControllerTest {
         when(productLeasingService.filter(any())).thenReturn(List.of(sampleProduct));
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -136,7 +136,7 @@ class ProductLeasingControllerTest {
         when(productLeasingService.filter(any())).thenReturn(List.of(sampleProduct));
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -150,7 +150,7 @@ class ProductLeasingControllerTest {
         when(productLeasingService.filter(any())).thenReturn(List.of());
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -168,7 +168,7 @@ class ProductLeasingControllerTest {
                                 "Au moins un critère de filtrage doit être fourni (ville et/ou dates)"));
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -189,7 +189,7 @@ class ProductLeasingControllerTest {
                                 "La date de fin doit être après la date de début"));
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -209,14 +209,14 @@ class ProductLeasingControllerTest {
                                 "La date de début ne peut pas être dans le passé"));
 
         mockMvc.perform(
-                        post("/product-leasing/filter")
+                        post("/leasing/products/filter")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
 
     // -------------------------------------------------------------------------
-    // GET /product-leasing/cities
+    // GET /leasing/products/cities
     // -------------------------------------------------------------------------
 
     @Test
@@ -224,7 +224,7 @@ class ProductLeasingControllerTest {
         when(productLeasingService.getAvailableCities())
                 .thenReturn(List.of("bordeaux", "lyon", "paris"));
 
-        mockMvc.perform(get("/product-leasing/cities"))
+        mockMvc.perform(get("/leasing/products/cities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.count").value(3))
@@ -235,7 +235,7 @@ class ProductLeasingControllerTest {
     void getCities_returns200_withEmptyList_whenNoCities() throws Exception {
         when(productLeasingService.getAvailableCities()).thenReturn(List.of());
 
-        mockMvc.perform(get("/product-leasing/cities"))
+        mockMvc.perform(get("/leasing/products/cities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(0));
     }

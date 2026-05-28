@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/product-leasing")
+@RequestMapping("/leasing/products")
 @RequiredArgsConstructor
 @Tag(name = "Product Leasing", description = "APIs pour la gestion de la location de produits")
 public class ProductLeasingController {
@@ -26,8 +26,17 @@ public class ProductLeasingController {
     private final ProductLeasingService productLeasingService;
 
     @GetMapping
-    @Operation(summary = "Récupérer tous les produits en location")
-    @ApiResponse(responseCode = "200", description = "Liste de tous les produits")
+    @Operation(
+            summary = "Récupérer tous les produits en location",
+            description =
+                    "Retourne la liste complète des produits disponibles à la location, triés par prix par jour croissant.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Liste de tous les produits",
+            content =
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ProductLeasingListResponse.class)))
     public ResponseEntity<ProductLeasingListResponse> findAll() {
         List<ProductLeasingResponse> results = productLeasingService.findAll();
         return ResponseEntity.ok(
@@ -53,6 +62,7 @@ public class ProductLeasingController {
                         description = "Résultat du filtrage (peut être vide)",
                         content =
                                 @Content(
+                                        mediaType = "application/json",
                                         schema =
                                                 @Schema(
                                                         implementation =
@@ -84,7 +94,13 @@ public class ProductLeasingController {
             summary = "Récupérer les villes disponibles",
             description =
                     "Retourne la liste de toutes les villes ayant au moins un produit en location")
-    @ApiResponse(responseCode = "200", description = "Liste des villes disponibles")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Liste des villes disponibles",
+            content =
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = LeasingCitiesResponse.class)))
     public ResponseEntity<LeasingCitiesResponse> getAvailableCities() {
         List<String> cities = productLeasingService.getAvailableCities();
         return ResponseEntity.ok(
