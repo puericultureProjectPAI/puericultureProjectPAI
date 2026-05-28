@@ -29,11 +29,13 @@ export const useImageManager = () => {
       // Mandatory: compress + convert to WebP before sending
       const optimizedFile = await optimizeImage(rawFile);
 
+      if (isLocalMock) {
+        return URL.createObjectURL(optimizedFile);
+      }
+
       const formData = new FormData();
       formData.append("file", optimizedFile);
-      if (!isLocalMock) {
-        formData.append("upload_preset", uploadPreset);
-      }
+      formData.append("upload_preset", uploadPreset);
 
       const response = await fetch(uploadUrl, {
         method: "POST",
