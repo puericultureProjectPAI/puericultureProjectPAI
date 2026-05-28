@@ -16,6 +16,7 @@ import com.puericulture.leasing.mapper.LeasingReviewMapper;
 import com.puericulture.leasing.repository.LeasingReviewRepository;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,25 +58,6 @@ class LeasingReviewServiceTest {
     }
 
     @Test
-    void createReview_throwsException_whenReviewAlreadyExistsForOrder() {
-        String personId = "user-uuid";
-        Long leasingId = 1L;
-        CreateLeasingReviewRequest request = new CreateLeasingReviewRequest();
-        request.setLeasingOrderId(10L);
-        request.setRating(5);
-        request.setComment("Super");
-
-        when(leasingReviewRepository.existsByLeasingOrderId(10L)).thenReturn(true);
-
-        assertThatThrownBy(() -> leasingReviewService.createReview(personId, leasingId, request))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage("Un avis a déjà été soumis pour cette commande de location.");
-
-        verify(leasingReviewRepository, never()).isOrderEligibleForReview(any(), any(), any());
-        verify(leasingReviewRepository, never()).save(any());
-    }
-
-    @Test
     void createReview_throwsException_whenOrderIsNotEligible() {
         String personId = "user-uuid";
         Long leasingId = 1L;
@@ -84,7 +66,6 @@ class LeasingReviewServiceTest {
         request.setRating(5);
         request.setComment("Super");
 
-        when(leasingReviewRepository.existsByLeasingOrderId(10L)).thenReturn(false);
         when(leasingReviewRepository.isOrderEligibleForReview(10L, personId, leasingId))
                 .thenReturn(false);
 
@@ -98,7 +79,7 @@ class LeasingReviewServiceTest {
     }
 
     @Test
-    void createReview_savesReview_whenValid() {
+    void createReview_savesNewReview_whenNoReviewExistsYet() {
         String personId = "user-uuid";
         Long leasingId = 1L;
         CreateLeasingReviewRequest request = new CreateLeasingReviewRequest();
@@ -106,14 +87,46 @@ class LeasingReviewServiceTest {
         request.setRating(5);
         request.setComment("Super");
 
-        when(leasingReviewRepository.existsByLeasingOrderId(10L)).thenReturn(false);
         when(leasingReviewRepository.isOrderEligibleForReview(10L, personId, leasingId))
                 .thenReturn(true);
+        when(leasingReviewRepository.findByLeasingOrderId(10L)).thenReturn(Optional.empty());
 
         leasingReviewService.createReview(personId, leasingId, request);
 
-        verify(leasingReviewRepository).existsByLeasingOrderId(10L);
         verify(leasingReviewRepository).isOrderEligibleForReview(10L, personId, leasingId);
+        verify(leasingReviewRepository).findByLeasingOrderId(10L);
         verify(leasingReviewRepository).save(any(LeasingReview.class));
+    }
+
+    @Test
+    void createReview_updatesExistingReview_whenReviewAlreadyExists() {
+        String personId = "user-uuid";
+        Long leasingId = 1L;
+        CreateLeasingReviewRequest request = new CreateLeasingReviewRequest();
+        request.setLeasingOrderId(10L);
+        request.setRating(4);
+        request.setComment("Updated Comment");
+
+        LeasingReview existingReview =
+                LeasingReview.builder()
+                        .id(100L)
+                        .leasingOrderId(10L)
+                        .leasingId(leasingId)
+                        .rating(5)
+                        .comment("Original Comment")
+                        .build();
+
+        when(leasingReviewRepository.isOrderEligibleForReview(10L, personId, leasingId))
+                .thenReturn(true);
+        when(leasingReviewRepository.findByLeasingOrderId(10L))
+                .thenReturn(Optional.of(existingReview));
+
+        leasingReviewService.createReview(personId, leasingId, request);
+
+        verify(leasingReviewRepository).isOrderEligibleForReview(10L, personId, leasingId);
+        verify(leasingReviewRepository).findByLeasingOrderId(10L);
+        verify(leasingReviewRepository).save(existingReview);
+        assertThat(existingReview.getRating()).isEqualTo(4);
+        assertThat(existingReview.getComment()).isEqualTo("Updated Comment");
     }
 }

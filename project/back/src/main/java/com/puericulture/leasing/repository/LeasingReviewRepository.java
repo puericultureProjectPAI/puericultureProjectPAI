@@ -3,6 +3,7 @@ package com.puericulture.leasing.repository;
 import com.puericulture.leasing.dto.LeasingReviewSummary;
 import com.puericulture.leasing.entity.LeasingReview;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -65,4 +66,10 @@ public interface LeasingReviewRepository extends JpaRepository<LeasingReview, Lo
             @Param("leasingOrderId") Long leasingOrderId,
             @Param("clientId") String clientId,
             @Param("leasingId") Long leasingId);
+
+    /**
+     * Retrieves an existing review for a specific leasing order. Used to support review
+     * editing/modification (upsert logic).
+     */
+    Optional<LeasingReview> findByLeasingOrderId(Long leasingOrderId);
 }
