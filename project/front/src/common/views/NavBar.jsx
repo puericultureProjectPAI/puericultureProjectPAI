@@ -10,10 +10,10 @@ export default function Navbar() {
   const location = useLocation();
 
   const buttons = [
-    { path: "/a", label: "Accueil", icon: homeIcon },
-    { path: "/aa", label: "Rechercher", icon: searchIcon },
-    { path: "/aaa", label: "Publier", icon: postIcon },
-    { path: "/aaaa", label: "Messages", icon: messageIcon },
+    { path: "/", label: "Accueil", icon: homeIcon },
+    { path: "/", label: "Rechercher", icon: searchIcon },
+    { path: "/", label: "Publier", icon: postIcon },
+    { path: "/", label: "Messages", icon: messageIcon },
     { path: "/me", label: "Profil", icon: profileIcon },
   ];
 

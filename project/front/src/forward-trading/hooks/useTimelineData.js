@@ -1,21 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { apiClient } from "../../common/utils/apiClient";
 
 export const useTimelineData = (timelineId) => {
-  const {
-    data: periods = [],
+  const [periods, setPeriods] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!timelineId) return;
+
+    const fetchTimeline = async () => {
+      try {
+        setIsLoading(true);
+
+        const response = await apiClient.get(
+          `/forward-trading/timelines/${timelineId}`,
+        );
+
+        setPeriods(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTimeline();
+  }, [timelineId]);
+
+  return {
+    periods,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["timeline", timelineId],
-    queryFn: async () => {
-      const response = await apiClient.get(
-        `/forward-trading/timelines/${timelineId}`,
-      );
-      return response.data;
-    },
-    enabled: !!timelineId,
-  });
-
-  return { periods, isLoading, error };
+  };
 };
