@@ -176,7 +176,9 @@ public class ExchangeService {
     }
 
     private void requireNotBlocked(Exchange exchange) {
-        requireNotBlocked(exchange);
+        if (exchange.getStatus() == ExchangeStatus.BLOCKED) {
+            throw new BadRequestException("Exchange is frozen due to an active report");
+        }
     }
 
     /**

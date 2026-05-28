@@ -277,7 +277,9 @@ class ExchangeReportServiceTest {
     @Test
     void getAllReports_returnsAllMappedReports() {
         ExchangeReport report1 = new ExchangeReport();
+        report1.setId(1L);
         ExchangeReport report2 = new ExchangeReport();
+        report2.setId(2L);
         ReportResponse resp1 = new ReportResponse();
         ReportResponse resp2 = new ReportResponse();
 
