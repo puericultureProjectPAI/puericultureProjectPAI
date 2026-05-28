@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * with available=false and must be shown as greyed out and non-clickable.
  */
 @RestController
-@RequestMapping("/api/public/leasing")
+@RequestMapping("/public/leasing")
 @RequiredArgsConstructor
 @Tag(
         name = "Leasing Catalog",
