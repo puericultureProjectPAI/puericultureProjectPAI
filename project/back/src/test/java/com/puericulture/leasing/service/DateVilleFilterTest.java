@@ -1,11 +1,19 @@
 package com.puericulture.leasing.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
+
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.leasing.dto.LeasingFilterRequest;
 import com.puericulture.leasing.dto.ProductLeasingResponse;
 import com.puericulture.leasing.entity.LeasingArticle;
 import com.puericulture.leasing.exception.InvalidFilterCriteriaException;
 import com.puericulture.leasing.mapper.ProductLeasingMapper;
 import com.puericulture.leasing.repository.ProductLeasingRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,25 +21,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 public class DateVilleFilterTest {
 
-    @Mock
-    private ProductLeasingRepository mockRepository;
+    @Mock private ProductLeasingRepository mockRepository;
 
-    @Mock
-    private ProductLeasingMapper mockMapper;
+    @Mock private ProductLeasingMapper mockMapper;
 
-    @InjectMocks
-    private ProductLeasingService productLeasingService;
+    @InjectMocks private ProductLeasingService productLeasingService;
 
     private LeasingArticle mockProduct;
     private ProductLeasingResponse mockDto;
@@ -43,24 +40,25 @@ public class DateVilleFilterTest {
         mockProduct.setPostTitle("Poussette Yoyo");
         mockProduct.setDescription("Poussette légère et compacte");
         mockProduct.setCity("Paris");
-        mockProduct.setCategory("Poussette");
+        mockProduct.setCategory(ProductCategory.TRANSPORT_BEBE);
         mockProduct.setBrand("Babyzen");
         mockProduct.setModel("Yoyo 2");
         mockProduct.setPostDate(LocalDateTime.now());
         mockProduct.setPricePerDay(5L);
         mockProduct.setPricePerMonth(90L);
 
-        mockDto = ProductLeasingResponse.builder()
-                .productId(1L)
-                .postTitle("Poussette Yoyo")
-                .description("Poussette légère et compacte")
-                .city("Paris")
-                .category("Poussette")
-                .brand("Babyzen")
-                .model("Yoyo 2")
-                .pricePerDay(5L)
-                .pricePerMonth(90L)
-                .build();
+        mockDto =
+                ProductLeasingResponse.builder()
+                        .productId(1L)
+                        .postTitle("Poussette Yoyo")
+                        .description("Poussette légère et compacte")
+                        .city("Paris")
+                        .category("Poussette")
+                        .brand("Babyzen")
+                        .model("Yoyo 2")
+                        .pricePerDay(5L)
+                        .pricePerMonth(90L)
+                        .build();
     }
 
     @Test
@@ -84,9 +82,7 @@ public class DateVilleFilterTest {
 
     @Test
     void filter_returnsByCity_whenOnlyCityProvided() {
-        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder()
-                .city("Paris")
-                .build();
+        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder().city("Paris").build();
 
         when(mockRepository.findByCity("Paris")).thenReturn(List.of(mockProduct));
         when(mockMapper.toProductLeasingResponse(mockProduct)).thenReturn(mockDto);
@@ -102,12 +98,11 @@ public class DateVilleFilterTest {
         LocalDate startDate = LocalDate.now().plusDays(1);
         LocalDate endDate = LocalDate.now().plusDays(30);
 
-        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder()
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
+        LeasingFilterRequest filterRequest =
+                LeasingFilterRequest.builder().startDate(startDate).endDate(endDate).build();
 
-        when(mockRepository.findAvailableIdsByDateRange(startDate, endDate)).thenReturn(List.of(1L));
+        when(mockRepository.findAvailableIdsByDateRange(startDate, endDate))
+                .thenReturn(List.of(1L));
         when(mockRepository.findAllById(List.of(1L))).thenReturn(List.of(mockProduct));
         when(mockMapper.toProductLeasingResponse(mockProduct)).thenReturn(mockDto);
 
@@ -121,11 +116,12 @@ public class DateVilleFilterTest {
         LocalDate startDate = LocalDate.now().plusDays(1);
         LocalDate endDate = LocalDate.now().plusDays(30);
 
-        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder()
-                .city("Paris")
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
+        LeasingFilterRequest filterRequest =
+                LeasingFilterRequest.builder()
+                        .city("Paris")
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
 
         when(mockRepository.findAvailableIdsByCityAndDateRange("Paris", startDate, endDate))
                 .thenReturn(List.of(1L));
@@ -152,11 +148,12 @@ public class DateVilleFilterTest {
         LocalDate startDate = LocalDate.now().plusDays(10);
         LocalDate endDate = LocalDate.now().plusDays(1);
 
-        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder()
-                .city("Paris")
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
+        LeasingFilterRequest filterRequest =
+                LeasingFilterRequest.builder()
+                        .city("Paris")
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
 
         assertThatThrownBy(() -> productLeasingService.filter(filterRequest))
                 .isInstanceOf(InvalidFilterCriteriaException.class)
@@ -168,10 +165,8 @@ public class DateVilleFilterTest {
         LocalDate startDate = LocalDate.of(2020, 1, 1);
         LocalDate endDate = LocalDate.of(2020, 1, 31);
 
-        LeasingFilterRequest filterRequest = LeasingFilterRequest.builder()
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
+        LeasingFilterRequest filterRequest =
+                LeasingFilterRequest.builder().startDate(startDate).endDate(endDate).build();
 
         assertThatThrownBy(() -> productLeasingService.filter(filterRequest))
                 .isInstanceOf(InvalidFilterCriteriaException.class)

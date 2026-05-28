@@ -2,9 +2,8 @@ package com.puericulture.leasing.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.util.List;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +22,8 @@ public class ProductLeasingListResponse {
     private List<ProductLeasingResponse> data;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Schema(description = "Message contextuel optionnel", example = "Aucun produit trouvé pour ces critères")
+    @Schema(
+            description = "Message contextuel optionnel",
+            example = "Aucun produit trouvé pour ces critères")
     private String message;
 }

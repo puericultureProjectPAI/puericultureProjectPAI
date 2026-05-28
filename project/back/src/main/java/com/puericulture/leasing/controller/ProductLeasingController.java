@@ -12,11 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/product-leasing")
@@ -31,38 +30,47 @@ public class ProductLeasingController {
     @ApiResponse(responseCode = "200", description = "Liste de tous les produits")
     public ResponseEntity<ProductLeasingListResponse> findAll() {
         List<ProductLeasingResponse> results = productLeasingService.findAll();
-        return ResponseEntity.ok(ProductLeasingListResponse.builder()
-                .success(true)
-                .count(results.size())
-                .data(results)
-                .build());
+        return ResponseEntity.ok(
+                ProductLeasingListResponse.builder()
+                        .success(true)
+                        .count(results.size())
+                        .data(results)
+                        .build());
     }
 
     /**
-     * Filtre les produits en location avec critères optionnels.
-     * Critères (au moins UN obligatoire) : city, startDate, endDate.
+     * Filtre les produits en location avec critères optionnels. Critères (au moins UN obligatoire)
+     * : city, startDate, endDate.
      */
     @PostMapping("/filter")
     @Operation(
             summary = "Filtrer les produits en location",
-            description = "Recherche les produits disponibles en location selon ville et/ou dates"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Résultat du filtrage (peut être vide)",
-                    content = @Content(schema = @Schema(implementation = ProductLeasingListResponse.class))
-            ),
-            @ApiResponse(responseCode = "400", description = "Critères invalides (aucun critère, dates incorrectes, etc)"),
-            @ApiResponse(responseCode = "500", description = "Erreur serveur interne")
-    })
-    public ResponseEntity<ProductLeasingListResponse> filter(@Valid @RequestBody LeasingFilterRequest filterRequest) {
+            description = "Recherche les produits disponibles en location selon ville et/ou dates")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Résultat du filtrage (peut être vide)",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                ProductLeasingListResponse.class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Critères invalides (aucun critère, dates incorrectes, etc)"),
+                @ApiResponse(responseCode = "500", description = "Erreur serveur interne")
+            })
+    public ResponseEntity<ProductLeasingListResponse> filter(
+            @Valid @RequestBody LeasingFilterRequest filterRequest) {
         List<ProductLeasingResponse> results = productLeasingService.filter(filterRequest);
 
-        ProductLeasingListResponse.ProductLeasingListResponseBuilder builder = ProductLeasingListResponse.builder()
-                .success(true)
-                .count(results.size())
-                .data(results);
+        ProductLeasingListResponse.ProductLeasingListResponseBuilder builder =
+                ProductLeasingListResponse.builder()
+                        .success(true)
+                        .count(results.size())
+                        .data(results);
 
         if (results.isEmpty()) {
             builder.message("Aucun produit trouvé pour ces critères");
@@ -74,15 +82,16 @@ public class ProductLeasingController {
     @GetMapping("/cities")
     @Operation(
             summary = "Récupérer les villes disponibles",
-            description = "Retourne la liste de toutes les villes ayant au moins un produit en location"
-    )
+            description =
+                    "Retourne la liste de toutes les villes ayant au moins un produit en location")
     @ApiResponse(responseCode = "200", description = "Liste des villes disponibles")
     public ResponseEntity<LeasingCitiesResponse> getAvailableCities() {
         List<String> cities = productLeasingService.getAvailableCities();
-        return ResponseEntity.ok(LeasingCitiesResponse.builder()
-                .success(true)
-                .count(cities.size())
-                .data(cities)
-                .build());
+        return ResponseEntity.ok(
+                LeasingCitiesResponse.builder()
+                        .success(true)
+                        .count(cities.size())
+                        .data(cities)
+                        .build());
     }
 }

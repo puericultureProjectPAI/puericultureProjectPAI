@@ -1,8 +1,8 @@
 package com.puericulture.leasing.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
 import java.time.LocalDate;
+import lombok.*;
 
 @Data
 @NoArgsConstructor

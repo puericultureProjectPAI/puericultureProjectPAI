@@ -6,14 +6,13 @@ import com.puericulture.leasing.entity.LeasingArticle;
 import com.puericulture.leasing.exception.InvalidFilterCriteriaException;
 import com.puericulture.leasing.mapper.ProductLeasingMapper;
 import com.puericulture.leasing.repository.ProductLeasingRepository;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,18 +24,18 @@ public class ProductLeasingService {
 
     @Transactional(readOnly = true)
     public List<ProductLeasingResponse> findAll() {
-        List<ProductLeasingResponse> results = productLeasingRepository.findAllWithLeasing()
-                .stream()
-                .map(productLeasingMapper::toProductLeasingResponse)
-                .toList();
+        List<ProductLeasingResponse> results =
+                productLeasingRepository.findAllWithLeasing().stream()
+                        .map(productLeasingMapper::toProductLeasingResponse)
+                        .toList();
         log.info("{} produits retournés", results.size());
         return results;
     }
 
     /**
-     * Filtre les produits selon les critères fournis (au moins UN obligatoire).
-     * Pour les filtres avec dates, la disponibilité est vérifiée via leasing_orders :
-     * un produit est disponible si aucune commande existante ne chevauche la période demandée.
+     * Filtre les produits selon les critères fournis (au moins UN obligatoire). Pour les filtres
+     * avec dates, la disponibilité est vérifiée via leasing_orders : un produit est disponible si
+     * aucune commande existante ne chevauche la période demandée.
      *
      * @throws InvalidFilterCriteriaException si aucun critère ou dates invalides
      */
@@ -69,25 +68,28 @@ public class ProductLeasingService {
 
         if (hasCity && hasDates) {
             log.debug("Filtre: VILLE + DATES (disponibilité)");
-            List<ProductLeasingResponse> results = findAvailableByIds(
-                    productLeasingRepository.findAvailableIdsByCityAndDateRange(city, startDate, endDate));
+            List<ProductLeasingResponse> results =
+                    findAvailableByIds(
+                            productLeasingRepository.findAvailableIdsByCityAndDateRange(
+                                    city, startDate, endDate));
             log.info("Filtrage effectué: {} produits trouvés", results.size());
             return results;
         }
 
         if (hasCity) {
             log.debug("Filtre: VILLE SEULEMENT");
-            List<ProductLeasingResponse> results = productLeasingRepository.findByCity(city)
-                    .stream()
-                    .map(productLeasingMapper::toProductLeasingResponse)
-                    .toList();
+            List<ProductLeasingResponse> results =
+                    productLeasingRepository.findByCity(city).stream()
+                            .map(productLeasingMapper::toProductLeasingResponse)
+                            .toList();
             log.info("Filtrage effectué: {} produits trouvés", results.size());
             return results;
         }
 
         log.debug("Filtre: DATES SEULEMENT (disponibilité)");
-        List<ProductLeasingResponse> results = findAvailableByIds(
-                productLeasingRepository.findAvailableIdsByDateRange(startDate, endDate));
+        List<ProductLeasingResponse> results =
+                findAvailableByIds(
+                        productLeasingRepository.findAvailableIdsByDateRange(startDate, endDate));
         log.info("Filtrage effectué: {} produits trouvés", results.size());
         return results;
     }
@@ -101,8 +103,7 @@ public class ProductLeasingService {
         if (ids.isEmpty()) {
             return List.of();
         }
-        return productLeasingRepository.findAllById(ids)
-                .stream()
+        return productLeasingRepository.findAllById(ids).stream()
                 .sorted(Comparator.comparing(LeasingArticle::getPricePerDay))
                 .map(productLeasingMapper::toProductLeasingResponse)
                 .toList();
