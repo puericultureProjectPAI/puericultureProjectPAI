@@ -51,13 +51,15 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /publier/i }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit).toHaveBeenCalledWith({
+    expect(onSubmit).toHaveBeenCalledWith("TROC", {
       title: "Poussette bébé",
       description: "Poussette bébé en très bon état",
       estimatedPrice: 40,
       imageReference: "poussette.png",
       city: "Lille",
       category: "Poussettes, porte-bébés et sièges auto",
+      condition: "Très bon état",
+      price: 0,
     });
   });
 });

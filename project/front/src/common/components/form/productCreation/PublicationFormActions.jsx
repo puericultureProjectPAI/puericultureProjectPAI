@@ -4,6 +4,7 @@ export default function PublicationFormActions({
   setTouched,
   step,
   validateForm,
+  values,
 }) {
   const goNext = async () => {
     const errors = await validateForm();
@@ -11,6 +12,7 @@ export default function PublicationFormActions({
       1: ["mode"],
       2: ["imageReference", "title", "description", "category", "city"],
       3: [],
+      4: [],
     }[step];
 
     const stepErrors = stepFields.filter((field) => errors[field]);
@@ -28,6 +30,9 @@ export default function PublicationFormActions({
     setStep(step + 1);
   };
 
+  const isLastStep =
+    step === 5 || (step === 4 && values?.mode !== "SECOND_HAND");
+
   return (
     <div className="mt-6 flex items-center justify-center gap-4">
       {step > 1 && (
@@ -40,7 +45,7 @@ export default function PublicationFormActions({
         </button>
       )}
 
-      {step < 4 ? (
+      {!isLastStep ? (
         <button
           className="min-w-28 rounded-md bg-[#080036] px-5 py-3 text-sm font-extrabold text-white transition hover:bg-[#1a1157]"
           onClick={goNext}
