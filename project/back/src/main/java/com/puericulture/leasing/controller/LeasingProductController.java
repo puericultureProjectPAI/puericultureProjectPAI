@@ -1,5 +1,6 @@
 package com.puericulture.leasing.controller;
 
+import com.puericulture.config.errormanager.ErrorResponse;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
 import com.puericulture.leasing.service.LeasingProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,7 +53,10 @@ public class LeasingProductController {
                 @ApiResponse(
                         responseCode = "500",
                         description = "Internal server error. Database query failed.",
-                        content = @Content(mediaType = "application/json"))
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponse.class)))
             })
     @GetMapping("/products")
     public ResponseEntity<List<LeasingProductSummaryDto>> getProducts() {

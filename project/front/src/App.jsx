@@ -44,8 +44,8 @@ export default function App() {
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
-        {/* Preview sans connexion */}
-        <Route path="/leasing/catalog-preview" element={<CatalogPage />} />
+        {/* Leasing - public */}
+        <Route path="/leasing/catalog" element={<CatalogPage />} />
         <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
 
         {/* Protected Routes */}
@@ -54,8 +54,7 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
-              <Route path="/forward" element={<ForwardTradingView />} />
-              {/* Future vertical routes go here */}
+
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
               <Route
