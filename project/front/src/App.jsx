@@ -8,10 +8,10 @@ import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
-import ProductDetailPage from "./leasing/views/ProductDetailPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
 
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
@@ -46,7 +46,7 @@ export default function App() {
 
         {/* Leasing - public */}
         <Route path="/leasing/catalog" element={<CatalogPage />} />
-        <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
+        <Route path="/leasing/products/:id" element={<LeasingProductDetailView />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
@@ -54,7 +54,7 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
-
+              {/* Future vertical routes go here */}
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
               <Route
