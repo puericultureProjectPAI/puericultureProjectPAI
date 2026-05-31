@@ -4,11 +4,7 @@
  * 1. Form to propose exchanges
  * 2. List of user's own exchanges
  * 3. List of exchanges proposed to user
- *
- * User journey visualization:
- * - PROPOSER FLOW: Create proposal (PENDING) → see response → delete if needed
- * - RECEIVER FLOW: Receive proposal → accept (ACCEPTED) → negotiate (chat) → confirm (CONFIRMED)
- * - Both: refuse if not interested (REFUSED)
+ * 4. LABORATOIRE : Test de l'échange triangulaire (Back-end Matching)
  */
 
 import { useEffect, useState } from "react";
@@ -17,8 +13,9 @@ import { useAuth } from "../../common/security/AuthContext";
 import ExchangeProposalForm from "../components/ExchangeProposalForm";
 import ExchangeList from "../components/ExchangeList";
 
-// Mock products - In real app, these would come from backend and use the authenticated user's ID
-// For now, we generate mock products dynamically with the real user ID
+// On importe ton composant de test depuis l'index de ton module troc
+import TriangularExchangePage from "../pages/TriangularExchangePage";
+
 const getMockAvailableProducts = (userId, userFirstName, userLastName) => [
   {
     id: 1,
@@ -75,19 +72,10 @@ const MOCK_OTHER_PRODUCTS = [
 ];
 
 const TrocView = () => {
-  // Get authenticated user from context (replaces MOCK_CURRENT_USER_ID)
   const { user } = useAuth();
-
-  // Exchange manager hook for all exchange operations
   const exchangeManager = useExchangeManager();
-
-  // Local component state
   const [activeSection, setActiveSection] = useState("overview");
 
-  /**
-   * Generate mock products with the authenticated user's real ID
-   * In production, these will come from backend API calls
-   */
   const mockAvailableProducts = getMockAvailableProducts(
     user?.id,
     user?.user_metadata?.firstName || "User",
@@ -96,37 +84,23 @@ const TrocView = () => {
 
   const { fetchMyExchanges, fetchExchangesProposedToMe } = exchangeManager;
 
-  /**
-   * Initialize: Load all exchanges when component mounts
-   */
   useEffect(() => {
-    // Load user's exchanges
     fetchMyExchanges();
-    // Load exchanges proposed to this user
     fetchExchangesProposedToMe();
   }, [fetchMyExchanges, fetchExchangesProposedToMe]);
 
-  /**
-   * Handle exchange creation
-   * Creates a new exchange proposal with the selected products
-   */
   const handleCreateExchange = async (proposerProduct, receiverProduct) => {
     try {
       const response = await exchangeManager.createNewExchange(
         proposerProduct,
         receiverProduct,
       );
-      // Success: form will be reset in useExchangeManager
       return response;
     } catch (err) {
       console.error("Failed to create exchange:", err);
-      // Error is handled in the hook and displayed via exchangeManager.error
     }
   };
 
-  /**
-   * Get statistics for the dashboard summary
-   */
   const getStats = () => {
     const pendingCount = exchangeManager.myExchanges.filter(
       (e) => e.status === "PENDING",
@@ -162,8 +136,7 @@ const TrocView = () => {
             TROC - Product Exchange
           </h1>
           <p className="text-gray-600">
-            Trade your unwanted items for products you need. Free, easy, and
-            community-driven.
+            Trade your unwanted items for products you need.
           </p>
         </div>
 
@@ -227,16 +200,26 @@ const TrocView = () => {
           >
             📦 Manage Exchanges
           </button>
+
+          {/* NOUVEL ONGLET : AJOUTÉ POUR TON LABO TRIANGULAIRE */}
+          <button
+            onClick={() => setActiveSection("triangular")}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+              activeSection === "triangular"
+                ? "bg-orange-600 text-white"
+                : "bg-white text-gray-700 border border-orange-300 hover:bg-orange-50 text-orange-600"
+            }`}
+          >
+            ⚡ Triangular Match (Labo)
+          </button>
         </div>
 
-        {/* Overview Section - Information and Journey */}
+        {/* 1. Overview Section */}
         {activeSection === "overview" && (
           <div className="space-y-6">
-            {/* User Journey Flow */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold mb-4">How TROC Works</h2>
               <div className="grid md:grid-cols-2 gap-8">
-                {/* Proposer Journey */}
                 <div>
                   <h3 className="font-bold text-lg text-blue-600 mb-3">
                     🎯 As a Proposer
@@ -253,32 +236,8 @@ const TrocView = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-3">
-                      <div className="bg-yellow-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-yellow-600">
-                        2
-                      </div>
-                      <div>
-                        <p className="font-semibold">Wait for Response</p>
-                        <p className="text-sm text-gray-600">
-                          Proposal is PENDING until the other user responds
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="bg-red-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-red-600">
-                        3
-                      </div>
-                      <div>
-                        <p className="font-semibold">Delete if Needed</p>
-                        <p className="text-sm text-gray-600">
-                          You can delete your proposal while it's still pending
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </div>
-
-                {/* Receiver Journey */}
                 <div>
                   <h3 className="font-bold text-lg text-purple-600 mb-3">
                     👤 As a Receiver
@@ -295,114 +254,59 @@ const TrocView = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-3">
-                      <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-blue-600">
-                        2
-                      </div>
-                      <div>
-                        <p className="font-semibold">Accept & Negotiate</p>
-                        <p className="text-sm text-gray-600">
-                          Accept the proposal and chat to finalize details
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="bg-green-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-green-600">
-                        3
-                      </div>
-                      <div>
-                        <p className="font-semibold">Confirm Exchange</p>
-                        <p className="text-sm text-gray-600">
-                          Both products are now permanently closed
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="bg-red-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-red-600">
-                        4
-                      </div>
-                      <div>
-                        <p className="font-semibold">Refuse (Optional)</p>
-                        <p className="text-sm text-gray-600">
-                          You can refuse any proposal at any time
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Quick Actions */}
-            <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-              <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                <button
-                  onClick={() => setActiveSection("propose")}
-                  className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-semibold"
-                >
-                  ➕ Create New Proposal
-                </button>
-                <button
-                  onClick={() => setActiveSection("manage")}
-                  className="p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-center font-semibold"
-                >
-                  📊 View All Exchanges
-                </button>
-                <button
-                  onClick={exchangeManager.fetchExchangesProposedToMe}
-                  className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-center font-semibold"
-                >
-                  🔄 Refresh Proposals
-                </button>
-              </div>
-            </div>
           </div>
         )}
 
-        {/* Propose Exchange Section */}
+        {/* 2. Propose Exchange Section */}
         {activeSection === "propose" && (
-          <div>
-            <ExchangeProposalForm
-              availableProducts={mockAvailableProducts}
-              otherUserProducts={MOCK_OTHER_PRODUCTS}
-              onSubmit={handleCreateExchange}
-              loading={exchangeManager.loading}
-              error={exchangeManager.error}
-              success={exchangeManager.successMessage}
-              onClearMessages={() => {
-                exchangeManager.clearError();
-                exchangeManager.clearSuccessMessage();
-              }}
-            />
-          </div>
+          <ExchangeProposalForm
+            availableProducts={mockAvailableProducts}
+            otherUserProducts={MOCK_OTHER_PRODUCTS}
+            onSubmit={handleCreateExchange}
+            loading={exchangeManager.loading}
+            error={exchangeManager.error}
+            success={exchangeManager.successMessage}
+            onClearMessages={() => {
+              exchangeManager.clearError();
+              exchangeManager.clearSuccessMessage();
+            }}
+          />
         )}
 
-        {/* Manage Exchanges Section */}
+        {/* 3. Manage Exchanges Section */}
         {activeSection === "manage" && (
-          <div>
-            <ExchangeList
-              myExchanges={exchangeManager.myExchanges}
-              proposedToMeExchanges={exchangeManager.proposedToMeExchanges}
-              currentUserId={user?.id}
-              onAccept={exchangeManager.acceptExchangeProposal}
-              onConfirm={exchangeManager.confirmExchangeProposal}
-              onRefuse={exchangeManager.refuseExchangeProposal}
-              onDelete={exchangeManager.deleteExchangeProposal}
-              loading={exchangeManager.loading}
-            />
+          <ExchangeList
+            myExchanges={exchangeManager.myExchanges}
+            proposedToMeExchanges={exchangeManager.proposedToMeExchanges}
+            currentUserId={user?.id}
+            onAccept={exchangeManager.acceptExchangeProposal}
+            onConfirm={exchangeManager.confirmExchangeProposal}
+            onRefuse={exchangeManager.refuseExchangeProposal}
+            onDelete={exchangeManager.deleteExchangeProposal}
+            loading={exchangeManager.loading}
+          />
+        )}
+
+        {/* 4. NOUVELLE SECTION : Affichage de ton composant de test */}
+        {/* 4. NOUVELLE SECTION : Affichage de ton prototype d'échange triangulaire */}
+        {activeSection === "triangular" && (
+          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <TriangularExchangePage />
           </div>
         )}
 
-        {/* Global Error/Success Messages */}
+        {/* Global Toast Messages */}
         {exchangeManager.error && activeSection !== "propose" && (
-          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow">
+          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow z-50">
             {exchangeManager.error}
           </div>
         )}
-
         {exchangeManager.successMessage && activeSection !== "propose" && (
-          <div className="fixed bottom-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
+          <div className="fixed bottom-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow z-50">
             {exchangeManager.successMessage}
           </div>
         )}

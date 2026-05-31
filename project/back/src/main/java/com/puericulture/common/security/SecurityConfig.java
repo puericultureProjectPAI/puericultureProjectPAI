@@ -54,9 +54,8 @@ public class SecurityConfig {
                                                 // Spring Boot Actuator health endpoint
                                                 "/actuator/health")
                                         .permitAll()
-
-                                        // .requestMatchers("/troc/**")
-                                        // .permitAll()
+                                        .requestMatchers("/troc/**")
+                                        .permitAll()
 
                                         // Admin-only routes
 
