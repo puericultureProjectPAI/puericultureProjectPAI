@@ -70,14 +70,8 @@ export default function CatalogPage() {
         {products.map((product) => (
           <article
             key={product.id}
-            onClick={() =>
-              product.available && navigate(`/leasing/products/${product.id}`)
-            }
-            className={`rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)]${
-              product.available
-                ? " cursor-pointer"
-                : " opacity-50 pointer-events-none"
-            }`}
+            onClick={() => navigate(`/leasing/products/${product.id}`)}
+            className="rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer hover:shadow-md transition-shadow"
           >
             <img
               src={product.firstImageUrl || fallbackImage(product.category)}
