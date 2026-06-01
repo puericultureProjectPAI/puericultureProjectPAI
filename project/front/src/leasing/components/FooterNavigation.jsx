@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function FooterNavigation() {
   const navItems = [
     { icon: "home", label: "Accueil", active: true },
