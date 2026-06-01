@@ -11,6 +11,7 @@ export const useExchangeManager = () => {
   const [myExchanges, setMyExchanges] = useState([]);
   const [proposedToMeExchanges, setProposedToMeExchanges] = useState([]);
   const [exchangesForProduct, setExchangesForProduct] = useState([]);
+  const [trocSuggestions, setTrocSuggestions] = useState([]);
 
   // Loading and error states
   const [loading, setLoading] = useState(false);
@@ -205,6 +206,74 @@ export const useExchangeManager = () => {
   );
 
   /**
+   * Fetch automatic troc suggestions for the connected user.
+   */
+  const fetchTrocSuggestions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await exchangeApi.getTrocSuggestions();
+      setTrocSuggestions(response.data);
+    } catch (err) {
+      setError("Failed to fetch troc suggestions: " + err.message);
+      console.error("Error fetching troc suggestions:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
+   * Ignore a suggestion and refresh the suggestion list.
+   * @param {number} suggestionId - The suggestion ID to ignore
+   */
+  const ignoreTrocSuggestion = useCallback(
+    async (suggestionId) => {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+      try {
+        await exchangeApi.ignoreTrocSuggestion(suggestionId);
+        setSuccessMessage("Suggestion ignored successfully.");
+        await fetchTrocSuggestions();
+        return true;
+      } catch (err) {
+        setError("Failed to ignore suggestion: " + err.message);
+        console.error("Error ignoring suggestion:", err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchTrocSuggestions],
+  );
+
+  /**
+   * Accept a suggestion, which creates an exchange proposal.
+   * @param {number} suggestionId - The suggestion ID to accept
+   */
+  const acceptTrocSuggestion = useCallback(
+    async (suggestionId) => {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+      try {
+        const response = await exchangeApi.acceptTrocSuggestion(suggestionId);
+        setSuccessMessage("Exchange proposal created from suggestion.");
+        await fetchTrocSuggestions();
+        await fetchMyExchanges();
+        return response.data;
+      } catch (err) {
+        setError("Failed to accept suggestion: " + err.message);
+        console.error("Error accepting suggestion:", err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchMyExchanges, fetchTrocSuggestions],
+  );
+
+  /**
    * Clear success message
    */
   const clearSuccessMessage = useCallback(() => {
@@ -223,6 +292,7 @@ export const useExchangeManager = () => {
     myExchanges,
     proposedToMeExchanges,
     exchangesForProduct,
+    trocSuggestions,
     loading,
     error,
     successMessage,
@@ -231,11 +301,14 @@ export const useExchangeManager = () => {
     fetchMyExchanges,
     fetchExchangesProposedToMe,
     fetchExchangesForProduct,
+    fetchTrocSuggestions,
     createNewExchange,
     acceptExchangeProposal,
     confirmExchangeProposal,
     refuseExchangeProposal,
     deleteExchangeProposal,
+    ignoreTrocSuggestion,
+    acceptTrocSuggestion,
     clearSuccessMessage,
     clearError,
   };
