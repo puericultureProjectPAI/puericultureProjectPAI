@@ -69,8 +69,18 @@ public class ProductLeasingController {
                                                                 ProductLeasingListResponse.class))),
                 @ApiResponse(
                         responseCode = "400",
-                        description = "Critères invalides (aucun critère, dates incorrectes, etc)"),
-                @ApiResponse(responseCode = "500", description = "Erreur serveur interne")
+                        description = "Critères invalides (aucun critère, dates incorrectes, etc)",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = Object.class))),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erreur serveur interne",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = Object.class)))
             })
     public ResponseEntity<ProductLeasingListResponse> filter(
             @Valid @RequestBody LeasingFilterRequest filterRequest) {
