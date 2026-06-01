@@ -65,7 +65,6 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           estimatedPrice: Number(values.estimatedPrice),
           images: values.images,
           price: values.price ? Number(values.price) : 0,
-          imageReference: values.imageReference,
           city: values.city,
           category: values.category,
           condition: values.condition,

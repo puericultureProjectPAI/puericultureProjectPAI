@@ -7,10 +7,15 @@ import MyImageInput from "../../../src/common/components/form/MyImageInput";
 
 expect.extend(matchers);
 
+const { uploadMock, deleteMock } = vi.hoisted(() => ({
+  uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
+  deleteMock: vi.fn().mockResolvedValue(true),
+}));
+
 vi.mock("../../../src/common/hooks/useProductImage", () => ({
   useProductImage: () => ({
-    uploadImage: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
-    deleteImage: vi.fn().mockResolvedValue(true),
+    uploadImage: uploadMock,
+    deleteImage: deleteMock,
     isUploading: false,
     isDeleting: false,
     error: null,
@@ -52,10 +57,6 @@ describe("MyImageInput", () => {
   });
 
   it("n'uploade pas les formats non supportés", async () => {
-    const { useProductImage } =
-      await import("../../../src/common/hooks/useProductImage");
-    const uploadMock = useProductImage().uploadImage;
-
     renderInFormik();
     const input = document.querySelector('input[type="file"]');
     const pdfFile = new File(["content"], "doc.pdf", {

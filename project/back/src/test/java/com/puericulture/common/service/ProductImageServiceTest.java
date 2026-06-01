@@ -126,9 +126,33 @@ class ProductImageServiceTest {
     }
 
     @Test
-    void deleteImage_callsDeleteById() {
-        service.deleteImage(42L);
+    void deleteImage_deletesImage_whenCallerIsOwner() {
+        ProductImage image = new ProductImage();
+        image.setProduct(product);
 
-        verify(productImageRepository).deleteById(42L);
+        when(productImageRepository.findById(42L)).thenReturn(Optional.of(image));
+
+        service.deleteImage(42L, OWNER_ID);
+
+        verify(productImageRepository).delete(image);
+    }
+
+    @Test
+    void deleteImage_throwsNotFoundException_whenImageNotFound() {
+        when(productImageRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.deleteImage(99L, OWNER_ID))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void deleteImage_throwsForbiddenException_whenCallerIsNotOwner() {
+        ProductImage image = new ProductImage();
+        image.setProduct(product);
+
+        when(productImageRepository.findById(42L)).thenReturn(Optional.of(image));
+
+        assertThatThrownBy(() -> service.deleteImage(42L, UUID.randomUUID()))
+                .isInstanceOf(ForbiddenException.class);
     }
 }

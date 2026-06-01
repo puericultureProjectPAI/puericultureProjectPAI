@@ -1,27 +1,43 @@
 import { useState } from "react";
 import { apiClient } from "../utils/apiClient";
-import { uploadImageToCloudinary } from "../utils/productImageApi";
+import { optimizeImage } from "../utils/imageOptimizer";
 
 export const useImageManager = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
-  const isLocalMock =
-    !import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ||
-    !import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-  /**
-   * Uploads an image to Cloudinary (or the local mock) after optimizing it.
-   * @param {File} rawFile - The raw file from an <input type="file">.
-   * @returns {Promise<string|null>} The secure URL of the uploaded image, or null on failure.
-   */
+  const isLocalMock = !cloudName || !uploadPreset;
+  const uploadUrl = isLocalMock
+    ? `http://localhost:8081/v1_1/local_mock/image/upload`
+    : `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
   const uploadImage = async (rawFile) => {
     setIsUploading(true);
     setError(null);
 
     try {
-      return await uploadImageToCloudinary(rawFile);
+      const optimizedFile = await optimizeImage(rawFile);
+
+      const formData = new FormData();
+      formData.append("file", optimizedFile);
+      if (!isLocalMock) {
+        formData.append("upload_preset", uploadPreset);
+      }
+
+      const response = await fetch(uploadUrl, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok)
+        throw new Error(`Upload failed (Status: ${response.status})`);
+
+      const data = await response.json();
+      return data.secure_url;
     } catch (err) {
       setError(err.message);
       return null;
@@ -60,7 +76,7 @@ export const useImageManager = () => {
 
     try {
       // apiClient already injects the Supabase Bearer token (see apiClient.jsx)
-      await apiClient.delete("/api/common/images", {
+      await apiClient.delete("/common/images", {
         params: { url: imageUrl },
       });
       return true;

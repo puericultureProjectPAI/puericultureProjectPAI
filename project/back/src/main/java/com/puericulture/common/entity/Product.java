@@ -88,5 +88,6 @@ public abstract class Product {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
+    @OrderBy("position ASC")
     private List<ProductImage> images = new ArrayList<>();
 }

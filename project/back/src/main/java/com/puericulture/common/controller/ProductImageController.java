@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/common/product/images")
+@RequestMapping("/common/product/images")
 @Tag(
         name = "Product Images",
         description = "Upload, retrieve and delete images for a product listing")
@@ -98,8 +98,9 @@ public class ProductImageController {
                         content = @Content(mediaType = "application/json"))
             })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
-        productImageService.deleteImage(id);
+    public ResponseEntity<Void> deleteImage(
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long id) {
+        productImageService.deleteImage(id, UUID.fromString(authenticatedPersonId));
         return ResponseEntity.noContent().build();
     }
 }

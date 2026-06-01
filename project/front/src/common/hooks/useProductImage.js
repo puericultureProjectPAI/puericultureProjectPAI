@@ -44,7 +44,7 @@ export const useProductImage = () => {
     try {
       await deleteProductImage(imageId);
       if (imageUrl && !isLocalUrl(imageUrl)) {
-        await apiClient.delete("/api/common/images", {
+        await apiClient.delete("/common/images", {
           params: { url: imageUrl },
         });
       }

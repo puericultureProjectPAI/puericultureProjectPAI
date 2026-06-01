@@ -71,7 +71,17 @@ public class ProductImageService {
         return productImageMapper.toDto(productImageRepository.save(entity));
     }
 
-    public void deleteImage(Long id) {
-        productImageRepository.deleteById(id);
+    @Transactional
+    public void deleteImage(Long id, UUID requesterId) {
+        ProductImage image =
+                productImageRepository
+                        .findById(id)
+                        .orElseThrow(() -> new NotFoundException("Image introuvable : " + id));
+
+        if (!image.getProduct().getAuthor().getId().equals(requesterId)) {
+            throw new ForbiddenException("Vous n'êtes pas autorisé à supprimer cette image.");
+        }
+
+        productImageRepository.delete(image);
     }
 }
