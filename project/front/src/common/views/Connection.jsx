@@ -11,19 +11,22 @@ export default function Connection() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
     setStatus("Logging in...");
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      setStatus(`Error: ${error.message}`);
+    if (signInError) {
+      setError("Email ou mot de passe incorrect.");
+      setStatus("");
     } else {
       setStatus("Login successful.");
       navigate("/home");
@@ -38,6 +41,7 @@ export default function Connection() {
       setPassword={setPassword}
       onLogin={handleLogin}
       status={status}
+      error={error}
     />
   );
 }
