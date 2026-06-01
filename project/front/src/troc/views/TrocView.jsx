@@ -16,6 +16,7 @@ import { useExchangeManager } from "../hooks/useExchangeManager";
 import { useAuth } from "../../common/security/AuthContext";
 import ExchangeProposalForm from "../components/ExchangeProposalForm";
 import ExchangeList from "../components/ExchangeList";
+import TrocSuggestionList from "../components/TrocSuggestionList";
 
 // Mock products - In real app, these would come from backend and use the authenticated user's ID
 // For now, we generate mock products dynamically with the real user ID
@@ -94,7 +95,8 @@ const TrocView = () => {
     user?.user_metadata?.lastName || "",
   );
 
-  const { fetchMyExchanges, fetchExchangesProposedToMe } = exchangeManager;
+  const { fetchMyExchanges, fetchExchangesProposedToMe, fetchTrocSuggestions } =
+    exchangeManager;
 
   /**
    * Initialize: Load all exchanges when component mounts
@@ -104,7 +106,9 @@ const TrocView = () => {
     fetchMyExchanges();
     // Load exchanges proposed to this user
     fetchExchangesProposedToMe();
-  }, [fetchMyExchanges, fetchExchangesProposedToMe]);
+    // Load automatic troc suggestions
+    fetchTrocSuggestions();
+  }, [fetchMyExchanges, fetchExchangesProposedToMe, fetchTrocSuggestions]);
 
   /**
    * Handle exchange creation
@@ -216,6 +220,16 @@ const TrocView = () => {
             }`}
           >
             ✏️ Propose Exchange
+          </button>
+          <button
+            onClick={() => setActiveSection("suggestions")}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+              activeSection === "suggestions"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            🤖 Suggestions
           </button>
           <button
             onClick={() => setActiveSection("manage")}
@@ -336,7 +350,7 @@ const TrocView = () => {
             {/* Quick Actions */}
             <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
               <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid md:grid-cols-4 gap-4">
                 <button
                   onClick={() => setActiveSection("propose")}
                   className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-semibold"
@@ -348,6 +362,12 @@ const TrocView = () => {
                   className="p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-center font-semibold"
                 >
                   📊 View All Exchanges
+                </button>
+                <button
+                  onClick={() => setActiveSection("suggestions")}
+                  className="p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-center font-semibold"
+                >
+                  🤖 View Suggestions
                 </button>
                 <button
                   onClick={exchangeManager.fetchExchangesProposedToMe}
@@ -376,6 +396,17 @@ const TrocView = () => {
               }}
             />
           </div>
+        )}
+
+        {/* Suggestions Section */}
+        {activeSection === "suggestions" && (
+          <TrocSuggestionList
+            suggestions={exchangeManager.trocSuggestions}
+            loading={exchangeManager.loading}
+            onAccept={exchangeManager.acceptTrocSuggestion}
+            onIgnore={exchangeManager.ignoreTrocSuggestion}
+            onRefresh={fetchTrocSuggestions}
+          />
         )}
 
         {/* Manage Exchanges Section */}
