@@ -6,20 +6,6 @@ import "../leasing.css";
 const fallbackImage = (title) =>
   `https://placehold.co/260x200?text=${encodeURIComponent(title || "Produit")}`;
 
-/**const MOCK_PRODUCT = {
-  postTitle: "Chaussons bébé",
-  description:
-    'Chaussons motricité 3 "1ers pas" - Beige. Premiers pas assurés ! Confort, souplesse et maintien.',
-  condition: "Très bon état",
-  brand: "Kitchoun",
-  dimensions: "15 x 6 x 4 cm",
-  minAgeMonths: 0,
-  maxAgeMonths: 36,
-  maxWeightKg: 15,
-  pricePerMonth: 536,
-  imageUrls: ["/leasing/chaussure.jpg"],
-};**/
-
 function formatAgeRange(minMonths, maxMonths) {
   if (minMonths == null && maxMonths == null) return null;
   const fmt = (m) => {
