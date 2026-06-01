@@ -24,7 +24,7 @@ export const PUBLISH_MODES = [
     title: "Seconde main",
     description: "Je fixe un prix et je vends",
     icon: "🏷️",
-    disabled: true,
+    disabled: false,
   },
   {
     key: "LOCATION",
