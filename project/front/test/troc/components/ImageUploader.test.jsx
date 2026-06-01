@@ -44,7 +44,7 @@ describe("MyImageInput", () => {
   });
 
   it("masque le bouton d'ajout quand la limite est atteinte", async () => {
-    renderInFormik([
+    const { container } = renderInFormik([
       "https://example.com/1.jpg",
       "https://example.com/2.jpg",
       "https://example.com/3.jpg",
@@ -53,7 +53,7 @@ describe("MyImageInput", () => {
     ]);
     await waitFor(() => {
       expect(
-        document.querySelector('input[type="file"]'),
+        container.querySelector('input[type="file"]'),
       ).not.toBeInTheDocument();
     });
   });

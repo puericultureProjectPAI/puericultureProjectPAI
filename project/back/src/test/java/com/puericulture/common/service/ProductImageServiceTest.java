@@ -44,11 +44,11 @@ class ProductImageServiceTest {
     void setUp() {
         images = new ArrayList<>();
         product = mock(Product.class);
-        when(product.getImages()).thenReturn(images);
+        lenient().when(product.getImages()).thenReturn(images);
 
         Person author = mock(Person.class);
-        when(author.getId()).thenReturn(OWNER_ID);
-        when(product.getAuthor()).thenReturn(author);
+        lenient().when(author.getId()).thenReturn(OWNER_ID);
+        lenient().when(product.getAuthor()).thenReturn(author);
     }
 
     @Test
