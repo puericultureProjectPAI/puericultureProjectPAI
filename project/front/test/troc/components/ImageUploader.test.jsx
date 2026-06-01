@@ -43,7 +43,7 @@ describe("MyImageInput", () => {
     expect(screen.getAllByRole("img")).toHaveLength(2);
   });
 
-  it("masque le bouton d'ajout quand la limite est atteinte", () => {
+  it("masque le bouton d'ajout quand la limite est atteinte", async () => {
     renderInFormik([
       "https://example.com/1.jpg",
       "https://example.com/2.jpg",
@@ -51,9 +51,11 @@ describe("MyImageInput", () => {
       "https://example.com/4.jpg",
       "https://example.com/5.jpg",
     ]);
-    expect(
-      document.querySelector('input[type="file"]'),
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        document.querySelector('input[type="file"]'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it("n'uploade pas les formats non supportés", async () => {

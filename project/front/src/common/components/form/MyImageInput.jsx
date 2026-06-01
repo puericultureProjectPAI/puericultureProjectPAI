@@ -1,4 +1,5 @@
 import { useField, useFormikContext } from "formik";
+import { useState } from "react";
 import { useProductImage } from "../../hooks/useProductImage";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -25,6 +26,7 @@ export default function MyImageInput({
   const { setFieldValue } = useFormikContext();
   const { uploadImage, isUploading, error: uploadError } = useProductImage();
 
+  const [limitWarning, setLimitWarning] = useState(false);
   const urls = Array.isArray(field.value) ? field.value : [];
 
   const handleFileChange = async (e) => {
@@ -32,11 +34,19 @@ export default function MyImageInput({
     e.target.value = "";
 
     const remaining = maxImages - urls.length;
-    if (remaining <= 0) return;
+    if (remaining <= 0) {
+      setLimitWarning(true);
+      return;
+    }
 
-    const toUpload = selected
-      .filter((f) => ALLOWED_TYPES.includes(f.type))
-      .slice(0, remaining);
+    const eligible = selected.filter((f) => ALLOWED_TYPES.includes(f.type));
+    const toUpload = eligible.slice(0, remaining);
+
+    if (eligible.length > remaining) {
+      setLimitWarning(true);
+    } else {
+      setLimitWarning(false);
+    }
 
     const newUrls = [];
     for (const file of toUpload) {
@@ -64,6 +74,13 @@ export default function MyImageInput({
 
       {(uploadError || (meta.touched && meta.error)) && (
         <p className="text-red-500 text-sm mb-2">{uploadError || meta.error}</p>
+      )}
+
+      {limitWarning && (
+        <p className="text-orange-500 text-sm mb-2">
+          Maximum {maxImages} photos autorisées. Seules les premières ont été
+          ajoutées.
+        </p>
       )}
 
       <div className="flex flex-wrap gap-2">
