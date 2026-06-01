@@ -24,7 +24,10 @@ npm install
 ## 2. Infrastructure & Environment Setup
 
 ### A. Start Supabase (Database & Auth Engine)
+Start Supabase (Database & Auth Engine)
 
+> PREREQUISITES: Docker must be installed and running on your machine before launching Supabase. Supabase CLI relies on Docker to start its local services (PostgreSQL database, Auth, etc.) in containers. Without Docker, the following command will fail.
+Download Docker Desktop: https://www.docker.com/products/docker-desktop
 ```bash
 cd project/back
 npx supabase start -x edge-runtime,storage-api
