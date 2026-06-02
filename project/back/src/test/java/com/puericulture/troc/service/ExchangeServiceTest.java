@@ -1,4 +1,4 @@
-package com.puericulture.troc;
+package com.puericulture.troc.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -13,7 +13,6 @@ import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
-import com.puericulture.troc.service.ExchangeService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

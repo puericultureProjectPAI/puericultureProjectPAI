@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import InstallPWA from "../components/InstallPWA";
 import Footer from "./Footer";
 import Header from "./Header";
+import Navbar from "./NavBar";
 
 const Layout = () => {
   return (
@@ -15,7 +16,7 @@ const Layout = () => {
         {/* routes contents will be integrated here*/}
         <Outlet />
       </main>
-
+      <Navbar />
       <Footer />
     </div>
   );

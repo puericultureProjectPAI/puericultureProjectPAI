@@ -1,3 +1,5 @@
+const formatPrice = (value) => `${value}€`;
+
 export default function TimelineArticle({ article }) {
   return (
     <div className="bg-white p-4 rounded-2xl flex items-center gap-4 shadow-sm border border-transparent hover:border-blue-100">
@@ -11,9 +13,11 @@ export default function TimelineArticle({ article }) {
           {article.tag}
         </span>
         <h4 className="text-sm font-bold text-gray-800 mt-1">{article.name}</h4>
-        <p className="text-xs text-gray-400">Prix : {article.price}</p>
       </div>
 
+      <span className="text-lg font-bold text-gray-800 shrink-0">
+        {formatPrice(article.price)}
+      </span>
       {/* Flèche en caractère texte simple */}
       <span className="text-gray-300 text-xl font-light">›</span>
     </div>
