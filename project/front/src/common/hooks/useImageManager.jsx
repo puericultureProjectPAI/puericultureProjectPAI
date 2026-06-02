@@ -11,8 +11,15 @@ export const useImageManager = () => {
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   const isLocalMock = !cloudName || !uploadPreset;
-  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+  const uploadUrl = isLocalMock
+    ? `http://localhost:8081/v1_1/local_mock/image/upload`
+    : `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
+  /**
+   * Uploads an image to Cloudinary (or the local mock) after optimizing it.
+   * @param {File} rawFile - The raw file from an <input type="file">.
+   * @returns {Promise<string|null>} The secure URL of the uploaded image, or null on failure.
+   */
   const uploadImage = async (rawFile) => {
     setIsUploading(true);
     setError(null);
@@ -20,13 +27,11 @@ export const useImageManager = () => {
     try {
       const optimizedFile = await optimizeImage(rawFile);
 
-      if (isLocalMock) {
-        return URL.createObjectURL(optimizedFile);
-      }
-
       const formData = new FormData();
       formData.append("file", optimizedFile);
-      formData.append("upload_preset", uploadPreset);
+      if (!isLocalMock) {
+        formData.append("upload_preset", uploadPreset);
+      }
 
       const response = await fetch(uploadUrl, {
         method: "POST",
