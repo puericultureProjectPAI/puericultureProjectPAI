@@ -60,7 +60,10 @@ export default function ProductDetailPage() {
 
   const priceDisplay =
     product.pricePerMonth != null
-      ? (product.pricePerMonth / 100).toFixed(2)
+      ? (product.pricePerMonth / 100).toLocaleString("fr-FR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) + " €"
       : null;
 
   const ageRange = formatAgeRange(product.minAgeMonths, product.maxAgeMonths);
@@ -85,7 +88,20 @@ export default function ProductDetailPage() {
             arrow_back
           </span>
         </button>
-        <button className="p-[2px]">
+        <button
+          aria-label="Partager"
+          onClick={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: product.postTitle,
+                url: window.location.href,
+              });
+            } else {
+              navigator.clipboard.writeText(window.location.href);
+            }
+          }}
+          className="p-[2px]"
+        >
           <span className="material-symbols-rounded text-[20px]">
             ios_share
           </span>
@@ -132,7 +148,7 @@ export default function ProductDetailPage() {
           <h1 className="text-[16px] font-bold">{product.postTitle}</h1>
           {priceDisplay && (
             <span className="ml-[8px] whitespace-nowrap text-[14px] font-bold">
-              {priceDisplay}€
+              {priceDisplay}
             </span>
           )}
         </div>
