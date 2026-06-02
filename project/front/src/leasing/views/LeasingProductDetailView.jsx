@@ -3,6 +3,7 @@ import { useLeasingArticle } from "../hooks/useLeasing";
 import ProductHeader from "../components/ProductHeader";
 import ProductImage from "../components/ProductImage";
 import ProductInfo from "../components/ProductInfo";
+import LeasingBookingSection from "../components/LeasingBookingSection";
 import LeasingReviewsSection from "../components/LeasingReviewsSection";
 import FooterNavigation from "../components/FooterNavigation";
 
@@ -80,6 +81,14 @@ export default function LeasingProductDetailView() {
         minAgeMonths={product.minAgeMonths}
         maxAgeMonths={product.maxAgeMonths}
         maxWeightKg={product.maxWeightKg}
+      />
+
+      {/* Date picker and booking logic section */}
+      <LeasingBookingSection
+        leasingId={product.id}
+        productTitle={product.title}
+        pricePerMonth={articleData.pricePerMonth}
+        pricePerDay={articleData.pricePerDay}
       />
 
       {/* Reviews list component with inline submit reviews popup trigger */}
