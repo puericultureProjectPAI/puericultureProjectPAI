@@ -62,6 +62,46 @@ export function useSubmitReview(leasingId) {
 }
 
 /**
+ * Hook to submit a new leasing reservation.
+ * Backend: POST /leasing/reservations (JWT protected via apiClient interceptor)
+ */
+export function useSubmitBooking(leasingId) {
+  return useMutation({
+    mutationFn: async ({
+      startDate,
+      endDate,
+      deliveryStreet,
+      deliveryZipCode,
+      deliveryCity,
+    }) => {
+      const response = await apiClient.post("/leasing/reservations", {
+        productId: Number(leasingId),
+        startDate,
+        endDate,
+        deliveryStreet,
+        deliveryZipCode,
+        deliveryCity,
+      });
+      return response.data;
+    },
+  });
+}
+
+/**
+ * Hook to retrieve user profile address for leasing delivery.
+ * Backend: GET /leasing/profile (JWT protected via apiClient interceptor)
+ */
+export function useLeasingProfile() {
+  return useQuery({
+    queryKey: ["leasingProfile"],
+    queryFn: async () => {
+      const response = await apiClient.get("/leasing/profile");
+      return response.data;
+    },
+  });
+}
+
+/**
  * Custom UI hook to encapsulate state mapping, name/date formatting logic
  * and calculations for childcare leasing reviews.
  */
