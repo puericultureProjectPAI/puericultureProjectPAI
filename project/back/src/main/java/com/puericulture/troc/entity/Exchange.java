@@ -33,10 +33,6 @@ public class Exchange {
     @Column(nullable = false)
     private ExchangeStatus status = ExchangeStatus.PENDING;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status_before_block")
-    private ExchangeStatus statusBeforeBlock;
-
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
 }
