@@ -1,11 +1,6 @@
 node_modules
 .idea
-.antigravity
-.antigravity.md
-.antigravityrules
-.claude
-.claude.md
-.cursor
-.cursor.md
-.gemini
-.gemini.md
+pr_review/*
+pr_review
+.agents
+.agents/*
