@@ -40,7 +40,6 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 "/health",
                                                 "/api/public/**",
-                                                //  "/api/v1/ai/**",
                                                 // Swagger / OpenAPI — must be accessible without a
                                                 // token
                                                 "/swagger-ui.html",

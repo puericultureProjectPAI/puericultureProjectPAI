@@ -53,8 +53,3 @@ logging:
     web: TRACE
     org.springframework.security: INFO
     com.puericulture: DEBUG
-
-google:
-  gemini:
-    api-key: AIzaSyCHUfkc_AjGcBQeNN-sd0NEXWwxHDVoYcs
-    url: https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent

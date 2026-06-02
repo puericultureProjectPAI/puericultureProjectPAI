@@ -19,11 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class GeminiVisionService {
 
-    @Value("${google.gemini.api-key}")
+    @Value("${OPENAI_API_KEY}")
     private String apiKey;
 
-    @Value("${google.gemini.url}")
-    private String apiUrl;
+    private final String apiUrl =
+            "https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
