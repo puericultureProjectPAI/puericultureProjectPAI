@@ -209,7 +209,10 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            📋 Overview
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              dashboard
+            </span>{" "}
+            Overview
           </button>
           <button
             onClick={() => setActiveSection("propose")}
@@ -219,7 +222,10 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            ✏️ Propose Exchange
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              edit
+            </span>{" "}
+            Propose Exchange
           </button>
           <button
             onClick={() => setActiveSection("suggestions")}
@@ -229,7 +235,10 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            🤖 Suggestions
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              smart_toy
+            </span>{" "}
+            Suggestions
           </button>
           <button
             onClick={() => setActiveSection("manage")}
@@ -239,7 +248,10 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            📦 Manage Exchanges
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              inventory_2
+            </span>{" "}
+            Manage Exchanges
           </button>
         </div>
 
@@ -253,7 +265,10 @@ const TrocView = () => {
                 {/* Proposer Journey */}
                 <div>
                   <h3 className="font-bold text-lg text-blue-600 mb-3">
-                    🎯 As a Proposer
+                    <span className="material-symbols-rounded text-[20px] align-middle">
+                      ads_click
+                    </span>{" "}
+                    As a Proposer
                   </h3>
                   <div className="space-y-3">
                     <div className="flex gap-3">
@@ -295,7 +310,10 @@ const TrocView = () => {
                 {/* Receiver Journey */}
                 <div>
                   <h3 className="font-bold text-lg text-purple-600 mb-3">
-                    👤 As a Receiver
+                    <span className="material-symbols-rounded text-[20px] align-middle">
+                      person
+                    </span>{" "}
+                    As a Receiver
                   </h3>
                   <div className="space-y-3">
                     <div className="flex gap-3">
@@ -355,25 +373,37 @@ const TrocView = () => {
                   onClick={() => setActiveSection("propose")}
                   className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-semibold"
                 >
-                  ➕ Create New Proposal
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    add
+                  </span>{" "}
+                  Create New Proposal
                 </button>
                 <button
                   onClick={() => setActiveSection("manage")}
                   className="p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-center font-semibold"
                 >
-                  📊 View All Exchanges
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    bar_chart
+                  </span>{" "}
+                  View All Exchanges
                 </button>
                 <button
                   onClick={() => setActiveSection("suggestions")}
                   className="p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-center font-semibold"
                 >
-                  🤖 View Suggestions
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    smart_toy
+                  </span>{" "}
+                  View Suggestions
                 </button>
                 <button
                   onClick={exchangeManager.fetchExchangesProposedToMe}
                   className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-center font-semibold"
                 >
-                  🔄 Refresh Proposals
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    refresh
+                  </span>{" "}
+                  Refresh Proposals
                 </button>
               </div>
             </div>

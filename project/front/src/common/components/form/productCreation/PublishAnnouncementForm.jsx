@@ -53,6 +53,7 @@ const validationSchemas = {
 
 export default function PublishAnnouncementForm({ error, onSubmit, success }) {
   const [step, setStep] = useState(1);
+  const [aiAnalysis, setAiAnalysis] = useState({ score: null, status: "idle" });
 
   return (
     <Formik
@@ -73,6 +74,7 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         const isCreated = await onSubmit(values.mode, payload);
         if (isCreated) {
           helpers.resetForm();
+          setAiAnalysis({ score: null, status: "idle" });
           setStep(1);
         }
         helpers.setSubmitting(false);
@@ -88,6 +90,8 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
             {step === 1 && <ModeSelectionStep setFieldValue={setFieldValue} />}
             {step === 2 && (
               <RequiredProductInfoStep
+                aiAnalysis={aiAnalysis}
+                setAiAnalysis={setAiAnalysis}
                 setFieldValue={setFieldValue}
                 values={values}
               />
