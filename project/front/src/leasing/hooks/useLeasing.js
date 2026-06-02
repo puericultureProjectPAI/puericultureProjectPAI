@@ -3,13 +3,13 @@ import { apiClient } from "../../common/utils/apiClient";
 
 /**
  * Hook to retrieve a detailed leasing article by its ID.
- * Backend: GET /leasing/articles/{id} (JWT protected via apiClient interceptor)
+ * Backend: GET /public/leasing/articles/{id} (Public endpoint)
  */
 export function useLeasingArticle(id) {
   return useQuery({
     queryKey: ["leasingArticle", id],
     queryFn: async () => {
-      const response = await apiClient.get(`/leasing/articles/${id}`);
+      const response = await apiClient.get(`/public/leasing/articles/${id}`);
       return response.data;
     },
     enabled: !!id,
@@ -59,4 +59,48 @@ export function useSubmitReview(leasingId) {
       });
     },
   });
+}
+
+/**
+ * Custom UI hook to encapsulate state mapping, name/date formatting logic
+ * and calculations for childcare leasing reviews.
+ */
+export function useLeasingReviewsData(leasingId) {
+  const { data: responseData, isLoading, error } = useLeasingReviews(leasingId);
+
+  const formatTimeAgo = (reviewDate) => {
+    if (!reviewDate) return "Récemment";
+    const date = new Date(reviewDate);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 1) return "Aujourd'hui";
+    if (diffDays <= 7) return `Il y a ${diffDays} jours`;
+    if (diffDays <= 30) {
+      const weeks = Math.floor(diffDays / 7);
+      return `Il y a ${weeks} semaine${weeks > 1 ? "s" : ""}`;
+    }
+    const months = Math.floor(diffDays / 30);
+    return `Il y a ${months} mois`;
+  };
+
+  const reviews = (responseData?.reviews || []).map((r) => ({
+    reviewerName: r.reviewerName,
+    rating: r.rating,
+    comment: r.comment || "Aucun commentaire.",
+    reviewDate: r.reviewDate,
+    timeAgo: formatTimeAgo(r.reviewDate),
+  }));
+
+  return {
+    reviews,
+    averageRating:
+      responseData?.averageRating != null
+        ? responseData.averageRating.toFixed(1)
+        : null,
+    totalReviews: responseData?.totalReviews || 0,
+    isLoading,
+    error,
+  };
 }

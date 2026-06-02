@@ -13,48 +13,6 @@ export default function LeasingProductDetailView() {
   // Fetch article details dynamically from the backend using the custom hook
   const { data: articleData, isLoading, error } = useLeasingArticle(id);
 
-  // Exact mockup fallback details to display if in demo/fallback mode
-  const defaultProduct = {
-    id: id || "123",
-    title: "Chaussons",
-    price: "5.36",
-    brand: "Kitchoun",
-    description:
-      'Chaussons motricité 3 "1ers pas" - Kitchoun - Beige Premiers pas assurés ! Confort, souplesse et maintien',
-    condition: "Très bon état",
-    images: ["/leasing/chaussure.jpg"],
-    dimensions: "15 x 6 x 4 cm",
-    minAgeMonths: 0,
-    maxAgeMonths: 36, // 3 ans
-    maxWeightKg: 15,
-  };
-
-  // Dynamically map backend DTO fields, falling back to Figma specs only in full demo mode
-  const product =
-    error || !articleData
-      ? defaultProduct
-      : {
-          id: articleData.id,
-          title:
-            articleData.postTitle || articleData.model || "Produit sans titre",
-          price: articleData.pricePerMonth
-            ? (articleData.pricePerMonth / 100).toFixed(2)
-            : "0.00",
-          brand: articleData.brand || "Non spécifiée",
-          description: articleData.description || "Aucune description.",
-          condition: articleData.condition || "Non spécifié",
-          images:
-            articleData.imageUrls && articleData.imageUrls.length > 0
-              ? articleData.imageUrls
-              : ["https://placehold.co/400x300?text=Pas+d'image"],
-          dimensions: articleData.dimensions || "Non renseignée",
-          minAgeMonths: articleData.minAgeMonths,
-          maxAgeMonths: articleData.maxAgeMonths,
-          maxWeightKg: articleData.maxWeightKg,
-        };
-
-  const isDemoMode = error || !articleData;
-
   const handleBack = () => {
     navigate("/leasing/catalog");
   };
@@ -70,17 +28,43 @@ export default function LeasingProductDetailView() {
     );
   }
 
+  if (error || !articleData) {
+    return (
+      <div className="mx-auto flex h-screen w-[260px] flex-col items-center justify-center bg-white shadow-lg border border-gray-100 font-['Figtree',sans-serif]">
+        <p className="text-[9px] font-bold text-red-500">
+          Impossible de charger le produit.
+        </p>
+        <button
+          onClick={handleBack}
+          className="mt-3 bg-[#040037] text-white rounded-[6px] py-[6px] px-[12px] text-[8px] font-extrabold uppercase tracking-wider hover:bg-[#040037]/90 transition"
+        >
+          Retour au catalogue
+        </button>
+      </div>
+    );
+  }
+
+  const product = {
+    id: articleData.id,
+    title: articleData.postTitle || articleData.model || "Produit sans titre",
+    price: articleData.pricePerMonth ? articleData.pricePerMonth : "0",
+    brand: articleData.brand || "Non spécifiée",
+    description: articleData.description || "Aucune description.",
+    condition: articleData.condition || "Non spécifié",
+    images:
+      articleData.imageUrls && articleData.imageUrls.length > 0
+        ? articleData.imageUrls
+        : ["https://placehold.co/400x300?text=Pas+d'image"],
+    dimensions: articleData.dimensions || "Non renseignée",
+    minAgeMonths: articleData.minAgeMonths,
+    maxAgeMonths: articleData.maxAgeMonths,
+    maxWeightKg: articleData.maxWeightKg,
+  };
+
   return (
     <div className="mx-auto flex min-h-screen w-[260px] flex-col bg-white text-[#040037] pb-[50px] relative shadow-lg border border-gray-100 font-['Figtree',sans-serif]">
       {/* Top and Sub Header components */}
       <ProductHeader onBack={handleBack} />
-
-      {/* Demo Warning Banner if backend call fails */}
-      {isDemoMode && (
-        <div className="bg-amber-500 text-white text-[7px] font-extrabold py-1 px-3 text-center tracking-wider shadow-sm flex items-center justify-center gap-1">
-          <span>⚠️ Mode Démo — Fallback Figma Actif</span>
-        </div>
-      )}
 
       {/* Product Image component with Carousel dots and Seconde Main badge */}
       <ProductImage src={product.images[0]} alt={product.title} />
