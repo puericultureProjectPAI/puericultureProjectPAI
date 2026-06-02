@@ -41,4 +41,11 @@ public class TrocRequest {
                     "Product category identifier. It is not the business type; Troc is represented by the product_troc specialization.",
             example = "3")
     private String category;
+
+    @Schema(
+            description =
+                    "Visual condition of the article, validated by the user. AI-suggested or manually entered.",
+            example = "Bon état",
+            allowableValues = {"Neuf", "Très bon état", "Bon état", "État correct", "Usé"})
+    private String condition;
 }

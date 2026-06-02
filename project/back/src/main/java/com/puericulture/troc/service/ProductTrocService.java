@@ -53,6 +53,7 @@ public class ProductTrocService {
         troc.setCategory(ProductCategory.fromLabel(request.getCategory()));
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
+        troc.setCondition(request.getCondition());
 
         ProductTroc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);
