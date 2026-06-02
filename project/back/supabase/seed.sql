@@ -20,7 +20,7 @@ INSERT INTO auth.users (
         'auteur@test.local',
         '', NOW(), NOW(), NOW(),
         '{"provider":"email","providers":["email"]}'::jsonb,
-        '{"name":"Auteur Test"}'::jsonb,
+        '{"last_name":"Auteur Test","first_name":"Heisenberg"}'::jsonb,
         false
     ),
     (
@@ -30,7 +30,7 @@ INSERT INTO auth.users (
         'client@test.local',
         '', NOW(), NOW(), NOW(),
         '{"provider":"email","providers":["email"]}'::jsonb,
-        '{"name":"Client Test"}'::jsonb,
+        '{"last_name":"Client Test","first_name":"Crazy8"}'::jsonb,
         false
     )
 ON CONFLICT (id) DO NOTHING;
