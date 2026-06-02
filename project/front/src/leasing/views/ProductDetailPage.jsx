@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
+import NavBar from "../../common/views/NavBar";
 import "../leasing.css";
 
 const fallbackImage = (title) =>
@@ -29,7 +30,7 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     apiClient
-      .get(`/leasing/articles/${id}`)
+      .get(`/public/leasing/articles/${id}`)
       .then((res) => setProduct(res.data))
       .catch(() => setError("Impossible de charger le produit."))
       .finally(() => setLoading(false));
@@ -193,26 +194,7 @@ export default function ProductDetailPage() {
         </button>
       </section>
 
-      {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-1/2 flex h-[42px] w-[260px] -translate-x-1/2 items-center justify-around border-t border-[#E6E6E6] bg-white">
-        {[
-          { icon: "home", label: "Accueil" },
-          { icon: "search", label: "Rechercher" },
-          { icon: "add_circle", label: "Publier" },
-          { icon: "mail", label: "Messages" },
-          { icon: "person", label: "Profil" },
-        ].map((item) => (
-          <div
-            key={item.label}
-            className="flex flex-col items-center justify-center gap-[2px] text-[7px] leading-none text-[#7C7A8A]"
-          >
-            <span className="material-symbols-rounded text-[16px]">
-              {item.icon}
-            </span>
-            <span>{item.label}</span>
-          </div>
-        ))}
-      </nav>
+      <NavBar />
     </main>
   );
 }
