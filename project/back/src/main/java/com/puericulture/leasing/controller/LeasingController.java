@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/leasing")
+@RequestMapping
 @RequiredArgsConstructor
 @Tag(name = "Leasing", description = "Endpoints for leasing operations")
 public class LeasingController {
@@ -40,7 +40,7 @@ public class LeasingController {
                         description = "Leasing article not found",
                         content = @Content(mediaType = "application/json"))
             })
-    @GetMapping("/articles/{id}")
+    @GetMapping("/public/leasing/articles/{id}")
     public ResponseEntity<LeasingArticleDetailDto> getArticleDetail(@PathVariable Long id) {
         return ResponseEntity.ok(leasingArticleService.getArticleDetail(id));
     }

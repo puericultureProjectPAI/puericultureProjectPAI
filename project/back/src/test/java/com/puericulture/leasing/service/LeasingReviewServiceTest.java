@@ -9,12 +9,13 @@ import static org.mockito.Mockito.when;
 
 import com.puericulture.config.errormanager.exception.BadRequestException;
 import com.puericulture.leasing.dto.CreateLeasingReviewRequest;
+import com.puericulture.leasing.dto.LeasingProductReviewsResponse;
 import com.puericulture.leasing.dto.LeasingReviewDto;
 import com.puericulture.leasing.dto.LeasingReviewSummary;
 import com.puericulture.leasing.entity.LeasingReview;
 import com.puericulture.leasing.mapper.LeasingReviewMapper;
 import com.puericulture.leasing.repository.LeasingReviewRepository;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class LeasingReviewServiceTest {
                 LeasingReviewDto.builder()
                         .reviewerName("Test User")
                         .rating(5)
-                        .reviewDate(OffsetDateTime.now())
+                        .reviewDate(Instant.now())
                         .comment("Excellent !")
                         .build();
 
@@ -49,12 +50,14 @@ class LeasingReviewServiceTest {
                 .thenReturn(List.of(mockSummary));
         when(leasingReviewMapper.toDto(mockSummary)).thenReturn(dto);
 
-        List<LeasingReviewDto> result = leasingReviewService.getReviewsForProduct(leasingId);
+        LeasingProductReviewsResponse result = leasingReviewService.getReviewsForProduct(leasingId);
 
         verify(leasingReviewRepository).findAllByLeasingId(leasingId);
         verify(leasingReviewMapper).toDto(mockSummary);
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isEqualTo(dto);
+        assertThat(result.getReviews()).hasSize(1);
+        assertThat(result.getReviews().get(0).getReviewerName()).isEqualTo("Test");
+        assertThat(result.getTotalReviews()).isEqualTo(1);
+        assertThat(result.getAverageRating()).isEqualTo(5.0);
     }
 
     @Test

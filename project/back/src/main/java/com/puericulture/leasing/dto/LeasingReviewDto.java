@@ -1,7 +1,7 @@
 package com.puericulture.leasing.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.Data;
 
@@ -32,9 +32,9 @@ public class LeasingReviewDto {
 
     @Schema(
             description = "Timestamp when the review was submitted.",
-            example = "2026-05-28T19:00:00+02:00",
+            example = "2026-05-28T19:00:00Z",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    private OffsetDateTime reviewDate;
+    private Instant reviewDate;
 
     @Schema(
             description =

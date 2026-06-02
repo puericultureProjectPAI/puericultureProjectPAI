@@ -5,9 +5,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.puericulture.leasing.dto.CreateLeasingReviewRequest;
+import com.puericulture.leasing.dto.LeasingProductReviewsResponse;
 import com.puericulture.leasing.dto.LeasingReviewDto;
 import com.puericulture.leasing.service.LeasingReviewService;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,23 +33,28 @@ class LeasingReviewControllerTest {
     @Test
     void getReviewsForProduct_delegatesToServiceAndReturnsOk() {
         Long leasingId = 1L;
-        List<LeasingReviewDto> expectedReviews =
-                List.of(
-                        LeasingReviewDto.builder()
-                                .reviewerName("Jane Doe")
-                                .rating(4)
-                                .reviewDate(OffsetDateTime.now())
-                                .comment("Très bien")
-                                .build());
+        LeasingProductReviewsResponse expectedResponse =
+                LeasingProductReviewsResponse.builder()
+                        .averageRating(4.0)
+                        .totalReviews(1)
+                        .reviews(
+                                List.of(
+                                        LeasingReviewDto.builder()
+                                                .reviewerName("Jane")
+                                                .rating(4)
+                                                .reviewDate(Instant.now())
+                                                .comment("Très bien")
+                                                .build()))
+                        .build();
 
-        when(leasingReviewService.getReviewsForProduct(leasingId)).thenReturn(expectedReviews);
+        when(leasingReviewService.getReviewsForProduct(leasingId)).thenReturn(expectedResponse);
 
-        ResponseEntity<List<LeasingReviewDto>> response =
+        ResponseEntity<LeasingProductReviewsResponse> response =
                 leasingReviewController.getReviewsForProduct(leasingId);
 
         verify(leasingReviewService).getReviewsForProduct(leasingId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedReviews);
+        assertThat(response.getBody()).isEqualTo(expectedResponse);
     }
 
     @Test

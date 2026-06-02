@@ -1,7 +1,7 @@
 package com.puericulture.leasing.controller;
 
 import com.puericulture.leasing.dto.CreateLeasingReviewRequest;
-import com.puericulture.leasing.dto.LeasingReviewDto;
+import com.puericulture.leasing.dto.LeasingProductReviewsResponse;
 import com.puericulture.leasing.service.LeasingReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,23 +40,27 @@ public class LeasingReviewController {
     @Operation(
             summary = "Get reviews for a leasing product",
             description =
-                    "Retrieves all client reviews left for a specific leased product. Accessible to anyone.")
+                    "Retrieves all client reviews left for a specific leased product, along with statistical summary metrics. Accessible to anyone.")
     @ApiResponses(
             value = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "Reviews retrieved successfully.",
+                        description = "Reviews and statistics retrieved successfully.",
                         content =
                                 @Content(
                                         mediaType = "application/json",
-                                        schema = @Schema(implementation = LeasingReviewDto.class))),
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                LeasingProductReviewsResponse
+                                                                        .class))),
                 @ApiResponse(
                         responseCode = "500",
                         description = "Internal server error.",
                         content = @Content(mediaType = "application/json"))
             })
     @GetMapping("/public/leasing/products/{leasingId}/reviews")
-    public ResponseEntity<List<LeasingReviewDto>> getReviewsForProduct(
+    public ResponseEntity<LeasingProductReviewsResponse> getReviewsForProduct(
             @PathVariable Long leasingId) {
         return ResponseEntity.ok(leasingReviewService.getReviewsForProduct(leasingId));
     }

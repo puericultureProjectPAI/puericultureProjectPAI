@@ -41,7 +41,7 @@ public abstract class Product {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ProductCategoryConverter.class)
     @Column(name = "category", length = 255, nullable = false)
     private ProductCategory category;
 

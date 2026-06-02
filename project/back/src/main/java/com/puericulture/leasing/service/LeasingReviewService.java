@@ -2,6 +2,7 @@ package com.puericulture.leasing.service;
 
 import com.puericulture.config.errormanager.exception.BadRequestException;
 import com.puericulture.leasing.dto.CreateLeasingReviewRequest;
+import com.puericulture.leasing.dto.LeasingProductReviewsResponse;
 import com.puericulture.leasing.dto.LeasingReviewDto;
 import com.puericulture.leasing.entity.LeasingReview;
 import com.puericulture.leasing.mapper.LeasingReviewMapper;
@@ -26,13 +27,38 @@ public class LeasingReviewService {
 
     /**
      * Retrieves all reviews left by users for a specific childcare product in the catalog. Returns
-     * them formatted as DTOs sorted by date in descending order.
+     * them formatted as DTOs sorted by date in descending order inside a statistics wrapper.
      */
     @Transactional(readOnly = true)
-    public List<LeasingReviewDto> getReviewsForProduct(Long leasingId) {
-        return leasingReviewRepository.findAllByLeasingId(leasingId).stream()
-                .map(leasingReviewMapper::toDto)
-                .toList();
+    public LeasingProductReviewsResponse getReviewsForProduct(Long leasingId) {
+        List<LeasingReviewDto> reviews =
+                leasingReviewRepository.findAllByLeasingId(leasingId).stream()
+                        .map(leasingReviewMapper::toDto)
+                        .map(
+                                dto -> {
+                                    if (dto.getReviewerName() != null) {
+                                        String name = dto.getReviewerName().trim();
+                                        String[] parts = name.split(" ");
+                                        dto.setReviewerName(parts[0]);
+                                    } else {
+                                        dto.setReviewerName("Parent Anonyme");
+                                    }
+                                    return dto;
+                                })
+                        .toList();
+
+        int totalReviews = reviews.size();
+        Double averageRating = null;
+        if (totalReviews > 0) {
+            double sum = reviews.stream().mapToDouble(LeasingReviewDto::getRating).sum();
+            averageRating = Math.round((sum / totalReviews) * 10.0) / 10.0;
+        }
+
+        return LeasingProductReviewsResponse.builder()
+                .averageRating(averageRating)
+                .totalReviews(totalReviews)
+                .reviews(reviews)
+                .build();
     }
 
     /**

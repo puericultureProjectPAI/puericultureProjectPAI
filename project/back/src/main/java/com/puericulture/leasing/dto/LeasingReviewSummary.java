@@ -1,6 +1,6 @@
 package com.puericulture.leasing.dto;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  * STRATEGIC INTENT: Spring Data native query projection for the leasing reviews read model. WHY:
@@ -20,7 +20,7 @@ public interface LeasingReviewSummary {
     Integer getRating();
 
     /** Timestamp when the review was submitted. */
-    OffsetDateTime getReviewDate();
+    Instant getReviewDate();
 
     /** Optional free-text comment. May be null if the user only left a star rating. */
     String getComment();
