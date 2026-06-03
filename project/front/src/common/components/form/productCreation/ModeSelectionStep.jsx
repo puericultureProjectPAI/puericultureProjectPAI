@@ -28,9 +28,7 @@ export default function ModeSelectionStep({ setFieldValue }) {
             type="button"
           >
             <span className="flex h-11 w-11 items-center justify-center rounded-md bg-[#f1efff] text-2xl text-[#080036]">
-              <span className="material-symbols-rounded text-[24px] leading-none">
-                {mode.icon}
-              </span>
+              {mode.icon}
             </span>
             <span>
               <span className="block font-extrabold text-[#080036]">
@@ -44,10 +42,7 @@ export default function ModeSelectionStep({ setFieldValue }) {
         ))}
       </div>
       <div className="mt-5 rounded-md border border-[#b9c5ff] bg-[#f7f9ff] px-3 py-3 text-center text-xs font-medium text-[#36336a]">
-        <span className="material-symbols-rounded text-[14px] align-middle">
-          info
-        </span>{" "}
-        Les autres modes seront disponibles prochainement
+        ⓘ Les autres modes seront disponibles prochainement
       </div>
     </div>
   );
