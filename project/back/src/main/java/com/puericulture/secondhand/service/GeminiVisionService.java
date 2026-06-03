@@ -29,7 +29,14 @@ public class GeminiVisionService {
     private final ObjectMapper objectMapper;
 
     private static final List<String> ALLOWED_CATEGORIES =
-            List.of("Furniture", "Electronics", "Clothing", "Books");
+            List.of(
+                    "Sommeil", // Lits, berceaux, gigoteuses
+                    "Repas", // Biberons, chaises hautes, chauffe-biberons
+                    "Sortie & Voyage", // Poussettes, sièges auto, porte-bébés
+                    "Éveil & Jouets", // Tapis d'éveil, hochets, peluches
+                    "Hygiène & Soins", // Change, baignoires, thermomètres
+                    "Sécurité" // Babyphones, barrières de sécurité
+                    );
 
     public ProductAnalysisResponse analyzeImages(List<MultipartFile> images) {
         try {
@@ -75,7 +82,12 @@ public class GeminiVisionService {
                         + ". "
                         + "Confidence score must be between 0 and 100. "
                         + "Format: {\"title\": \"string\", \"description\": \"string\", \"category\": \"string\", \"confidenceScore\": number}. "
-                        + "Do not include markdown markers like ```json.";
+                        + "Do not include markdown markers like ```json. "
+                        + "COMMERCIAL GUIDELINES: "
+                        + "1. The 'title' must be catchy, professional, and optimized for an e-commerce website (e.g., brand, model, key feature). "
+                        + "2. The 'description' must be highly commercial, warm, and persuasive. "
+                        + "Highlight the benefits for the baby (comfort, safety, awakening) and for the parents (practicality, durability, peace of mind). "
+                        + "Use an engaging, marketing-oriented tone, not just a technical list of features.";
 
         log.debug("Prompt envoyé : {}", prompt);
         parts.add(Map.of("text", prompt));
