@@ -1,10 +1,36 @@
 import { Field } from "formik";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { PRODUCT_CATEGORIES } from "../../../../troc/constants/publicationOptions.js";
 import FieldError from "../FieldError.jsx";
+import { apiClient } from "../../../utils/apiClient.jsx";
 
 export default function RequiredProductInfoStep({ setFieldValue, values }) {
   const fileInputRef = useRef(null);
+  // ai second main
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isAILoading, setIsAILoading] = useState(false);
+  const handleAIRequest = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("images", selectedFile);
+
+    setIsAILoading(true);
+    console.log("Envoi de l'image à l'IA Gemini...");
+
+    try {
+      // Utilisation de apiClient qui ajoute automatiquement le token (Bearer)
+
+      // On utilise "v1/ai/analyze-products" car le contexte est déjà configuré
+      const response = await apiClient.post("v1/ai/analyze-products", formData);
+
+      console.log(" === RÉSULTAT IA GEMINI ===", response.data);
+    } catch (error) {
+      console.error(" === ERREUR IA GEMINI ===", error);
+    } finally {
+      setIsAILoading(false);
+    }
+  }; //
 
   return (
     <div>
@@ -14,6 +40,7 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
         onChange={(event) => {
           const [file] = event.target.files;
           if (file) {
+            setSelectedFile(file);
             setFieldValue("imageReference", file.name);
           }
         }}
@@ -40,6 +67,18 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
         )}
       </button>
       <FieldError name="imageReference" />
+
+      {/* BOUTON IA uniquement pour la seconde*/}
+      {selectedFile && values.mode === "SECOND_HAND" && (
+        <button
+          type="button"
+          onClick={handleAIRequest}
+          disabled={isAILoading}
+          className="mb-6 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
+        >
+          {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
+        </button>
+      )}
 
       <label
         className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
