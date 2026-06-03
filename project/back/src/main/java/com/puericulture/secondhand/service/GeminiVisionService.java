@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class GeminiVisionService {
 
-    @Value("${OPENAI_API_KEY}")
+    @Value("${GEMINI_API_KEY:}")
     private String apiKey;
 
     private final String apiUrl =
