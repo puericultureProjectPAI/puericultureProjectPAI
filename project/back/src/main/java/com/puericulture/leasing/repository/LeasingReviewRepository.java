@@ -4,6 +4,7 @@ import com.puericulture.leasing.dto.LeasingReviewSummary;
 import com.puericulture.leasing.entity.LeasingReview;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -72,4 +73,18 @@ public interface LeasingReviewRepository extends JpaRepository<LeasingReview, Lo
      * editing/modification (upsert logic).
      */
     Optional<LeasingReview> findByLeasingOrderId(Long leasingOrderId);
+
+    @Query(
+            value =
+                    """
+                SELECT lo.client_product_id FROM public.leasing_orders lo
+                INNER JOIN public.client_products cp ON cp.id = lo.client_product_id
+                WHERE cp.client_id = :clientId
+                  AND cp.product_id = :leasingId
+                ORDER BY lo.client_product_id DESC
+                LIMIT 1
+                """,
+            nativeQuery = true)
+    Optional<Long> findLatestOrderIdForUserAndProduct(
+            @Param("clientId") UUID clientId, @Param("leasingId") Long leasingId);
 }

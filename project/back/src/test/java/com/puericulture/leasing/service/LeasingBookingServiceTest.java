@@ -88,11 +88,8 @@ class LeasingBookingServiceTest {
         assertThat(response.getEstimatedDeliveryDate())
                 .isEqualTo(request.getStartDate().minusDays(3));
 
-        verify(personRepository).save(user);
-        verify(clientProductRepository).save(any(ClientProduct.class));
+        verify(clientProductRepository, times(2)).save(any(ClientProduct.class));
         verify(leasingOrderRepository).save(any(LeasingOrder.class));
-        assertThat(user.getStreet()).isEqualTo("123 Rue Kiabi");
-        assertThat(user.getCity()).isEqualTo("59000;Lille");
     }
 
     @Test
@@ -126,8 +123,6 @@ class LeasingBookingServiceTest {
         assertThat(response).isNotNull();
         // 1 month * 90 EUR/month + 5 days * 5 EUR/day = 115 EUR
         assertThat(response.getTotalPrice()).isEqualTo(115L);
-
-        verify(personRepository).save(user);
     }
 
     @Test
@@ -210,6 +205,8 @@ class LeasingBookingServiceTest {
         user.setCity("75002;Paris");
 
         when(personRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(leasingOrderRepository.findOrdersByClientId(eq(userId), any()))
+                .thenReturn(java.util.Collections.emptyList());
 
         com.puericulture.leasing.dto.LeasingProfileDto profile =
                 leasingBookingService.getLeasingProfile(userIdStr);
@@ -226,6 +223,8 @@ class LeasingBookingServiceTest {
         user.setCity("Paris");
 
         when(personRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(leasingOrderRepository.findOrdersByClientId(eq(userId), any()))
+                .thenReturn(java.util.Collections.emptyList());
 
         com.puericulture.leasing.dto.LeasingProfileDto profile =
                 leasingBookingService.getLeasingProfile(userIdStr);

@@ -2,6 +2,9 @@ package com.puericulture.leasing.repository;
 
 import com.puericulture.leasing.entity.LeasingOrder;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +25,9 @@ public interface LeasingOrderRepository extends JpaRepository<LeasingOrder, Long
             @Param("productId") Long productId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @Query(
+            "SELECT lo FROM LeasingOrder lo JOIN ClientProduct cp ON lo.clientProductId = cp.id "
+                    + "WHERE cp.clientId = :clientId ORDER BY lo.clientProductId DESC")
+    List<LeasingOrder> findOrdersByClientId(@Param("clientId") UUID clientId, Pageable pageable);
 }

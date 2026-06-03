@@ -1,10 +1,8 @@
 package com.puericulture.leasing.controller;
 
-import com.puericulture.leasing.dto.LeasingArticleDetailDto;
 import com.puericulture.leasing.dto.LeasingProfileDto;
 import com.puericulture.leasing.dto.LeasingReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationResponseDto;
-import com.puericulture.leasing.service.LeasingArticleService;
 import com.puericulture.leasing.service.LeasingBookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,38 +18,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/leasing")
 @RequiredArgsConstructor
 @Tag(name = "Leasing", description = "Endpoints for leasing operations")
 public class LeasingController {
 
-    private final LeasingArticleService leasingArticleService;
     private final LeasingBookingService leasingBookingService;
-
-    @Operation(
-            summary = "Get leasing article details",
-            description = "Retrieves the detailed information of a leasing article by its ID")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Article found and returned successfully",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema =
-                                                @Schema(
-                                                        implementation =
-                                                                LeasingArticleDetailDto.class))),
-                @ApiResponse(
-                        responseCode = "404",
-                        description = "Leasing article not found",
-                        content = @Content(mediaType = "application/json"))
-            })
-    @GetMapping("/public/leasing/articles/{id}")
-    public ResponseEntity<LeasingArticleDetailDto> getArticleDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(leasingArticleService.getArticleDetail(id));
-    }
 
     @Operation(
             summary = "Reserve a leasing article",
@@ -83,7 +55,7 @@ public class LeasingController {
                         description = "Unauthorized",
                         content = @Content(mediaType = "application/json"))
             })
-    @PostMapping("/leasing/reservations")
+    @PostMapping("/reservations")
     public ResponseEntity<LeasingReservationResponseDto> createReservation(
             @Valid @RequestBody LeasingReservationRequestDto dto,
             @AuthenticationPrincipal String authenticatedPersonId) {
@@ -110,7 +82,7 @@ public class LeasingController {
                         description = "Unauthorized",
                         content = @Content(mediaType = "application/json"))
             })
-    @GetMapping("/leasing/profile")
+    @GetMapping("/profile")
     public ResponseEntity<LeasingProfileDto> getLeasingProfile(
             @AuthenticationPrincipal String authenticatedPersonId) {
         return ResponseEntity.ok(leasingBookingService.getLeasingProfile(authenticatedPersonId));

@@ -98,4 +98,15 @@ public class LeasingReviewController {
             @Valid @RequestBody CreateLeasingReviewRequest request) {
         leasingReviewService.createReview(authenticatedPersonId, leasingId, request);
     }
+
+    @Operation(
+            summary = "Get eligible order ID for review",
+            description =
+                    "Retrieves the latest completed leasing order ID for a given product and authenticated user, if they have one.")
+    @GetMapping("/leasing/products/{leasingId}/eligible-order")
+    public ResponseEntity<Long> getEligibleOrderId(
+            @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long leasingId) {
+        return ResponseEntity.ok(
+                leasingReviewService.getEligibleOrderId(authenticatedPersonId, leasingId));
+    }
 }

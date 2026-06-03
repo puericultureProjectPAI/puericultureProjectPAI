@@ -33,4 +33,13 @@ public class LeasingOrder {
 
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
+
+    @Column(name = "delivery_street")
+    private String deliveryStreet;
+
+    @Column(name = "delivery_zip_code")
+    private String deliveryZipCode;
+
+    @Column(name = "delivery_city")
+    private String deliveryCity;
 }

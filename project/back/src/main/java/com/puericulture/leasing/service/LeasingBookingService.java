@@ -16,6 +16,7 @@ import com.puericulture.leasing.repository.LeasingArticleRepository;
 import com.puericulture.leasing.repository.LeasingOrderRepository;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,20 @@ public class LeasingBookingService {
                         .findById(userUuid)
                         .orElseThrow(() -> new UnauthorizedException("User not found"));
 
+        // Try to get address from the latest LeasingOrder
+        List<LeasingOrder> orders =
+                leasingOrderRepository.findOrdersByClientId(
+                        userUuid, org.springframework.data.domain.PageRequest.of(0, 1));
+        if (!orders.isEmpty()) {
+            LeasingOrder latest = orders.get(0);
+            return LeasingProfileDto.builder()
+                    .street(latest.getDeliveryStreet() != null ? latest.getDeliveryStreet() : "")
+                    .zipCode(latest.getDeliveryZipCode() != null ? latest.getDeliveryZipCode() : "")
+                    .city(latest.getDeliveryCity() != null ? latest.getDeliveryCity() : "")
+                    .build();
+        }
+
+        // Fallback to Person address if no leasing order exists
         String rawCity = client.getCity();
         String zipCode = "";
         String city = "";
@@ -136,28 +151,26 @@ public class LeasingBookingService {
         long remainingDays = days % 30;
         long totalPrice = (months * pricePerMonth) + (remainingDays * pricePerDay);
 
-        // 6. Update user's delivery address with serialization for zip code
-        String serializedCity =
-                dto.getDeliveryZipCode().trim() + ";" + dto.getDeliveryCity().trim();
-        client.setStreet(dto.getDeliveryStreet().trim());
-        client.setCity(serializedCity);
-        personRepository.save(client);
-
-        // 7. Save ClientProduct
+        // 6. Save ClientProduct
         ClientProduct clientProduct =
                 ClientProduct.builder()
                         .productId(article.getId())
                         .clientId(userUuid)
-                        .orderId(0L) // Dummy order id as per schema default
+                        .orderId(0L) // Temporary dummy value to satisfy NOT NULL
                         .build();
         clientProduct = clientProductRepository.save(clientProduct);
+        clientProduct.setOrderId(clientProduct.getId());
+        clientProduct = clientProductRepository.save(clientProduct);
 
-        // 8. Save LeasingOrder
+        // 7. Save LeasingOrder with delivery address
         LeasingOrder leasingOrder =
                 LeasingOrder.builder()
                         .clientProductId(clientProduct.getId())
                         .startDate(dto.getStartDate())
                         .endDate(dto.getEndDate())
+                        .deliveryStreet(dto.getDeliveryStreet().trim())
+                        .deliveryZipCode(dto.getDeliveryZipCode().trim())
+                        .deliveryCity(dto.getDeliveryCity().trim())
                         .build();
         leasingOrderRepository.save(leasingOrder);
 
@@ -167,7 +180,7 @@ public class LeasingBookingService {
                 authenticatedPersonId,
                 clientProduct.getId());
 
-        // 9. Construct and return response DTO
+        // 8. Construct and return response DTO
         return LeasingReservationResponseDto.builder()
                 .reservationNumber("RES-" + clientProduct.getId())
                 .estimatedDeliveryDate(dto.getStartDate().minusDays(3))

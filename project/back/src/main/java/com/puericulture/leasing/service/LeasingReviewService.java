@@ -9,6 +9,7 @@ import com.puericulture.leasing.mapper.LeasingReviewMapper;
 import com.puericulture.leasing.repository.LeasingReviewRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,5 +97,21 @@ public class LeasingReviewService {
                             .build();
             leasingReviewRepository.save(review);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Long getEligibleOrderId(String personId, Long leasingId) {
+        if (personId == null) {
+            return null;
+        }
+        UUID userUuid;
+        try {
+            userUuid = UUID.fromString(personId);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+        return leasingReviewRepository
+                .findLatestOrderIdForUserAndProduct(userUuid, leasingId)
+                .orElse(null);
     }
 }
