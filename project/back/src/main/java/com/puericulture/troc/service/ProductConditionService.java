@@ -27,11 +27,14 @@ public class ProductConditionService {
                     + "Analyse l'image fournie et évalue l'état visuel de l'article. "
                     + "IMPORTANT : Ta réponse doit être en français. "
                     + "Réponds UNIQUEMENT avec un objet JSON valide, sans markdown ni balises. "
-                    + "Format attendu : {\"condition\": \"string\", \"confidenceScore\": number}. "
+                    + "Format attendu : {\"condition\": \"string\", \"confidenceScore\": number, \"multipleItemsDetected\": boolean}. "
                     + "Valeurs autorisées pour condition : \"Neuf\", \"Très bon état\", \"Bon état\", \"État correct\", \"Usé\". "
                     + "confidenceScore doit être un entier entre 0 et 100. "
+                    + "Si l'image contient plusieurs articles distincts, "
+                    + "retourne : {\"condition\": null, \"confidenceScore\": 0, \"multipleItemsDetected\": true}. "
                     + "Si l'image est floue, ne montre pas clairement un article ou est de qualité insuffisante, "
-                    + "retourne : {\"condition\": null, \"confidenceScore\": 0}.";
+                    + "retourne : {\"condition\": null, \"confidenceScore\": 0, \"multipleItemsDetected\": false}. "
+                    + "Dans tous les autres cas, multipleItemsDetected doit être false.";
 
     @Value("${google.gemini.api-key}")
     private String apiKey;
@@ -110,6 +113,12 @@ public class ProductConditionService {
         String cleaned = aiText.replace("```json", "").replace("```", "").trim();
         ConditionAnalysisResponse result =
                 objectMapper.readValue(cleaned, ConditionAnalysisResponse.class);
+
+        if (result.isMultipleItemsDetected()) {
+            result.setCondition(null);
+            result.setConfidenceScore(0);
+            return result;
+        }
 
         if (result.getCondition() != null && !ALLOWED_CONDITIONS.contains(result.getCondition())) {
             log.warn("AI returned unknown condition '{}', setting to null", result.getCondition());

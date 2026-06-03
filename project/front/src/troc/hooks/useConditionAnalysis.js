@@ -6,6 +6,7 @@ export default function useConditionAnalysis() {
   const [confidenceScore, setConfidenceScore] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
+  const [multipleItemsDetected, setMultipleItemsDetected] = useState(false);
 
   const analyzeCondition = async (imageUrl) => {
     if (!imageUrl) return;
@@ -14,13 +15,18 @@ export default function useConditionAnalysis() {
     setError(null);
     setSuggestion(null);
     setConfidenceScore(null);
+    setMultipleItemsDetected(false);
 
     try {
       const response = await apiClient.post("/troc/ai/condition", null, {
         params: { imageUrl },
       });
-      setSuggestion(response.data.condition);
-      setConfidenceScore(response.data.confidenceScore);
+      if (response.data.multipleItemsDetected) {
+        setMultipleItemsDetected(true);
+      } else {
+        setSuggestion(response.data.condition);
+        setConfidenceScore(response.data.confidenceScore);
+      }
     } catch {
       setError(
         "L'analyse automatique a échoué. Veuillez renseigner l'état manuellement.",
@@ -34,6 +40,7 @@ export default function useConditionAnalysis() {
     setSuggestion(null);
     setConfidenceScore(null);
     setError(null);
+    setMultipleItemsDetected(false);
   };
 
   return {
@@ -42,6 +49,7 @@ export default function useConditionAnalysis() {
     confidenceScore,
     isAnalyzing,
     error,
+    multipleItemsDetected,
     reset,
   };
 }

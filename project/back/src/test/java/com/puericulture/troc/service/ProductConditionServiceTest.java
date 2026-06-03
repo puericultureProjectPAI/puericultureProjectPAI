@@ -74,6 +74,20 @@ class ProductConditionServiceTest {
     }
 
     @Test
+    void analyzeCondition_multipleItemsDetected_returnsNullConditionWithFlag() {
+        String geminiResponse =
+                buildGeminiResponse(
+                        "{\"condition\": null, \"confidenceScore\": 0, \"multipleItemsDetected\": true}");
+        mockRestTemplate(geminiResponse);
+
+        ConditionAnalysisResponse result = service.analyzeCondition(VALID_IMAGE_URL);
+
+        assertThat(result.getCondition()).isNull();
+        assertThat(result.getConfidenceScore()).isEqualTo(0);
+        assertThat(result.isMultipleItemsDetected()).isTrue();
+    }
+
+    @Test
     void analyzeCondition_geminiServiceDown_throws503() {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
                 .thenThrow(new RuntimeException("Connection refused"));

@@ -6,8 +6,14 @@ import FieldError from "../FieldError.jsx";
 
 export default function TrocSpecificStep() {
   const { values, setFieldValue } = useFormikContext();
-  const { analyzeCondition, suggestion, confidenceScore, isAnalyzing, error } =
-    useConditionAnalysis();
+  const {
+    analyzeCondition,
+    suggestion,
+    confidenceScore,
+    isAnalyzing,
+    error,
+    multipleItemsDetected,
+  } = useConditionAnalysis();
 
   const firstImage = Array.isArray(values.images) ? values.images[0] : null;
 
@@ -72,6 +78,13 @@ export default function TrocSpecificStep() {
               </span>
             )}
           </div>
+        )}
+
+        {!isAnalyzing && multipleItemsDetected && (
+          <p className="mb-2 text-xs text-orange-500">
+            Plusieurs articles ont été détectés sur la photo. Sélectionnez
+            l&apos;article concerné ou reprenez une photo plus précise.
+          </p>
         )}
 
         {!isAnalyzing && error && (
