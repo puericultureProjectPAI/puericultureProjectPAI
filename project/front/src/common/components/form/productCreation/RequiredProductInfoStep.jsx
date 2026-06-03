@@ -1,16 +1,17 @@
 import { Field } from "formik";
-import { useRef } from "react";
 import {
   CONDITION_OPTIONS,
   PRODUCT_CATEGORIES,
 } from "../../../../troc/constants/publicationOptions.js";
 import FieldError from "../FieldError.jsx";
+import MyImageInput from "../MyImageInput.jsx";
 
 const AI_ERROR_MESSAGE =
   "L’IA n’a pas pu analyser vos images. Veuillez remplir les champs manuellement.";
 
-const buildAiDraft = (imageReference) => {
-  const normalizedName = imageReference
+const buildAiDraft = (imageReference = "") => {
+  const fileName = imageReference.split("/").pop() || "";
+  const normalizedName = fileName
     .replace(/\.[^/.]+$/, "")
     .replace(/[-_]+/g, " ")
     .trim();
@@ -50,18 +51,11 @@ export default function RequiredProductInfoStep({
   setFieldValue,
   values,
 }) {
-  const fileInputRef = useRef(null);
-  const hasImage = Boolean(values.imageReference);
+  const uploadedImages = Array.isArray(values.images) ? values.images : [];
+  const hasImage = uploadedImages.length > 0;
+  const lastImageReference = uploadedImages.at(-1) || "";
   const isAiLoading = aiAnalysis.status === "loading";
   const canRunAi = hasImage && !isAiLoading;
-
-  const handleImageChange = (event) => {
-    const [file] = event.target.files;
-    if (file) {
-      setFieldValue("imageReference", file.name);
-      setAiAnalysis({ score: null, status: "idle" });
-    }
-  };
 
   const handleGenerateAnnouncement = async () => {
     if (!canRunAi) {
@@ -71,7 +65,7 @@ export default function RequiredProductInfoStep({
     setAiAnalysis({ score: null, status: "loading" });
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    if (/fail|erreur|error/i.test(values.imageReference)) {
+    if (/fail|erreur|error/i.test(lastImageReference)) {
       setAiAnalysis({
         message: AI_ERROR_MESSAGE,
         score: null,
@@ -80,7 +74,7 @@ export default function RequiredProductInfoStep({
       return;
     }
 
-    const draft = buildAiDraft(values.imageReference);
+    const draft = buildAiDraft(lastImageReference);
     if (!values.title) {
       await setFieldValue("title", draft.title);
     }
@@ -102,35 +96,13 @@ export default function RequiredProductInfoStep({
 
   return (
     <div>
-      <input
-        accept="image/png,image/jpeg"
-        className="hidden"
-        onChange={handleImageChange}
-        ref={fileInputRef}
-        type="file"
-      />
-
       <p className="mb-2 text-center text-xs font-semibold text-[#5362d6]">
         Max 5 photos JPG ou PNG
       </p>
-      <button
-        className="mb-3 flex min-h-20 w-full items-center rounded-xl border border-[#9b99b5] bg-[#f5f4fb] px-4 text-left"
-        onClick={() => fileInputRef.current?.click()}
-        type="button"
-      >
-        {hasImage && (
-          <span className="mr-3 flex h-16 w-16 items-center justify-center rounded-lg border border-dashed border-[#9b99b5] bg-white px-1 text-center text-[10px] font-semibold text-[#5f5b78]">
-            {values.imageReference}
-          </span>
-        )}
-        <span className="flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-dashed border-[#9b99b5] bg-white text-[#080036]">
-          <span className="text-lg">＋</span>
-          <span className="text-sm font-semibold">Ajouter</span>
-        </span>
-      </button>
+      <MyImageInput name="images" maxImages={5} />
 
       <button
-        className={`mb-2 w-full rounded-md px-4 py-2 text-sm font-extrabold transition ${
+        className={`mb-2 mt-3 flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-extrabold transition ${
           canRunAi
             ? "bg-[#0a9f51] text-white hover:bg-[#087f42]"
             : "cursor-not-allowed bg-[#c4c2ce] text-white"
@@ -139,18 +111,22 @@ export default function RequiredProductInfoStep({
         onClick={handleGenerateAnnouncement}
         type="button"
       >
-        {isAiLoading
-          ? "Analyse des images..."
-          : "🪄 Générer l’annonce avec l’IA"}
+        <span className="material-symbols-rounded text-[18px] leading-none">
+          {isAiLoading ? "progress_activity" : "auto_awesome"}
+        </span>
+        {isAiLoading ? "Analyse des images..." : "Générer l’annonce avec l’IA"}
       </button>
 
       {aiAnalysis.status === "success" && aiAnalysis.score !== null && (
         <div
-          className={`mb-3 rounded-md border px-3 py-2 text-center text-xs font-extrabold ${getAiScoreStyle(
+          className={`mb-3 flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-center text-xs font-extrabold ${getAiScoreStyle(
             aiAnalysis.score,
           )}`}
         >
-          💡 Fiabilité IA : {aiAnalysis.score}%
+          <span className="material-symbols-rounded text-[16px] leading-none">
+            lightbulb
+          </span>
+          Fiabilité IA : {aiAnalysis.score}%
         </div>
       )}
 
@@ -159,8 +135,6 @@ export default function RequiredProductInfoStep({
           {aiAnalysis.message}
         </p>
       )}
-
-      <FieldError name="imageReference" />
 
       <label
         className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"

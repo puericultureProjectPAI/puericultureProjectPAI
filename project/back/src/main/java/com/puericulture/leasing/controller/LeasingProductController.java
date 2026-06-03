@@ -1,7 +1,9 @@
 package com.puericulture.leasing.controller;
 
 import com.puericulture.config.errormanager.ErrorResponse;
+import com.puericulture.leasing.dto.LeasingArticleDetailDto;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
+import com.puericulture.leasing.service.LeasingArticleService;
 import com.puericulture.leasing.service.LeasingProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +15,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LeasingProductController {
 
     private final LeasingProductService leasingProductService;
+    private final LeasingArticleService leasingArticleService;
 
     @Operation(
             summary = "List all leasing products",
@@ -61,5 +65,30 @@ public class LeasingProductController {
     @GetMapping("/products")
     public ResponseEntity<List<LeasingProductSummaryDto>> getProducts() {
         return ResponseEntity.ok(leasingProductService.findAll());
+    }
+
+    @Operation(
+            summary = "Get leasing article details",
+            description = "Retrieves the detailed information of a leasing article by its ID")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Article found and returned successfully",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                LeasingArticleDetailDto.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Leasing article not found",
+                        content = @Content(mediaType = "application/json"))
+            })
+    @GetMapping("/articles/{id}")
+    public ResponseEntity<LeasingArticleDetailDto> getArticleDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(leasingArticleService.getArticleDetail(id));
     }
 }
