@@ -10,7 +10,7 @@ export default function PublicationFormActions({
     const errors = await validateForm();
     const stepFields = {
       1: ["mode"],
-      2: ["imageReference", "title", "description", "category", "city"],
+      2: ["images", "title", "description", "category", "city"],
       3: [],
       4: [],
     }[step];
