@@ -18,12 +18,13 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
     @Column(name = "image_position")
-    private Integer imagePosition;
+    private Integer position;
 }
