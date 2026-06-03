@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
 import NavBar from "../../common/views/NavBar";
+import LeasingBookingSection from "../components/LeasingBookingSection";
+import LeasingReviewsSection from "../components/LeasingReviewsSection";
 import "../leasing.css";
 
 const fallbackImage = (title) =>
@@ -26,7 +28,6 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImage, setCurrentImage] = useState(0);
-  const [inWishlist, setInWishlist] = useState(false);
 
   useEffect(() => {
     apiClient
@@ -154,9 +155,17 @@ export default function ProductDetailPage() {
           )}
         </div>
 
+        {/* Booking Selection Section */}
+        <LeasingBookingSection
+          leasingId={id}
+          productTitle={product.postTitle}
+          pricePerMonth={product.pricePerMonth}
+          pricePerDay={product.pricePerDay}
+        />
+
         {/* Description */}
         {product.description && (
-          <div className="mb-[12px]">
+          <div className="mb-[12px] mt-[10px]">
             <p className="mb-[4px] text-[9px] font-semibold">Description</p>
             <p className="rounded-[4px] border border-[#E6E6E6] p-[8px] text-[8px] leading-[1.4]">
               {product.description}
@@ -176,22 +185,8 @@ export default function ProductDetailPage() {
           </div>
         )}
 
-        {/* Wishlist */}
-        <button
-          onClick={() => setInWishlist((v) => !v)}
-          className="mb-[10px] flex w-full items-center justify-center gap-[6px] py-[8px] text-[10px]"
-        >
-          <span className="material-symbols-rounded text-[16px]">
-            {inWishlist ? "favorite" : "favorite_border"}
-          </span>
-          Ajouter à ma wishlist
-        </button>
-
-        {/* CTA */}
-        <button className="flex w-full items-center justify-center gap-[6px] rounded-[6px] bg-[#040037] py-[10px] text-[10px] font-medium text-white">
-          <span className="material-symbols-rounded text-[14px]">send</span>
-          Envoyer un message
-        </button>
+        {/* Reviews & Actions Section */}
+        <LeasingReviewsSection leasingId={id} />
       </section>
 
       <NavBar />

@@ -37,8 +37,8 @@ describe("LeasingBookingSection Component", () => {
       <LeasingBookingSection
         leasingId={1}
         productTitle="Poussette"
-        pricePerMonth={90}
-        pricePerDay={5}
+        pricePerMonth={9000}
+        pricePerDay={500}
       />,
     );
 
@@ -58,8 +58,8 @@ describe("LeasingBookingSection Component", () => {
       <LeasingBookingSection
         leasingId={1}
         productTitle="Poussette"
-        pricePerMonth={90}
-        pricePerDay={5}
+        pricePerMonth={9000}
+        pricePerDay={500}
       />,
     );
 
@@ -88,8 +88,8 @@ describe("LeasingBookingSection Component", () => {
       <LeasingBookingSection
         leasingId={1}
         productTitle="Poussette"
-        pricePerMonth={90}
-        pricePerDay={5}
+        pricePerMonth={9000}
+        pricePerDay={500}
       />,
     );
 

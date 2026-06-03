@@ -5,6 +5,7 @@ import heartplusIcon from "../../assets/icons/heartplus.svg";
 
 export default function LeasingReviewsSection({ leasingId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showMessageInfo, setShowMessageInfo] = useState(false);
 
   // Consume pre-formatted reviews and calculated metrics from the custom hook
   const { reviews, averageRating, totalReviews, isLoading } =
@@ -32,11 +33,7 @@ export default function LeasingReviewsSection({ leasingId }) {
 
       {/* Action Button: Envoyer un message */}
       <button
-        onClick={() =>
-          alert(
-            "Messagerie non configurée. Votre message est en cours de préparation.",
-          )
-        }
+        onClick={() => setShowMessageInfo(true)}
         className="bg-[#040037] text-white w-full rounded-[6px] py-[10px] flex items-center justify-center gap-[6px] mt-[10px] hover:bg-[#040037]/90 transition active:scale-[0.98]"
       >
         <span className="material-symbols-rounded text-[14px]">send</span>
@@ -44,6 +41,13 @@ export default function LeasingReviewsSection({ leasingId }) {
           Envoyer un message
         </span>
       </button>
+
+      {showMessageInfo && (
+        <div className="text-[8px] font-semibold text-[#040037] bg-[#F2F2F9] rounded-[6px] p-[8px] text-center mt-[6px]">
+          Messagerie en cours de développement. Votre demande sera transmise
+          prochainement.
+        </div>
+      )}
 
       <div className="w-full h-[1px] bg-[#F2F2F5] mt-[10px]"></div>
 

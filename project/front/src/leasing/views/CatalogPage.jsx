@@ -70,8 +70,11 @@ export default function CatalogPage() {
         {products.map((product) => (
           <article
             key={product.id}
-            onClick={() => navigate(`/leasing/products/${product.id}`)}
-            className="rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() =>
+              product.available !== false &&
+              navigate(`/leasing/products/${product.id}`)
+            }
+            className={`rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer hover:shadow-md transition-shadow ${product.available === false ? "opacity-50 pointer-events-none" : ""}`}
           >
             <img
               src={product.firstImageUrl || fallbackImage(product.category)}
@@ -98,7 +101,9 @@ export default function CatalogPage() {
             </p>
 
             <p className="mt-[3px] text-[9px] font-bold leading-none">
-              {product.pricePerMonth}€/mois
+              {product.available === false
+                ? "Indisponible"
+                : `${product.pricePerMonth / 100}€/mois`}
             </p>
           </article>
         ))}

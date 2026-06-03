@@ -1,27 +1,32 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useSubmitReview } from "../hooks/useLeasing";
-import { useState } from "react";
+import { useSubmitReview, useEligibleOrderId } from "../hooks/useLeasing";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../common/security/AuthContext";
 
 export default function ReviewFormModal({ leasingId, onClose }) {
   const [submitError, setSubmitError] = useState("");
+  const { isAuthenticated } = useAuth();
   const submitReviewMutation = useSubmitReview(leasingId);
+  const { data: eligibleOrderId } = useEligibleOrderId(
+    leasingId,
+    isAuthenticated,
+  );
 
   // Formik configuration with Yup validation schema
   const formik = useFormik({
     initialValues: {
-      leasingOrderId: [999, 998, 997, 996].includes(Number(leasingId))
-        ? Number(leasingId) * 10 + 3
-        : Number(leasingId) || 1,
+      leasingOrderId: "",
       rating: 5,
       comment: "",
     },
+    enableReinitialize: true,
     validationSchema: Yup.object({
       leasingOrderId: Yup.number()
         .typeError("L'ID de commande doit être un nombre")
         .integer("L'ID de commande doit être un entier")
         .positive("L'ID de commande doit être supérieur à 0")
-        .required("Identifiant requis"),
+        .required("Identifiant de commande requis"),
       rating: Yup.number()
         .min(1, "1 étoile minimum")
         .max(5, "5 étoiles maximum")
@@ -32,6 +37,13 @@ export default function ReviewFormModal({ leasingId, onClose }) {
       ),
     }),
     onSubmit: async (values, { setSubmitting }) => {
+      if (!values.leasingOrderId) {
+        setSubmitError(
+          "Aucune commande éligible trouvée pour laisser un avis.",
+        );
+        setSubmitting(false);
+        return;
+      }
       setSubmitError("");
       try {
         await submitReviewMutation.mutateAsync({
@@ -55,6 +67,12 @@ export default function ReviewFormModal({ leasingId, onClose }) {
       }
     },
   });
+
+  useEffect(() => {
+    if (eligibleOrderId) {
+      formik.setFieldValue("leasingOrderId", eligibleOrderId);
+    }
+  }, [eligibleOrderId]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-[#040037]/60 backdrop-blur-xs font-['Figtree',sans-serif]">

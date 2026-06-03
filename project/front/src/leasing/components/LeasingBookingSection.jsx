@@ -7,7 +7,7 @@ export default function LeasingBookingSection({
   leasingId,
   productTitle,
   pricePerMonth,
-  pricePerDay = 5, // Default daily price fallback
+  pricePerDay = 500, // Default daily price fallback in centimes (5€)
 }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -37,9 +37,12 @@ export default function LeasingBookingSection({
         const months = Math.floor(diffDays / 30);
         const remainingDays = diffDays % 30;
 
+        const pricePerMonthEuros = Number(pricePerMonth) / 100;
+        const pricePerDayEuros = Number(pricePerDay) / 100;
+
         // Pricing formula matching backend logic
         totalPrice =
-          months * Number(pricePerMonth) + remainingDays * Number(pricePerDay);
+          months * pricePerMonthEuros + remainingDays * pricePerDayEuros;
 
         durationText = `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
         if (months > 0) {
@@ -131,7 +134,11 @@ export default function LeasingBookingSection({
               Estimation total
             </span>
             <span className="text-[12px] text-[#040037] font-extrabold mt-[1px]">
-              {totalPrice}€
+              {totalPrice.toLocaleString("fr-FR", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              })}
+              €
             </span>
           </div>
         </div>

@@ -144,3 +144,16 @@ export function useLeasingReviewsData(leasingId) {
     error,
   };
 }
+
+export function useEligibleOrderId(leasingId, enabled = true) {
+  return useQuery({
+    queryKey: ["eligibleOrderId", leasingId],
+    queryFn: async () => {
+      const response = await apiClient.get(
+        `/leasing/products/${leasingId}/eligible-order`,
+      );
+      return response.data;
+    },
+    enabled: !!leasingId && enabled,
+  });
+}
