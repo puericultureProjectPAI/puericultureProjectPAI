@@ -1,6 +1,2 @@
 node_modules
 .idea
-pr_review/*
-pr_review
-.agents
-.agents/*
