@@ -1,45 +1,12 @@
 import { Field } from "formik";
-import { useRef } from "react";
 import { PRODUCT_CATEGORIES } from "../../../../troc/constants/publicationOptions.js";
+import MyImageInput from "../MyImageInput.jsx";
 import FieldError from "../FieldError.jsx";
 
-export default function RequiredProductInfoStep({ setFieldValue, values }) {
-  const fileInputRef = useRef(null);
-
+export default function RequiredProductInfoStep() {
   return (
     <div>
-      <input
-        accept="image/png,image/jpeg"
-        className="hidden"
-        onChange={(event) => {
-          const [file] = event.target.files;
-          if (file) {
-            setFieldValue("imageReference", file.name);
-          }
-        }}
-        ref={fileInputRef}
-        type="file"
-      />
-
-      <p className="mb-2 text-center text-xs font-semibold text-[#5362d6]">
-        Max 5 photos JPG ou PNG
-      </p>
-      <button
-        className="mb-4 flex min-h-20 w-full items-center rounded-xl border border-[#9b99b5] bg-[#f5f4fb] px-4 text-left"
-        onClick={() => fileInputRef.current?.click()}
-        type="button"
-      >
-        <span className="flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-dashed border-[#9b99b5] bg-white text-[#080036]">
-          <span className="text-lg">＋</span>
-          <span className="text-sm font-semibold">Ajouter</span>
-        </span>
-        {values.imageReference && (
-          <span className="ml-4 text-xs font-medium text-[#5f5b78]">
-            {values.imageReference}
-          </span>
-        )}
-      </button>
-      <FieldError name="imageReference" />
+      <MyImageInput name="images" maxImages={5} />
 
       <label
         className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
