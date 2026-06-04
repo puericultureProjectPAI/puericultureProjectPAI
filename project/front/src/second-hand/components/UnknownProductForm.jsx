@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useAuth } from "../../common/security/AuthContext";
+import { apiClient } from "../../common/utils/apiClient";
 
 const categories = [
   "Vêtements (filles & garçons)",
@@ -16,8 +16,6 @@ const categories = [
 ];
 
 export default function UnknownProductForm({ ean, onSubmitSuccess }) {
-  const { session } = useAuth();
-
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -37,14 +35,6 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
     onSubmit: async (values, { setSubmitting, setStatus }) => {
       setStatus(null);
 
-      if (!session?.access_token) {
-        setStatus({
-          error: " Session non disponible. Veuillez vous reconnecter.",
-        });
-        setSubmitting(false);
-        return;
-      }
-
       try {
         const payload = {
           ean,
@@ -53,22 +43,7 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
           price: Number(values.price),
         };
 
-        // console.log(" PAYLOAD ENVOYÉ :", payload);
-        //console.log(" TOKEN UTILISÉ :", session.access_token.substring(0, 20) + "...");
-
-        const res = await fetch("http://localhost:8080/api/api/v1/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        // console.log(" STATUS :", res.status);
-
-        const text = await res.text();
-        // console.log(" RAW RESPONSE :", text);
+        const res = await apiClient.post("/api/v1/products", payload);
 
         //  SUCCESS (201 Created)
         if (res.status === 201) {
@@ -78,29 +53,27 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
           }, 600);
           return;
         }
-
-        // 403 (Token manquant ou invalide)
-        if (res.status === 403) {
-          setStatus({
-            error: " Accès refusé (403). Token invalide ou expiré.",
-          });
-          return;
-        }
-
-        //  Autres erreurs
-        let errorMsg = `Erreur backend (${res.status})`;
-        try {
-          const errorData = JSON.parse(text);
-          errorMsg = errorData.message || errorMsg;
-        } catch {
-          // Response is not JSON, use default message
-        }
-        setStatus({ error: ` ${errorMsg}` });
       } catch (err) {
-        console.error(" Erreur réseau :", err);
-        setStatus({
-          error: "Erreur réseau / serveur injoignable",
-        });
+        if (err.response) {
+          const { status, data } = err.response;
+
+          // 403 (Token manquant ou invalide)
+          if (status === 403) {
+            setStatus({
+              error: " Accès refusé (403). Token invalide ou expiré.",
+            });
+            return;
+          }
+
+          //  Autres erreurs
+          const errorMsg = data?.message || `Erreur backend (${status})`;
+          setStatus({ error: ` ${errorMsg}` });
+        } else {
+          console.error(" Erreur réseau :", err);
+          setStatus({
+            error: "Erreur réseau / serveur injoignable",
+          });
+        }
       } finally {
         setSubmitting(false);
       }

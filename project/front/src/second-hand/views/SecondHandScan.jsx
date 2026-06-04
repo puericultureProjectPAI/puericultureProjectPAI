@@ -1,7 +1,7 @@
 import { useState } from "react";
 import BarcodeScanner from "../components/BarcodeScanner";
-
 import UnknownProductForm from "../components/UnknownProductForm";
+import { apiClient } from "../../common/utils/apiClient";
 
 export default function SecondHandScan() {
   const [scannedCode, setScannedCode] = useState(null);
@@ -16,56 +16,38 @@ export default function SecondHandScan() {
     setProductNotFound(false);
 
     try {
-      const url = `http://localhost:8080/api/v1/products/${barcode}`;
-      //console.log(" Appel API :", url);
-
-      const res = await fetch(url);
-
-      // console.log(" Status HTTP :", res.status);
-
-      const text = await res.text();
-      //console.log(" RAW RESPONSE :", text);
-
-      let data = null;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        // console.log(" Réponse NON JSON (probablement HTML error page)");
-      }
+      await apiClient.get(`/api/v1/products/${barcode}`);
 
       //  CASE 200 OK - Produit trouvé
-      if (res.status === 200) {
-        //console.log(" Produit trouvé :", data);
-        setProductNotFound(false);
-        return;
-      }
-
-      //  CASE 404 NOT FOUND - Produit inconnu
-      if (res.status === 404) {
-        console.log(" 404 reçu");
-
-        if (data?.error === "PRODUCT_NOT_FOUND") {
-          // console.log(" Produit inconnu → affichage formulaire");
-          setProductNotFound(true);
-        } else {
-          // console.log(" 404 mais format inattendu :", data);
-        }
-        return;
-      }
-
-      //  Autres erreurs serveur
-      if (!res.ok && res.status !== 404) {
-        console.log(" Erreur serveur :", res.status);
-      }
+      setProductNotFound(false);
     } catch (err) {
-      console.error(" Erreur réseau :", err);
+      if (err.response) {
+        const { status, data } = err.response;
+
+        //  CASE 404 NOT FOUND - Produit inconnu
+        if (status === 404) {
+          console.log(" 404 reçu");
+
+          if (data?.error === "PRODUCT_NOT_FOUND") {
+            // console.log(" Produit inconnu → affichage formulaire");
+            setProductNotFound(true);
+          } else {
+            console.log(" 404 mais format inattendu :", data);
+          }
+        } else {
+          //  Autres erreurs serveur
+          console.log(" Erreur serveur :", status);
+        }
+      } else {
+        console.error(" Erreur réseau :", err);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleSuccess = () => {
-    console.log("🎉 Produit créé avec succès");
+    console.log("Produit créé avec succès");
     setProductNotFound(false);
     setScannedCode(null);
   };
