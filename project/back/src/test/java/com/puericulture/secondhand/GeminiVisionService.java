@@ -1,8 +1,14 @@
 package com.puericulture.secondhand;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puericulture.secondhand.dto.ProductAnalysisResponse;
 import com.puericulture.secondhand.service.GeminiVisionService;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,21 +22,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class GeminiVisionServiceTest {
 
-    @Mock
-    private RestTemplate restTemplate;
+    @Mock private RestTemplate restTemplate;
 
-    @InjectMocks
-    private GeminiVisionService geminiVisionService;
+    @InjectMocks private GeminiVisionService geminiVisionService;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +38,8 @@ class GeminiVisionServiceTest {
 
     @Test
     void analyzeImages_shouldReturnValidResponse_whenGeminiReturnsValidJson() {
-        String geminiResponse = """
+        String geminiResponse =
+                """
                 {
                   "candidates": [{
                     "content": {
@@ -56,7 +54,8 @@ class GeminiVisionServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(geminiResponse, HttpStatus.OK));
 
-        MultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
+        MultipartFile image =
+                new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
 
         ProductAnalysisResponse result = geminiVisionService.analyzeImages(List.of(image));
 
@@ -67,7 +66,8 @@ class GeminiVisionServiceTest {
 
     @Test
     void analyzeImages_shouldFallbackCategory_whenGeminiReturnsUnknownCategory() {
-        String geminiResponse = """
+        String geminiResponse =
+                """
                 {
                   "candidates": [{
                     "content": {
@@ -82,7 +82,8 @@ class GeminiVisionServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(geminiResponse, HttpStatus.OK));
 
-        MultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
+        MultipartFile image =
+                new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
 
         ProductAnalysisResponse result = geminiVisionService.analyzeImages(List.of(image));
 
@@ -91,7 +92,8 @@ class GeminiVisionServiceTest {
 
     @Test
     void analyzeImages_shouldResetConfidenceScore_whenOutOfRange() {
-        String geminiResponse = """
+        String geminiResponse =
+                """
                 {
                   "candidates": [{
                     "content": {
@@ -106,7 +108,8 @@ class GeminiVisionServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(geminiResponse, HttpStatus.OK));
 
-        MultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
+        MultipartFile image =
+                new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
 
         ProductAnalysisResponse result = geminiVisionService.analyzeImages(List.of(image));
 
@@ -118,7 +121,8 @@ class GeminiVisionServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        MultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
+        MultipartFile image =
+                new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
 
         assertThatThrownBy(() -> geminiVisionService.analyzeImages(List.of(image)))
                 .isInstanceOf(ResponseStatusException.class)

@@ -25,12 +25,16 @@ public class ProductAIController {
     private static final int MAX_FILE_COUNT = 5;
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-    @Operation(summary = "Analyser une image avec l'IA Gemini",
-               description = "Envoie une ou plusieurs images à Gemini pour obtenir titre, description, catégorie et score de confiance")
+    @Operation(
+            summary = "Analyser une image avec l'IA Gemini",
+            description =
+                    "Envoie une ou plusieurs images à Gemini pour obtenir titre, description, catégorie et score de confiance")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Analyse réussie"),
         @ApiResponse(responseCode = "400", description = "Aucune image fournie"),
-        @ApiResponse(responseCode = "413", description = "Fichier trop volumineux ou trop d'images"),
+        @ApiResponse(
+                responseCode = "413",
+                description = "Fichier trop volumineux ou trop d'images"),
         @ApiResponse(responseCode = "415", description = "Type de fichier non supporté"),
         @ApiResponse(responseCode = "503", description = "Service IA indisponible")
     })
