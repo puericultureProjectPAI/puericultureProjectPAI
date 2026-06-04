@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
+import ArrivalPackBanner from "../components/ArrivalPackBanner";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
@@ -164,6 +165,14 @@ export default function CatalogPage() {
           </button>
         </section>
       </section>
+
+      {city && startDate && endDate && (
+        <ArrivalPackBanner
+          city={city}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      )}
 
       <section className="grid grid-cols-2 gap-x-[12px] gap-y-[12px] px-[20px] pt-[14px] pb-[75px]">
         {loading && (

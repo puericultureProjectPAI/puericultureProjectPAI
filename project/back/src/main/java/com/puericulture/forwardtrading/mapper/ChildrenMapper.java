@@ -43,8 +43,8 @@ public abstract class ChildrenMapper {
     }
 
     @Named("getAge")
-    public Integer getAge(LocalDate birthDate) {
+    public Integer getAge(java.sql.Date birthDate) {
         if (birthDate == null) return null;
-        return Period.between(birthDate, LocalDate.now()).getYears();
+        return Period.between(birthDate.toLocalDate(), LocalDate.now()).getYears();
     }
 }
