@@ -1,13 +1,12 @@
 import { useState } from "react";
+import { apiClient } from "../utils/apiClient";
 import { optimizeImage } from "../utils/imageOptimizer";
-import { apiClient } from "../utils/apiClient"; // ← authenticated Axios instance
 
 export const useImageManager = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Environment detection (Vite uses import.meta.env)
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
@@ -26,7 +25,6 @@ export const useImageManager = () => {
     setError(null);
 
     try {
-      // Mandatory: compress + convert to WebP before sending
       const optimizedFile = await optimizeImage(rawFile);
 
       const formData = new FormData();
@@ -83,7 +81,7 @@ export const useImageManager = () => {
 
     try {
       // apiClient already injects the Supabase Bearer token (see apiClient.jsx)
-      await apiClient.delete("/api/common/images", {
+      await apiClient.delete("/common/images", {
         params: { url: imageUrl },
       });
       return true;

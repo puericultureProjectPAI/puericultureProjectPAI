@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Formik, Form, useField } from "formik";
-import logoKiabi from "../../assets/comm-logo-complet-brand.svg";
+import logoKiabi from "../../assets/Logo_Kiabi.svg";
 import * as Yup from "yup";
 
 // --- Sous-composant Input (Modifié pour pouvoir masquer la bordure verte à l'étape 2) ---
