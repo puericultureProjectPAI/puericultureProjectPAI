@@ -15,6 +15,7 @@ import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
+import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -58,6 +59,10 @@ export default function App() {
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
+              <Route
+                path="/second-hand/compare/:ean"
+                element={<PriceComparisonView />}
+              />
               <Route
                 path="/forward/timeline/:id"
                 element={<ForwardTradingView />}

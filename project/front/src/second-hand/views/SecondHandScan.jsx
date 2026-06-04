@@ -1,12 +1,14 @@
 import { useState } from "react";
 import BarcodeScanner from "../components/BarcodeScanner";
+import { useNavigate } from "react-router-dom";
 
 export default function SecondHandScan() {
   const [scannedCode, setScannedCode] = useState(null);
+  const navigate = useNavigate();
 
   const handleDetected = (barcode) => {
     setScannedCode(barcode);
-    console.log("Code scanné :", barcode);
+    navigate(`/second-hand/compare/${barcode}`);
   };
 
   return (
