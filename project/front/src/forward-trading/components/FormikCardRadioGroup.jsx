@@ -32,9 +32,9 @@ export const FormikCardRadioGroup = ({
                   value={option.value}
                   checked={isSelected}
                   className="hidden"
-                  onChange={(event) => {
-                    field.onChange(event);
-                    if (onSelect) onSelect(option.value, event);
+                  onClick={() => {
+                    field.onChange({ target: { name, value: option.value } });
+                    if (onSelect) onSelect(option.value);
                   }}
                 />
               )}
@@ -55,7 +55,7 @@ export const FormikCardRadioGroup = ({
             )}
 
             <div className="p-2.5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
-              <div className="w-36 max-w-52 justify-start text-text-brand text-xl font-bold font-figtree">
+              <div className="flex-1 justify-start text-text-brand text-xl font-bold font-figtree">
                 {option.label}
               </div>
             </div>

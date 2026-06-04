@@ -61,13 +61,18 @@ export default function App() {
                 element={<CreationEnfantView />}
               />
               <Route
+                path="/forward/onboarding"
+                element={<FamilyOnboardingView />}
+              />
+              <Route
                 path="/product/create"
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
-                 <Route path="/onboarding-family"
+              <Route
+                path="/onboarding-family"
                 element={<FamilyOnboardingView />}
-                />
+              />
             </Route>
 
             {/* Default Redirections: Explicit logic  */}
