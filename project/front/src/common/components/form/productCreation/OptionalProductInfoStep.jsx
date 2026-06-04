@@ -1,161 +1,125 @@
 import { Field } from "formik";
-import { CONDITION_OPTIONS } from "../../../../troc/constants/publicationOptions.js";
+import {
+  CITY_OPTIONS,
+  RADIUS_OPTIONS,
+} from "../../../../troc/constants/publicationOptions.js";
+
+const fieldClassName =
+  "w-full rounded-md border border-[#858199] bg-white px-3 py-[10px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
+const labelClassName =
+  "mb-[8px] block text-[18px] font-extrabold leading-tight text-[#080036]";
 
 export default function OptionalProductInfoStep() {
   return (
-    <div>
-      <div className="mb-5 rounded-xl border border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 text-center text-xs font-medium text-[#1e3a8a]">
-        Ces informations optionnelles permettront aux utilisateurs de mieux
-        connaître votre produit.
-      </div>
+    <div className="space-y-[32px]">
+      <section className="rounded-xl bg-[#f4f3fb] px-[10px] py-[18px]">
+        <h2 className="mb-[18px] text-center text-[20px] font-extrabold leading-tight text-[#080036]">
+          Troc
+        </h2>
 
-      <label
-        className="mb-2 block text-sm font-extrabold text-[#080036]"
-        htmlFor="condition"
-      >
-        État
-      </label>
-      <Field
-        as="select"
-        className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-        id="condition"
-        name="condition"
-      >
-        <option value="">Select</option>
-        {CONDITION_OPTIONS.map((condition) => (
-          <option key={condition} value={condition}>
-            {condition}
-          </option>
-        ))}
-      </Field>
+        <div className="grid grid-cols-2 gap-[16px]">
+          <div>
+            <label className={labelClassName} htmlFor="city">
+              Ville
+            </label>
+            <Field as="select" className={fieldClassName} id="city" name="city">
+              <option value="">Ville</option>
+              {CITY_OPTIONS.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </Field>
+          </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div>
-          <label
-            className="mb-2 block text-sm font-extrabold text-[#080036]"
-            htmlFor="brand"
-          >
-            Marque
-          </label>
-          <Field
-            className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-            id="brand"
-            name="brand"
-            placeholder="Ex : Kiabi"
-          />
+          <div>
+            <label className={labelClassName} htmlFor="radius">
+              Rayon
+            </label>
+            <Field
+              as="select"
+              className={fieldClassName}
+              id="radius"
+              name="radius"
+            >
+              <option value="">km</option>
+              {RADIUS_OPTIONS.map((radius) => (
+                <option key={radius} value={radius}>
+                  {radius}
+                </option>
+              ))}
+            </Field>
+          </div>
         </div>
 
-        <div>
-          <label
-            className="mb-2 block text-sm font-extrabold text-[#080036]"
-            htmlFor="model"
-          >
-            Modèle
-          </label>
-          <Field
-            className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-            id="model"
-            name="model"
-            placeholder="Optionnel"
-          />
-        </div>
-      </div>
+        <label
+          className={`${labelClassName} mt-[26px]`}
+          htmlFor="wantedArticle"
+        >
+          Je cherche
+        </label>
+        <Field
+          className={fieldClassName}
+          id="wantedArticle"
+          name="wantedArticle"
+          placeholder="Type d'article..."
+        />
+      </section>
 
-      <label
-        className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
-        htmlFor="dimensions"
-      >
-        Dimensions
-      </label>
-      <Field
-        className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-        id="dimensions"
-        name="dimensions"
-        placeholder="Ex : 60 x 40 cm"
-      />
+      <section className="rounded-xl bg-[#f4f3fb] px-[10px] py-[18px]">
+        <h2 className="mb-[18px] text-center text-[20px] font-extrabold leading-tight text-[#080036]">
+          Location
+        </h2>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div>
-          <label
-            className="mb-2 block text-sm font-extrabold text-[#080036]"
-            htmlFor="lastCheckDate"
-          >
-            Dernier contrôle
-          </label>
-          <Field
-            className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-            id="lastCheckDate"
-            name="lastCheckDate"
-            type="date"
-          />
-        </div>
+        <div className="grid grid-cols-2 gap-[16px]">
+          <div>
+            <label className={labelClassName} htmlFor="rentalStartDate">
+              Du
+            </label>
+            <Field
+              className={fieldClassName}
+              id="rentalStartDate"
+              name="rentalStartDate"
+              placeholder="jj/mm/aaaa"
+            />
+          </div>
 
-        <div>
-          <label
-            className="mb-2 block text-sm font-extrabold text-[#080036]"
-            htmlFor="maxWeightKg"
-          >
-            Poids max. kg
-          </label>
-          <Field
-            className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-            id="maxWeightKg"
-            min="0"
-            name="maxWeightKg"
-            placeholder="Ex : 15"
-            type="number"
-          />
-        </div>
-      </div>
-
-      <label
-        className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
-        htmlFor="securityStandard"
-      >
-        Norme de sécurité
-      </label>
-      <Field
-        className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-        id="securityStandard"
-        name="securityStandard"
-        placeholder="Ex : EN 1888"
-      />
-
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div>
-          <label
-            className="mb-2 block text-sm font-extrabold text-[#080036]"
-            htmlFor="minAgeMonths"
-          >
-            Âge min. mois
-          </label>
-          <Field
-            className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-            id="minAgeMonths"
-            min="0"
-            name="minAgeMonths"
-            placeholder="Ex : 0"
-            type="number"
-          />
+          <div>
+            <label className={labelClassName} htmlFor="rentalEndDate">
+              Au
+            </label>
+            <Field
+              className={fieldClassName}
+              id="rentalEndDate"
+              name="rentalEndDate"
+              placeholder="jj/mm/aaaa"
+            />
+          </div>
         </div>
 
-        <div>
+        <div className="mt-[26px] flex items-center gap-[14px]">
           <label
-            className="mb-2 block text-sm font-extrabold text-[#080036]"
-            htmlFor="maxAgeMonths"
+            className="shrink-0 text-[18px] font-extrabold leading-tight text-[#080036]"
+            htmlFor="dailyPrice"
           >
-            Âge max. mois
+            Prix / jour
           </label>
-          <Field
-            className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-            id="maxAgeMonths"
-            min="0"
-            name="maxAgeMonths"
-            placeholder="Ex : 36"
-            type="number"
-          />
+          <div className="relative flex-1">
+            <Field
+              className={`${fieldClassName} pr-8`}
+              id="dailyPrice"
+              min="0"
+              name="dailyPrice"
+              placeholder="0,00"
+              step="0.01"
+              type="number"
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] font-semibold text-[#2f2d3c]">
+              €
+            </span>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

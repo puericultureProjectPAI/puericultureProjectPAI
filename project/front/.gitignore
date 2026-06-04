@@ -25,3 +25,6 @@ dist-ssr
 
 # Images mocks
 ./public/mock-uploads
+./public/mock_uploads
+public/mock_uploads
+public/mock-uploads

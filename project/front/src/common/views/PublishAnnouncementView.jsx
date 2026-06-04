@@ -5,12 +5,10 @@ export default function PublishAnnouncementView() {
   const { error, publishTroc, success } = useTroc();
 
   return (
-    <main className="min-h-screen bg-[#f6f6fb] px-4 py-6">
-      <PublishAnnouncementForm
-        error={error}
-        onSubmit={publishTroc}
-        success={success}
-      />
-    </main>
+    <PublishAnnouncementForm
+      error={error}
+      onSubmit={(_mode, payload) => publishTroc(payload)}
+      success={success}
+    />
   );
 }
