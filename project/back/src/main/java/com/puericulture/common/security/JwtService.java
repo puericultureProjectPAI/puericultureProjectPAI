@@ -1,101 +1,38 @@
 package com.puericulture.common.security;
 
-import com.auth0.jwk.JwkException;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.JwkProviderBuilder;
-import io.jsonwebtoken.*;
-import java.net.URL;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@NoArgsConstructor
 @Slf4j
 public class JwtService {
 
-    private final JwtParser jwtParser;
-
-    public JwtService(@Value("${supabase.url}") String supabaseUrl) {
-        try {
-            // Normalisation de l'URL pour éviter les erreurs de double slash
-            String baseUrl =
-                    supabaseUrl.endsWith("/")
-                            ? supabaseUrl.substring(0, supabaseUrl.length() - 1)
-                            : supabaseUrl;
-            String issuer = baseUrl + "/auth/v1";
-            URL jwksUrl = new URL(issuer + "/.well-known/jwks.json");
-
-            // JwkProvider robuste : Cache étendu, plafond de rate-limit augmenté contre le DoS, et
-            // Timeouts drastiques
-            JwkProvider jwkProvider =
-                    new JwkProviderBuilder(jwksUrl)
-                            .cached(10, 24, TimeUnit.HOURS)
-                            .rateLimited(50, 1, TimeUnit.MINUTES) // Augmenté pour absorber le bruit
-                            .timeouts(
-                                    5000,
-                                    5000) // 5 secondes max (Connect / Read) pour éviter le thread
-                            // starvation
-                            .build();
-
-            SigningKeyResolver keyResolver =
-                    new SigningKeyResolverAdapter() {
-                        @Override
-                        public Key resolveSigningKey(JwsHeader header, Claims claims) {
-                            String kid = header.getKeyId();
-                            if (kid == null) {
-                                throw new IllegalArgumentException(
-                                        "Key ID (kid) manquant dans le header JWT");
-                            }
-                            try {
-                                return jwkProvider.get(kid).getPublicKey();
-                            } catch (JwkException e) {
-                                // Log en WARN sans la stacktrace complète pour anéantir le risque
-                                // de log flooding
-                                log.warn(
-                                        "JWKS - Clé publique introuvable ou refusée pour le kid: {}",
-                                        kid);
-                                throw new SecurityException("Signature JWT non vérifiable");
-                            }
-                        }
-                    };
-
-            // Parseur exigeant l'Issuer et l'Audience pour valider l'intention, pas juste la
-            // signature
-            this.jwtParser =
-                    Jwts.parserBuilder()
-                            .setSigningKeyResolver(keyResolver)
-                            .requireIssuer(issuer) // Bloque les tokens provenant d'un autre
-                            // projet/environnement
-                            .requireAudience(
-                                    "authenticated") // Bloque les tokens qui n'ont pas la bonne
-                            // portée d'authentification
-                            .build();
-
-            log.info("✅ JWT mode: JWKS Dynamique sécurisé activé (source: {})", jwksUrl);
-
-        } catch (Exception e) {
-            throw new IllegalStateException(
-                    "Échec de l'initialisation JWKS avec l'URL: " + supabaseUrl, e);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Extraction des Claims
-    // -------------------------------------------------------------------------
+    @Value("${supabase.jwt.secret}")
+    private String jwtSecret;
 
     public String extractName(String token) {
         return extractClaim(
                 token,
                 claims -> {
-                    HashMap<?, ?> meta = claims.get("user_metadata", HashMap.class);
-                    return (meta != null && meta.get("name") != null)
-                            ? meta.get("name").toString()
-                            : null;
+                    HashMap<?, ?> userMetadata = claims.get("user_metadata", HashMap.class);
+                    if (userMetadata != null && userMetadata.get("name") != null) {
+                        return userMetadata.get("name").toString();
+                    }
+                    return null;
                 });
     }
 
@@ -103,10 +40,11 @@ public class JwtService {
         return extractClaim(
                 token,
                 claims -> {
-                    HashMap<?, ?> meta = claims.get("user_metadata", HashMap.class);
-                    return (meta != null && meta.get("role") != null)
-                            ? meta.get("role").toString()
-                            : null;
+                    HashMap<?, ?> userMetadata = claims.get("user_metadata", HashMap.class);
+                    if (userMetadata != null && userMetadata.get("role") != null) {
+                        return userMetadata.get("role").toString();
+                    }
+                    return null;
                 });
     }
 
@@ -118,31 +56,41 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        return resolver.apply(extractAllClaims(token));
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-        return jwtParser.parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    // -------------------------------------------------------------------------
-    // Validation
-    // -------------------------------------------------------------------------
-
+    /**
+     * Validates the token cryptographically against the Supabase secret. Specific exceptions are
+     * caught to avoid masking security threats or misconfigurations.
+     */
     public Boolean validateToken(String token) {
         try {
-            jwtParser.parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
             return true;
         } catch (SignatureException e) {
-            log.error("Signature JWT invalide");
+            log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error("Token JWT expiré");
+            log.error("Expired JWT token: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            log.error("Token JWT malformé");
+            log.error("Malformed JWT token: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Erreur de validation JWT : Requête rejetée");
+            log.error("JWT validation error: {}", e.getMessage());
         }
         return false;
+    }
+
+    private Key getSignKey() {
+        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

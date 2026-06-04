@@ -26,48 +26,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
-                // CSRF is disabled: the application relies strictly on stateless JWT authentication
+                // CSRF is disabled as the application relies strictly on stateless JWT
+                // authentication
                 .csrf(csrf -> csrf.disable())
 
-                // Enforce stateless session management — Spring must not maintain HTTP sessions
+                // Enforce stateless session management. Spring must not maintain HTTP sessions.
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
                                 auth
-                                        // Public endpoints: health-check, public API, and Swagger
-                                        // UI
-                                        .requestMatchers(
-                                                "/health",
-                                                "/api/public/**",
-                                                // Swagger / OpenAPI — must be accessible without a
-                                                // token
-                                                "/swagger-ui.html",
-                                                "/swagger-ui/**",
-                                                "/swagger-resources/**",
-                                                "/api-docs",
-                                                "/api-docs/**",
-                                                "/v3/api-docs",
-                                                "/v3/api-docs/**",
-                                                "/configuration/**",
-                                                "/webjars/**", // Required for the UI assets
-                                                // Spring Boot Actuator health endpoint
-                                                "/actuator/health")
+                                        // The /api/auth/** wildcard is explicitly REMOVED.
+                                        // Identity is handled by Supabase. Only health-checks and
+                                        // specific public endpoints pass freely.
+                                        .requestMatchers("/api/public/**", "/health")
                                         .permitAll()
-
-                                        // .requestMatchers("/troc/**")
-                                        // .permitAll()
-
-                                        // Admin-only routes
-
                                         .requestMatchers("/api/admin/**")
                                         .hasRole("ADMIN")
 
-                                        // All other requests require a valid Supabase JWT
+                                        // All other requests require a valid JWT validated by the
+                                        // filter
                                         .anyRequest()
                                         .authenticated());
 
-        // Validate the Supabase JWT before Spring's standard authentication filter
+        // Intercept requests to validate the Supabase JWT before Spring attempts standard
+        // authentication
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -77,11 +60,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Explicit origins mapped to development and deployment environments
-
-        configuration.setAllowedOriginPatterns(
+        // Strict explicit origins mapped to your development and deployment environments
+        configuration.setAllowedOrigins(
                 Arrays.asList(
-                        "http://localhost:*", // Vite dev server
+                        "http://localhost:5173",
+                        "http://localhost:4173",
                         "https://puericultureprojectpai.vercel.app"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

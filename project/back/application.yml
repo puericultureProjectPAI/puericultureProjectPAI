@@ -1,14 +1,16 @@
 server:
-  # On écoute sur PORT (standard Render) et on tombe sur 8080 en local
-  port: ${PORT:8080}
-  servlet:
-    # Définit /api par défaut, mais laisse la priorité à la variable d'environnement
-    context-path: ${SERVER_SERVLET_CONTEXT_PATH:/api}
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: projet-puericulture
 
+  # Configuration de l'IA (OpenRouter / Ollama)
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
+  # Configuration PostgreSQL (Supabase)
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL}
@@ -17,23 +19,30 @@ spring:
 
   jpa:
     hibernate:
-      # DANGEREUX EN PROD. Doit être écrasé par SPRING_JPA_HIBERNATE_DDL_AUTO=validate sur Render
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+      # CRITIQUE EN LOCAL : Autorise Hibernate à créer/mettre à jour tes tables métier
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: ${SHOW_SQL:true}
+    show-sql: true # Pratique pour le debug en local
+  # Limite de taille d'image pour ne pas tuer les instances gratuites de Render et supabase
+  servlet:
+    multipart:
+      max-file-size: ${SUPABASE_STORAGE_MAX_SIZE}
+      max-request-size: ${SUPABASE_STORAGE_MAX_SIZE}
 
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-
+# Configuration Supabase (Correspond EXACTEMENT aux @Value de ton JwtService)
 supabase:
+  jwt:
+    secret: ${SUPABASE_JWT_SECRET}
   url: ${SUPABASE_URL}
   service:
     key: ${SUPABASE_SERVICE_KEY}
+  storage:
+    bucket: ${SUPABASE_STORAGE_BUCKET:puericulture-images}
 
+# Documentation API (Swagger)
 springdoc:
   api-docs:
     path: /api-docs
@@ -41,15 +50,17 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
+# Monitoring
 management:
   endpoints:
     web:
       exposure:
         include: health,info
 
+# Gestion des logs
 logging:
   level:
     root: INFO
-    web: TRACE
     org.springframework.security: INFO
+    # Correction du nom de package pour correspondre à tes classes Java
     com.puericulture: DEBUG

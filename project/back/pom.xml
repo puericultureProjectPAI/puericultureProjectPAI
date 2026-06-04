@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<lombok.version>1.18.38</lombok.version>
+		<lombok.version>1.18.32</lombok.version>
 		<spring-ai.version>1.0.0-M6</spring-ai.version>
 		<springdoc.version>2.5.0</springdoc.version>
 	</properties>
@@ -59,11 +59,6 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>jwks-rsa</artifactId>
-			<version>0.22.1</version>
-		</dependency>
 
 		<!-- BASE DE DONNÉES -->
 		<dependency>
@@ -74,13 +69,6 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
-		</dependency>
-
-		<!-- CLOUDINARY -->
-		<dependency>
-			<groupId>com.cloudinary</groupId>
-			<artifactId>cloudinary-http44</artifactId>
-			<version>1.36.0</version>
 		</dependency>
 
 		<!-- IA (Spring AI) -->
@@ -199,8 +187,7 @@
 					<java>
 						<googleJavaFormat>
 							<version>1.22.0</version>
-							<style>AOSP</style>
-						</googleJavaFormat>
+							<style>AOSP</style> </googleJavaFormat>
 
 						<removeUnusedImports/>
 						<formatAnnotations/>

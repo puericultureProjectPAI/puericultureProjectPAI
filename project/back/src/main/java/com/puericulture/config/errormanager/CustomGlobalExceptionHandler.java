@@ -4,7 +4,6 @@ import com.puericulture.config.errormanager.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -31,23 +30,6 @@ public class CustomGlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ErrorResponse.builder().message(badRequestException.getMessage()).build());
-    }
-
-    /**
-     * Gère les erreurs de type "Mauvaise Requête" (400).
-     *
-     * @param messageNotReadableException L'exception contenant les détails de l'erreur client.
-     * @return Une ResponseEntity contenant le message d'erreur et le statut 400.
-     */
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException messageNotReadableException) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(
-                        ErrorResponse.builder()
-                                .message(messageNotReadableException.getMessage())
-                                .build());
     }
 
     /**
