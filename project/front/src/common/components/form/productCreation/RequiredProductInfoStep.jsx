@@ -69,7 +69,7 @@ export default function RequiredProductInfoStep() {
           type="button"
           onClick={handleAIRequest}
           disabled={isAILoading}
-          className="mb-4 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
+          className="mt-4 mb-4 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
         >
           {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
         </button>
