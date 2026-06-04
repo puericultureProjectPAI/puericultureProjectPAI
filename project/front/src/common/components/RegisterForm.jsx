@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Formik, Form, useField } from "formik";
 import logoKiabi from "../../assets/Logo_Kiabi.svg";
 import * as Yup from "yup";
+import CheckCircleIcon from "./CheckCircleIcon";
+import XCircleIcon from "./XCircleIcon";
 
 // --- Sous-composant Input (Modifié pour pouvoir masquer la bordure verte à l'étape 2) ---
 const MyTextInput = ({
@@ -146,50 +148,26 @@ export default function RegisterForm({ onSubmit, isLoading }) {
                   {pwdReqs.map((req, idx) => {
                     const isPristine = pwd.length === 0;
 
+                    // On prépare les variables
+                    let IconComponent;
                     let iconClass = "w-4 h-4 ";
-                    let IconPath;
 
+                    // On assigne le bon composant et la bonne couleur selon l'état
                     if (isPristine) {
+                      IconComponent = CheckCircleIcon;
                       iconClass += "text-subtle";
-                      IconPath = (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      );
                     } else if (req.valid) {
+                      IconComponent = CheckCircleIcon;
                       iconClass += "text-feedback-background-success-bold";
-                      IconPath = (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      );
                     } else {
+                      IconComponent = XCircleIcon;
                       iconClass += "text-feedback-background-alert-bold";
-                      IconPath = (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      );
                     }
 
                     return (
                       <li key={idx} className="flex items-center gap-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          className={iconClass}
-                        >
-                          {IconPath}
-                        </svg>
+                        {/* On appelle le composant dynamiquement ! */}
+                        <IconComponent className={iconClass} />
                         <span className="text-subtle">{req.label}</span>
                       </li>
                     );
