@@ -1,36 +1,55 @@
-import { Link, useLocation } from "react-router-dom";
+import searchIcon from "../../assets/icons/button/navbar/menu-search-icon-subtle.svg";
+import postIcon from "../../assets/icons/button/navbar/menu-post-icon-subtle.svg";
+import profileIcon from "../../assets/icons/button/navbar/menu-profile-icon-subtle.svg";
+import messageIcon from "../../assets/icons/button/navbar/menu-message-icon-subtle.svg";
+import homeIcon from "../../assets/icons/button/navbar/menu-home-icon-subtle.svg";
+import { useLocation, useNavigate } from "react-router";
 
-const navItems = [
-  { to: "/", label: "Accueil", icon: "⌂" },
-  { to: "/search", label: "Rechercher", icon: "⌕" },
-  { to: "/product/create", label: "Publier", icon: "⊕" },
-  { to: "/messages", label: "Messages", icon: "✉" },
-  { to: "/profile", label: "Profil", icon: "♙" },
-];
-
-export default function NavBar() {
+export default function Navbar() {
+  const navigate = useNavigate();
   const location = useLocation();
 
-  return (
-    <nav className="app-bottom-nav" aria-label="Navigation principale">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.to;
+  const buttons = [
+    { path: "/", label: "Accueil", icon: homeIcon },
+    { path: "/", label: "Rechercher", icon: searchIcon },
+    { path: "/", label: "Publier", icon: postIcon },
+    { path: "/", label: "Messages", icon: messageIcon },
+    { path: "/me", label: "Profil", icon: profileIcon },
+  ];
 
-        return (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={`app-bottom-nav__item ${
-              isActive ? "app-bottom-nav__item--active" : ""
-            }`}
-          >
-            <span className="app-bottom-nav__icon" aria-hidden="true">
-              {item.icon}
-            </span>
-            <span className="app-bottom-nav__label">{item.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
+  return (
+    <div className="flex justify-between px-6 py-3">
+      {buttons.map((b) => (
+        <IconButton
+          key={b.path}
+          active={location.pathname === b.path}
+          onClick={() => navigate(b.path)}
+          icon={b.icon}
+          label={b.label}
+        />
+      ))}
+    </div>
+  );
+}
+
+function IconButton({ active, onClick, icon, label }) {
+  return (
+    <div
+      onClick={onClick}
+      className="flex flex-col items-center cursor-pointer"
+    >
+      <img
+        src={icon}
+        className={active ? "text-text-brand" : "text-text-subtle"}
+      />
+
+      <div
+        className={
+          active ? "text-text-brand text-xs" : "text-text-subtle text-xs"
+        }
+      >
+        {label}
+      </div>
+    </div>
   );
 }
