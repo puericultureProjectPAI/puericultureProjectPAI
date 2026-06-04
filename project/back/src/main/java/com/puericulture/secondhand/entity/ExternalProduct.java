@@ -32,5 +32,5 @@ public class ExternalProduct {
     private String imageUrl;
 
     @Column(name = "price")
-    private Double price;
+    private Float price;
 }

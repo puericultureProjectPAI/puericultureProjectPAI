@@ -22,5 +22,5 @@ public class ExternalProductDTO {
     private String brand;
     private String category;
     private String imageUrl;
-    private Double price;
+    private Float price;
 }
