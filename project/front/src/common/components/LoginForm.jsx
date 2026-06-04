@@ -1,5 +1,5 @@
 import { useState } from "react";
-import kiabiLogo from "../../../src/assets/Logo_Kiabi_(2025).svg.png";
+import kiabiLogo from "../../assets/Logo_Kiabi.svg";
 import eyeIcon from "../../../src/assets/eye.svg";
 import eyeOffIcon from "../../../src/assets/eye-off.svg";
 import { NavLink } from "react-router";
