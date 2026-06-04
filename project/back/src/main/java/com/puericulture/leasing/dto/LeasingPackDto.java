@@ -13,7 +13,7 @@ public class LeasingPackDto {
     @Schema(description = "List of products included in the pack")
     private List<LeasingProductSummaryDto> products;
 
-    @Schema(description = "Total calculated price for the duration of the stay in cents")
+    @Schema(description = "Total calculated price for the duration of the stay in euros")
     private Long totalPrice;
 
     @Schema(description = "Age of the child in months used for the recommendation")

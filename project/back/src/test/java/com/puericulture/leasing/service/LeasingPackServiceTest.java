@@ -61,27 +61,21 @@ class LeasingPackServiceTest {
     void testGenerateArrivalPack_Age6to14Months_WithCar() {
         when(personRepository.findById(personId)).thenReturn(Optional.of(person));
 
-        // Act
         LeasingPackDto pack =
                 leasingPackService.generateArrivalPack(
                         "Paris", LocalDate.now(), LocalDate.now().plusDays(5), true, null);
 
-        // Assert
         assertEquals(10, pack.getChildAgeMonths());
-        // Should request: Poussette légère, Lit parapluie, Siège auto
         verify(leasingProductRepository)
-                .findAvailableProductByKeywordAndCity(
-                        eq("Poussette légère"), eq("Paris"), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Poussette"), eq("Paris"), any(), any());
         verify(leasingProductRepository)
-                .findAvailableProductByKeywordAndCity(
-                        eq("Lit parapluie"), eq("Paris"), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Couchage"), eq("Paris"), any(), any());
         verify(leasingProductRepository)
-                .findAvailableProductByKeywordAndCity(eq("Siège auto"), eq("Paris"), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Siège auto"), eq("Paris"), any(), any());
     }
 
     @Test
     void testGenerateArrivalPack_Under6Months_NoCar() {
-        // Change age to 3 months
         child.setBirthDate(Date.valueOf(LocalDate.now().minusMonths(3)));
         when(personRepository.findById(personId)).thenReturn(Optional.of(person));
 
@@ -90,34 +84,26 @@ class LeasingPackServiceTest {
                         "Lyon", LocalDate.now(), LocalDate.now().plusDays(2), false, null);
 
         assertEquals(3, pack.getChildAgeMonths());
-        // Should request: Nacelle, Lit parapluie
         verify(leasingProductRepository)
-                .findAvailableProductByKeywordAndCity(eq("Nacelle"), eq("Lyon"), any(), any());
-        verify(leasingProductRepository)
-                .findAvailableProductByKeywordAndCity(
-                        eq("Lit parapluie"), eq("Lyon"), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Couchage"), eq("Lyon"), any(), any());
         verify(leasingProductRepository, never())
-                .findAvailableProductByKeywordAndCity(eq("Cosy"), any(), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Siège auto"), any(), any(), any());
     }
 
     @Test
     void testGenerateArrivalPack_Over14Months_NoCar_ShortStay() {
-        // Change age to 24 months
         child.setBirthDate(Date.valueOf(LocalDate.now().minusMonths(24)));
         when(personRepository.findById(personId)).thenReturn(Optional.of(person));
 
-        // Duration is 2 days (today to tomorrow is 1 day, plus 1 day? wait, start to start+2 is 2
-        // days)
         LeasingPackDto pack =
                 leasingPackService.generateArrivalPack(
                         "Bordeaux", LocalDate.now(), LocalDate.now().plusDays(2), false, null);
 
         assertEquals(24, pack.getChildAgeMonths());
-        // Should request: Poussette canne ONLY, because duration <= 2, and no car
         verify(leasingProductRepository)
-                .findAvailableProductByKeywordAndCity(
-                        eq("Poussette canne"), eq("Bordeaux"), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("Poussette"), eq("Bordeaux"), any(), any());
         verify(leasingProductRepository, never())
-                .findAvailableProductByKeywordAndCity(eq("Lit parapluie"), any(), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Couchage"), any(), any(), any());
     }
 }

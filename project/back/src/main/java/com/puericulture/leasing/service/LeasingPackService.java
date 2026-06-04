@@ -3,6 +3,7 @@ package com.puericulture.leasing.service;
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.config.errormanager.exception.NotFoundException;
+import com.puericulture.config.errormanager.exception.UnauthorizedException;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import com.puericulture.leasing.dto.LeasingPackDto;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
@@ -36,7 +37,7 @@ public class LeasingPackService {
         // 1. Get authenticated person
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof String)) {
-            throw new IllegalArgumentException("User must be authenticated to generate a pack");
+            throw new UnauthorizedException("User must be authenticated to generate a pack");
         }
         UUID personId = UUID.fromString((String) principal);
         Person person =
@@ -78,27 +79,26 @@ public class LeasingPackService {
             durationDays = 1;
         }
 
-        List<String> keywords = new ArrayList<>();
+        List<String> categories = new ArrayList<>();
 
         if (ageInMonths < 6) {
-            keywords.add("Nacelle");
-            keywords.add("Lit parapluie");
+            categories.add("Couchage");
             if (carNeeded) {
-                keywords.add("Cosy");
+                categories.add("Siège auto");
             }
         } else if (ageInMonths <= 14) {
-            keywords.add("Poussette légère");
-            keywords.add("Lit parapluie");
+            categories.add("Poussette");
+            categories.add("Couchage");
             if (carNeeded) {
-                keywords.add("Siège auto");
+                categories.add("Siège auto");
             }
         } else {
-            keywords.add("Poussette canne");
+            categories.add("Poussette");
             if (durationDays > 2) {
-                keywords.add("Lit parapluie");
+                categories.add("Couchage");
             }
             if (carNeeded) {
-                keywords.add("Siège auto");
+                categories.add("Siège auto");
             }
         }
 
@@ -106,9 +106,9 @@ public class LeasingPackService {
         List<LeasingProductSummaryDto> packProducts = new ArrayList<>();
         long totalPrice = 0L;
 
-        for (String keyword : keywords) {
+        for (String category : categories) {
             leasingProductRepository
-                    .findAvailableProductByKeywordAndCity(keyword, city, startDate, endDate)
+                    .findAvailableProductByCategoryAndCity(category, city, startDate, endDate)
                     .ifPresent(
                             summary -> {
                                 LeasingProductSummaryDto dto = leasingProductMapper.toDto(summary);
