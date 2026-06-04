@@ -2,7 +2,6 @@ package com.puericulture.leasing.controller;
 
 import com.puericulture.config.errormanager.ErrorResponse;
 import com.puericulture.leasing.dto.LeasingArticleDetailDto;
-import com.puericulture.leasing.dto.LeasingFilterRequest;
 import com.puericulture.leasing.dto.LeasingProductSummaryDto;
 import com.puericulture.leasing.service.LeasingArticleService;
 import com.puericulture.leasing.service.LeasingProductService;
@@ -15,7 +14,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * STRATEGIC INTENT: Exposes the public catalog of products available for leasing. WHY THIS MATTERS:
@@ -63,69 +65,6 @@ public class LeasingProductController {
     @GetMapping("/products")
     public ResponseEntity<List<LeasingProductSummaryDto>> getProducts() {
         return ResponseEntity.ok(leasingProductService.findAll());
-    }
-
-    @Operation(
-            summary = "Filtrer les produits en location",
-            description =
-                    "Recherche les produits disponibles selon ville et/ou dates (au moins un critère obligatoire). "
-                            + "Pour les filtres avec dates, seuls les produits sans commande chevauchante sont retournés.")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Résultats du filtrage (peut être vide).",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema =
-                                                @Schema(
-                                                        implementation =
-                                                                LeasingProductSummaryDto.class))),
-                @ApiResponse(
-                        responseCode = "400",
-                        description = "Critères invalides (aucun critère, dates incorrectes, etc.)",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = ErrorResponse.class))),
-                @ApiResponse(
-                        responseCode = "500",
-                        description = "Erreur serveur interne.",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = ErrorResponse.class)))
-            })
-    @PostMapping("/products/filter")
-    public ResponseEntity<List<LeasingProductSummaryDto>> filterProducts(
-            @RequestBody LeasingFilterRequest filterRequest) {
-        return ResponseEntity.ok(leasingProductService.filter(filterRequest));
-    }
-
-    @Operation(
-            summary = "Lister les villes disponibles",
-            description = "Retourne les villes ayant au moins un produit enregistré en location.")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Liste des villes récupérée.",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = String.class))),
-                @ApiResponse(
-                        responseCode = "500",
-                        description = "Erreur serveur interne.",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = ErrorResponse.class)))
-            })
-    @GetMapping("/products/cities")
-    public ResponseEntity<List<String>> getAvailableCities() {
-        return ResponseEntity.ok(leasingProductService.getAvailableCities());
     }
 
     @Operation(

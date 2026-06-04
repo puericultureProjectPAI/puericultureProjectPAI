@@ -1,4 +1,4 @@
-package com.puericulture.common.service;
+package com.puericulture.troc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,7 +15,6 @@ import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.mapper.ProductTrocMapper;
 import com.puericulture.troc.repository.ProductTrocRepository;
-import com.puericulture.troc.service.ProductTrocService;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
