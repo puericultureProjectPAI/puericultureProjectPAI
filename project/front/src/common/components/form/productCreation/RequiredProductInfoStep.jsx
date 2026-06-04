@@ -6,7 +6,7 @@ import { useState } from "react";
 import { apiClient } from "../../../utils/apiClient.jsx";
 
 export default function RequiredProductInfoStep() {
-  const { values, setFieldValue } = useFormikContext();
+  const { values } = useFormikContext();
   // ai second main
   const [selectedFile, setSelectedFile] = useState(null);
   const [isAILoading, setIsAILoading] = useState(false);
@@ -23,7 +23,11 @@ export default function RequiredProductInfoStep() {
       // Utilisation de apiClient qui ajoute automatiquement le token (Bearer)
 
       // On utilise "v1/ai/analyze-products" car le contexte est déjà configuré
-      const response = await apiClient.post("v1/ai/analyze-products", formData);
+      //const response = await apiClient.post("v1/ai/analyze-products", formData);
+      const response = await apiClient.post(
+        "second-hand/v1/ai/analyze-products",
+        formData,
+      );
 
       console.log(" === RÉSULTAT IA GEMINI ===", response.data);
     } catch (error) {
@@ -43,7 +47,6 @@ export default function RequiredProductInfoStep() {
 
           if (file) {
             setSelectedFile(file);
-            setFieldValue("imageReference", file.name);
           }
         }}
       />
