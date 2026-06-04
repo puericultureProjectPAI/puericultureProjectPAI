@@ -1,6 +1,9 @@
 package com.puericulture.common.entity;
 
+import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import jakarta.persistence.*;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,9 +46,17 @@ public class Person {
     @Column(name = "genre", length = 1)
     private String genre;
 
+    @Column(name = "date_of_birth")
+    private java.sql.Date dateOfBirth;
+
     /**
      * EXAMPLE OF A RELATIONSHIP: All domain relations (products, messages, leasing orders) now
      * point to THIS Person entity, not the native Supabase 'users' table. * @OneToMany(mappedBy =
      * "author") private List<Product> products;
      */
+    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
+    private List<ChildrenEntity> children;
+
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
 }

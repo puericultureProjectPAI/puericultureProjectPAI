@@ -1,0 +1,1 @@
+ALTER TABLE public.timeline_events ALTER COLUMN period_id TYPE BIGINT;
