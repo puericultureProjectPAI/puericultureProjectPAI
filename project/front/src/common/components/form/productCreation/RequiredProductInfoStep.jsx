@@ -33,7 +33,7 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
 
     try {
       const response = await apiClient.post(
-        "api/v1/ai/analyze-products",
+        "v1/ai/analyze-products",
         formData,
         {
           headers: {
@@ -56,14 +56,14 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
   };
 
   const getBadgeStyle = (score) => {
-    if (score >= 0.8) return "bg-green-100 text-green-700 border-green-300";
-    if (score >= 0.5) return "bg-orange-100 text-orange-700 border-orange-300";
+    if (score >= 80) return "bg-green-100 text-green-700 border-green-300";
+    if (score >= 50) return "bg-orange-100 text-orange-700 border-orange-300";
     return "bg-red-100 text-red-700 border-red-300";
   };
 
   const getBadgeEmoji = (score) => {
-    if (score >= 0.8) return "🟢";
-    if (score >= 0.5) return "🟠";
+    if (score >= 80) return "🟢";
+    if (score >= 50) return "🟠";
     return "🔴";
   };
 
@@ -123,7 +123,7 @@ export default function RequiredProductInfoStep({ setFieldValue, values }) {
           className={`mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold ${getBadgeStyle(confidenceScore)}`}
         >
           <span>{getBadgeEmoji(confidenceScore)}</span>
-          <span>Fiabilité IA : {Math.round(confidenceScore * 100)}%</span>
+          <span>Fiabilité IA : {Math.round(confidenceScore)}%</span>
         </div>
       )}
 

@@ -11,7 +11,7 @@ import SecondHandSpecificStep from "../../../../second-hand/components/SecondHan
 
 const initialValues = {
   mode: "TROC",
-  images: [],
+  imageReference: "",
   title: "",
   description: "",
   category: "",
@@ -31,7 +31,7 @@ const validationSchemas = {
     mode: Yup.string().oneOf(["TROC", "SECOND_HAND"]).required(),
   }),
   2: Yup.object({
-    images: Yup.array().min(1, "Au moins une image est obligatoire"),
+    imageReference: Yup.string().required("Une image est obligatoire"),
     title: Yup.string().required("Le nom de l'article est obligatoire"),
     description: Yup.string().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
@@ -63,7 +63,7 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           title: values.title,
           description: values.description,
           estimatedPrice: Number(values.estimatedPrice),
-          images: values.images,
+          imageReference: values.imageReference,
           price: values.price ? Number(values.price) : 0,
           city: values.city,
           category: values.category,
@@ -86,7 +86,12 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         >
           <Form>
             {step === 1 && <ModeSelectionStep setFieldValue={setFieldValue} />}
-            {step === 2 && <RequiredProductInfoStep />}
+            {step === 2 && (
+              <RequiredProductInfoStep
+                setFieldValue={setFieldValue}
+                values={values}
+              />
+            )}
             {step === 3 && <OptionalProductInfoStep />}
             {step === 4 && values.mode === "TROC" && <TrocSpecificStep />}
             {step === 4 && values.mode === "SECOND_HAND" && (

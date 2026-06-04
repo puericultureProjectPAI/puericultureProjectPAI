@@ -4,19 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puericulture.secondhand.dto.ProductAnalysisResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,14 +29,22 @@ public class GeminiVisionService {
     private final ObjectMapper objectMapper;
 
     private static final List<String> ALLOWED_CATEGORIES =
-            List.of("Furniture", "Electronics", "Clothing", "Books");
+            List.of(
+                    "Vêtements (filles & garçons)",
+                    "Jeux et jouets",
+                    "Poussettes, porte-bébés et sièges auto",
+                    "Meubles et décoration",
+                    "Bain et change",
+                    "Sécurité bébé et enfant",
+                    "Allaitement et alimentation",
+                    "Sommeil et literie",
+                    "Santé et grossesse",
+                    "Autres articles pour bébé et enfant");
 
     public ProductAnalysisResponse analyzeImages(List<MultipartFile> images) {
         try {
-            // 1. Préparation du Body pour Gemini (Format Officiel)
             Map<String, Object> requestBody = buildGeminiPayload(images);
 
-            // 2. Envoi de la requête
             String url = apiUrl + "?key=" + apiKey;
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -58,7 +58,6 @@ public class GeminiVisionService {
                         HttpStatus.SERVICE_UNAVAILABLE, "Gemini API Error");
             }
 
-            // 3. Extraction et validation du JSON structuré depuis la réponse brute
             return parseAndValidateResponse(response.getBody());
 
         } catch (Exception e) {
@@ -72,11 +71,10 @@ public class GeminiVisionService {
         log.info("===> Début de la construction du payload Gemini pour {} image(s)", images.size());
         List<Map<String, Object>> parts = new ArrayList<>();
 
-        // 1. Ajout du Prompt
-        // Modifie la ligne du prompt pour inclure l'instruction de langue
         String prompt =
                 "Analyze the provided image(s). "
-                        + "IMPORTANT: Your response must be in FRENCH. "
+                        + "IMPORTANT: The title and description must be in FRENCH. "
+                        + "The category must be exactly one of the allowed categories, written exactly as provided. "
                         + "Return ONLY a valid JSON object. "
                         + "Categories allowed: "
                         + ALLOWED_CATEGORIES
@@ -88,11 +86,9 @@ public class GeminiVisionService {
         log.debug("Prompt envoyé : {}", prompt);
         parts.add(Map.of("text", prompt));
 
-        // 2. Ajout des images
         for (int i = 0; i < images.size(); i++) {
             MultipartFile img = images.get(i);
 
-            // Nettoyage du type MIME (parfois envoyé comme "image/jpeg;charset=UTF-8")
             String contentType = img.getContentType();
             if (contentType != null && contentType.contains(";")) {
                 contentType = contentType.split(";")[0];
@@ -108,7 +104,6 @@ public class GeminiVisionService {
             byte[] bytes = img.getBytes();
             String base64Data = Base64.getEncoder().encodeToString(bytes);
 
-            // Log partiel de la base64 pour vérification sans inonder la console
             log.debug(
                     "Image {} Base64 (début) : {}...",
                     i + 1,
@@ -124,7 +119,6 @@ public class GeminiVisionService {
                                     base64Data)));
         }
 
-        // 3. Construction finale
         Map<String, Object> finalPayload = Map.of("contents", List.of(Map.of("parts", parts)));
 
         log.info("===> Payload construit avec succès. Nombre total de 'parts' : {}", parts.size());
@@ -134,7 +128,6 @@ public class GeminiVisionService {
 
     private ProductAnalysisResponse parseAndValidateResponse(String rawResponse) throws Exception {
         JsonNode root = objectMapper.readTree(rawResponse);
-        // Gemini renvoie le texte dans candidates[0].content.parts[0].text
         String aiJsonText =
                 root.path("candidates")
                         .get(0)
@@ -145,15 +138,13 @@ public class GeminiVisionService {
                         .asText()
                         .trim();
 
-        // Nettoyage si jamais l'IA ajoute des backticks markdown malgré l'ordre
         aiJsonText = aiJsonText.replace("```json", "").replace("```", "").trim();
 
         ProductAnalysisResponse result =
                 objectMapper.readValue(aiJsonText, ProductAnalysisResponse.class);
 
-        // Validation métier
         if (!ALLOWED_CATEGORIES.contains(result.getCategory())) {
-            result.setCategory("Other");
+            result.setCategory("Autres articles pour bébé et enfant");
         }
         if (result.getConfidenceScore() < 0 || result.getConfidenceScore() > 100) {
             result.setConfidenceScore(0.0);
