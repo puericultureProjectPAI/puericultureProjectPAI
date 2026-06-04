@@ -2,9 +2,13 @@ package com.puericulture.common.entity;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Converter(autoApply = true)
 public class ProductCategoryConverter implements AttributeConverter<ProductCategory, String> {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductCategoryConverter.class);
 
     @Override
     public String convertToDatabaseColumn(ProductCategory attribute) {
@@ -58,6 +62,10 @@ public class ProductCategoryConverter implements AttributeConverter<ProductCateg
                 try {
                     return ProductCategory.fromLabel(dbData);
                 } catch (Exception e) {
+                    log.warn(
+                            "Unknown product category label '{}', falling back to 'AUTRES'",
+                            dbData,
+                            e);
                     return ProductCategory.AUTRES; // Fallback instead of crashing
                 }
         }

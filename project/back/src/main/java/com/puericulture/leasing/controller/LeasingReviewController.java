@@ -1,11 +1,9 @@
 package com.puericulture.leasing.controller;
 
 import com.puericulture.leasing.dto.CreateLeasingReviewRequest;
-import com.puericulture.leasing.dto.LeasingProductReviewsResponse;
 import com.puericulture.leasing.service.LeasingReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,42 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
  * securing the submission endpoint behind JWT verification to prevent review spoofing.
  */
 @RestController
-@RequestMapping
+@RequestMapping("/leasing")
 @RequiredArgsConstructor
-@Tag(
-        name = "Leasing Reviews",
-        description = "Public and protected endpoints for leasing product reviews")
+@Tag(name = "Leasing Reviews", description = "Protected endpoints for leasing product reviews")
 public class LeasingReviewController {
 
     private final LeasingReviewService leasingReviewService;
-
-    @Operation(
-            summary = "Get reviews for a leasing product",
-            description =
-                    "Retrieves all client reviews left for a specific leased product, along with statistical summary metrics. Accessible to anyone.")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Reviews and statistics retrieved successfully.",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema =
-                                                @Schema(
-                                                        implementation =
-                                                                LeasingProductReviewsResponse
-                                                                        .class))),
-                @ApiResponse(
-                        responseCode = "500",
-                        description = "Internal server error.",
-                        content = @Content(mediaType = "application/json"))
-            })
-    @GetMapping("/public/leasing/products/{leasingId}/reviews")
-    public ResponseEntity<LeasingProductReviewsResponse> getReviewsForProduct(
-            @PathVariable Long leasingId) {
-        return ResponseEntity.ok(leasingReviewService.getReviewsForProduct(leasingId));
-    }
 
     @Operation(
             summary = "Submit a review for a leased product",
@@ -90,7 +58,7 @@ public class LeasingReviewController {
                         description = "Internal server error.",
                         content = @Content(mediaType = "application/json"))
             })
-    @PostMapping("/leasing/products/{leasingId}/reviews")
+    @PostMapping("/products/{leasingId}/reviews")
     @ResponseStatus(HttpStatus.CREATED)
     public void createReview(
             @AuthenticationPrincipal String authenticatedPersonId,
@@ -103,7 +71,7 @@ public class LeasingReviewController {
             summary = "Get eligible order ID for review",
             description =
                     "Retrieves the latest completed leasing order ID for a given product and authenticated user, if they have one.")
-    @GetMapping("/leasing/products/{leasingId}/eligible-order")
+    @GetMapping("/products/{leasingId}/eligible-order")
     public ResponseEntity<Long> getEligibleOrderId(
             @AuthenticationPrincipal String authenticatedPersonId, @PathVariable Long leasingId) {
         return ResponseEntity.ok(

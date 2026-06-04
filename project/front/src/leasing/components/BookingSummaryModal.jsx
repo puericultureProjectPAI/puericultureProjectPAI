@@ -122,6 +122,16 @@ export default function BookingSummaryModal({
                   {formatDateString(successData.estimatedDeliveryDate)}
                 </span>
               </div>
+              <div>
+                <span className="font-bold">Prix total payé :</span>{" "}
+                <span className="font-extrabold">
+                  {(successData.totalPrice / 100).toLocaleString("fr-FR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  €
+                </span>
+              </div>
             </div>
 
             <button

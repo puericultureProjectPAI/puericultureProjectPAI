@@ -152,11 +152,21 @@ public class LeasingBookingService {
         long totalPrice = (months * pricePerMonth) + (remainingDays * pricePerDay);
 
         // 6. Save ClientProduct
+        // TECHNICAL EXPLANATION: The database table 'client_products' defines the 'order_id' column
+        // as 'NOT NULL'. Since the primary key 'id' of 'client_products' is automatically generated
+        // (GenerationType.IDENTITY) upon insertion, and the 'leasing_orders' table links back to
+        // this
+        // generated id (meaning we cannot insert into 'leasing_orders' first), we must perform a
+        // two-step insert. First, we persist 'ClientProduct' with a dummy 'orderId' (0) to satisfy
+        // the
+        // database-level 'NOT NULL' constraint. Then, once the primary key is generated, we update
+        // 'orderId' to match the generated id (which is our order's id) and perform a second save.
         ClientProduct clientProduct =
                 ClientProduct.builder()
                         .productId(article.getId())
                         .clientId(userUuid)
-                        .orderId(0L) // Temporary dummy value to satisfy NOT NULL
+                        .orderId(
+                                0L) // Temporary dummy value to satisfy database NOT NULL constraint
                         .build();
         clientProduct = clientProductRepository.save(clientProduct);
         clientProduct.setOrderId(clientProduct.getId());

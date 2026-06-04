@@ -7,7 +7,7 @@ export default function LeasingBookingSection({
   leasingId,
   productTitle,
   pricePerMonth,
-  pricePerDay = 500, // Default daily price fallback in centimes (5€)
+  pricePerDay,
 }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
