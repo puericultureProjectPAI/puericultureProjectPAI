@@ -12,6 +12,14 @@ export default {
         info: "#E8F3FF",
         "info-medium": "#E8F3FFBF",
         "info-low": "#E8F3FF80",
+        "bg-base": "#FFFFFF",
+        "bg-brand": "#000028",
+        "text-brand": "#000040",
+        "icon-subtle": "#757388",
+        "feedback-text-subtle": "#757388",
+        "feedback-text-brand": "#000040",
+        "feedback-border-neutral": "#D6D6E0",
+        "feedback-border-brand": "#000040",
 
         //feed-back-background
 
