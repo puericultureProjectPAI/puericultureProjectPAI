@@ -32,6 +32,7 @@ describe("PublishAnnouncementForm", () => {
       <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: /troc/i }));
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
     await screen.findByLabelText(/Nom de l'article/i);
@@ -53,25 +54,33 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.change(screen.getByLabelText(/Catégorie/i), {
       target: { value: "Poussettes, porte-bébés et sièges auto" },
     });
-    fireEvent.change(screen.getByLabelText(/Ville/i), {
-      target: { value: "Lille" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
-
-    await screen.findByText(/informations complémentaires/i);
     fireEvent.change(screen.getByLabelText(/État/i), {
       target: { value: "Très bon état" },
     });
-
-    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
-
-    await screen.findByRole("button", { name: /publier/i });
-    fireEvent.change(screen.getByLabelText(/Prix estimé/i), {
+    fireEvent.change(screen.getByLabelText(/Prix/i), {
       target: { value: "40" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /publier/i }));
+    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
+
+    await screen.findByText(/^Troc$/i);
+    fireEvent.change(screen.getByLabelText(/Ville/i), {
+      target: { value: "Lille" },
+    });
+    fireEvent.change(screen.getByLabelText(/Je cherche/i), {
+      target: { value: "Lit parapluie" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
+
+    await screen.findByText(/Matchs IA détectés/i);
+    const publishButton = screen
+      .getAllByText(/^publier$/i)
+      .find((element) => element.closest("button"))
+      ?.closest("button");
+
+    expect(publishButton).toBeTruthy();
+    fireEvent.click(publishButton);
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit).toHaveBeenCalledWith("TROC", {
