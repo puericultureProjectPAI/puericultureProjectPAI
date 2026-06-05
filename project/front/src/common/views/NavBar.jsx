@@ -18,7 +18,7 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="flex justify-between px-6 py-3">
+    <div className="sticky bottom-0 z-50 bg-white border-t border-gray-200 flex justify-between px-6 py-3">
       {buttons.map((b) => (
         <IconButton
           key={b.path}
