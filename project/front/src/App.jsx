@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import Layout from "./common/views/Layout";
 import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
@@ -12,6 +12,7 @@ import ProductDetailPage from "./leasing/views/ProductDetailPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
@@ -51,7 +52,7 @@ export default function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<GlobalCatalogView />} />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
@@ -80,24 +81,5 @@ export default function App() {
         </Route>
       </Routes>
     </AuthProvider>
-  );
-}
-
-function Home() {
-  const navigate = useNavigate();
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">Project PAI</h1>
-
-      <button className="w-full max-w-sm rounded-xl bg-blue-600 px-6 py-3 font-medium text-white shadow-md transition-transform hover:bg-blue-700 active:scale-95">
-        Main Action
-      </button>
-      <button
-        className="w-full max-w-sm bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition-transform"
-        onClick={() => navigate("/second-hand/scan")}
-      >
-        Scanner un produit
-      </button>
-    </div>
   );
 }
