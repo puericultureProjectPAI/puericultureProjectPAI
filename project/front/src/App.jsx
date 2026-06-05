@@ -75,7 +75,6 @@ export default function App() {
               <Route path="/troc" element={<TrocView />} />
             </Route>
 
-            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
         </Route>
