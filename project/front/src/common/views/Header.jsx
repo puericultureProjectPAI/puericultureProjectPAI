@@ -1,7 +1,7 @@
 export default function Header() {
   //A adapter plus tard avec la version PC
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-[#080036] px-4 text-white">
+    <header className="flex h-14 shrink-0 items-center justify-between bg-[#080036] px-4 text-white z-50">
       {/* le logo kiabi m'envoie vers la home page */}
       <a className="text-2xl font-extrabold tracking-wide" href="/home">
         KIABI

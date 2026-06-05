@@ -82,6 +82,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(
                 Arrays.asList(
                         "http://localhost:*", // Vite dev server
+                        "http://127.0.0.1:*", // Vite dev server
                         "https://puericultureprojectpai.vercel.app"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
