@@ -42,6 +42,7 @@ export default function App() {
         {/* Public Route */}
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
+        <Route path="/forward/onboarding" element={<FamilyOnboardingView />} />
 
         {/* Security: Protected Shell*/}
         <Route element={<ProtectedRoute />}>
@@ -59,10 +60,6 @@ export default function App() {
               <Route
                 path="/forward/create-children"
                 element={<CreationEnfantView />}
-              />
-              <Route
-                path="/forward/onboarding"
-                element={<FamilyOnboardingView />}
               />
               <Route
                 path="/product/create"
