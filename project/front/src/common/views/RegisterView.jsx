@@ -12,7 +12,8 @@ export default function RegisterView() {
     setIsLoading(true);
     setStatus("");
 
-    const { email, password, lastName, firstName, birthDate } = formValues;
+    const { email, password, lastName, firstName, pseudo, birthDate } =
+      formValues;
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -21,6 +22,7 @@ export default function RegisterView() {
         data: {
           last_name: lastName,
           first_name: firstName,
+          username: pseudo,
           birth_date: birthDate,
         },
       },
@@ -44,10 +46,19 @@ export default function RegisterView() {
   };
 
   return (
-    <div>
-      <h2>Créer un compte</h2>
+    <div className="min-h-screen bg-bg-alternate flex flex-col items-center justify-center p-4 font-figtree">
       <RegisterForm onSubmit={handleSignUp} isLoading={isLoading} />
-      {status && <p>{status}</p>}
+      {status && (
+        <p
+          className={`mt-4 p-3 rounded text-center w-full max-w-md ${
+            status.includes("Erreur") || status.includes("existe déjà")
+              ? "bg-feedback-background-alert text-feedback-background-alert-bold"
+              : "bg-feedback-background-success text-feedback-background-success-bold"
+          }`}
+        >
+          {status}
+        </p>
+      )}
     </div>
   );
 }

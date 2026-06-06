@@ -7,6 +7,11 @@ export default function SecondHandScan() {
   const [scannedCode, setScannedCode] = useState(null);
   const [productNotFound, setProductNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
+import { useNavigate } from "react-router-dom";
+
+export default function SecondHandScan() {
+  const [scannedCode, setScannedCode] = useState(null);
+  const navigate = useNavigate();
 
   const handleDetected = async (barcode) => {
     setScannedCode(barcode);
@@ -37,6 +42,7 @@ export default function SecondHandScan() {
   const handleSuccess = () => {
     setProductNotFound(false);
     setScannedCode(null);
+    navigate(`/second-hand/compare/${barcode}`);
   };
 
   return (
