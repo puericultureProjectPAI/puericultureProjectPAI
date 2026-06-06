@@ -31,7 +31,7 @@ export default function UnknownProductForm({ ean, onSubmitSuccess }) {
           price: Number(values.price),
         };
 
-        const res = await apiClient.post("/api/v1/products", payload);
+        const res = await apiClient.post("/v1/products", payload);
 
         //  SUCCESS (201 Created)
         if (res.status === 201) {

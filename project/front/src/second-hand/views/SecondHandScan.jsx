@@ -9,14 +9,12 @@ export default function SecondHandScan() {
   const [loading, setLoading] = useState(false);
 
   const handleDetected = async (barcode) => {
-    console.log("📸 Barcode scanné :", barcode);
-
     setScannedCode(barcode);
     setLoading(true);
     setProductNotFound(false);
 
     try {
-      await apiClient.get(`/api/v1/products/${barcode}`);
+      await apiClient.get(`/v1/products/${barcode}`);
 
       //  CASE 200 OK - Produit trouvé
       setProductNotFound(false);
@@ -25,18 +23,8 @@ export default function SecondHandScan() {
         const { status, data } = err.response;
 
         //  CASE 404 NOT FOUND - Produit inconnu
-        if (status === 404) {
-          console.log(" 404 reçu");
-
-          if (data?.error === "PRODUCT_NOT_FOUND") {
-            // console.log(" Produit inconnu → affichage formulaire");
-            setProductNotFound(true);
-          } else {
-            console.log(" 404 mais format inattendu :", data);
-          }
-        } else {
-          //  Autres erreurs serveur
-          console.log(" Erreur serveur :", status);
+        if (status === 404 && data?.error === "PRODUCT_NOT_FOUND") {
+          setProductNotFound(true);
         }
       } else {
         console.error(" Erreur réseau :", err);
@@ -47,7 +35,6 @@ export default function SecondHandScan() {
   };
 
   const handleSuccess = () => {
-    console.log("Produit créé avec succès");
     setProductNotFound(false);
     setScannedCode(null);
   };
