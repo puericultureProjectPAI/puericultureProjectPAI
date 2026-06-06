@@ -14,7 +14,6 @@ import com.puericulture.forwardtrading.mapper.TimeLineGeneratorMapper;
 import com.puericulture.forwardtrading.repository.ChildrenRepository;
 import com.puericulture.forwardtrading.repository.TimelineEventRepository;
 import com.puericulture.forwardtrading.repository.TimelineRepository;
-import com.puericulture.forwardtrading.utils.timeline.generator.MockTimeLineGenerator;
 import com.puericulture.forwardtrading.utils.timeline.generator.TimelineGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -28,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class OnBoardingService {
 
     private final PersonRepository personRepository;
-    private final TimelineGenerator timelineGenerator = new MockTimeLineGenerator();
+    private final TimelineGenerator timelineGenerator;
     private final TimeLineGeneratorMapper timeLineGeneratorMapper;
     private final ChildrenMapper childrenMapper;
     private final PersonPreferencesMapper personPreferencesMapper;
