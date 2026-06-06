@@ -77,6 +77,7 @@ public class MockTimeLineGenerator implements TimelineGenerator {
         return TimelineEvents.builder()
                 // .id(timelineEventIdIncrementer)
                 .timeline(timelines)
+                .type("ACHAT")
                 .articleName(mockedArticles.get(random.nextInt(mockedArticles.size())))
                 .articleTag(mockedTags.get(random.nextInt(mockedTags.size())))
                 .period(getTimelinePeriods())

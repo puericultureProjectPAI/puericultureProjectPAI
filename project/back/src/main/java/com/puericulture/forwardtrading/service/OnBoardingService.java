@@ -16,6 +16,7 @@ import com.puericulture.forwardtrading.repository.TimelineEventRepository;
 import com.puericulture.forwardtrading.repository.TimelineRepository;
 import com.puericulture.forwardtrading.utils.timeline.generator.MockTimeLineGenerator;
 import com.puericulture.forwardtrading.utils.timeline.generator.TimelineGenerator;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,7 @@ public class OnBoardingService {
     private final TimelineEventRepository timelineEventRepository;
     private final TimelineRepository timelineRepository;
 
+    @Transactional
     public OnBoardingDto createOnBoarding(@Valid OnBoardingDto onBoardingDto, String userId) {
         Person person =
                 personRepository
