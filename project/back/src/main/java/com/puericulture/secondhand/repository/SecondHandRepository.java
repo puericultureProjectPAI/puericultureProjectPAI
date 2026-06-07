@@ -17,10 +17,9 @@ public interface SecondHandRepository extends JpaRepository<SecondHand, Long> {
     Long countActiveListingsByCategory(@Param("category") ProductCategory category);
 
     @Query(
-    "SELECT new com.puericulture.secondhand.dto.SecondHandListItemDto(" +
-    "s.id, s.postTitle, s.price, CAST(s.category AS string), " +
-    "(SELECT pi.imageUrl FROM ProductImage pi WHERE pi.product.id = s.id AND pi.position = 1)) " +
-    "FROM SecondHand s")
-    
+            "SELECT new com.puericulture.secondhand.dto.SecondHandListItemDto("
+                    + "s.id, s.postTitle, s.price, CAST(s.category AS string), "
+                    + "(SELECT pi.imageUrl FROM ProductImage pi WHERE pi.product.id = s.id AND pi.position = 1)) "
+                    + "FROM SecondHand s")
     List<SecondHandListItemDto> findAllListItems();
 }

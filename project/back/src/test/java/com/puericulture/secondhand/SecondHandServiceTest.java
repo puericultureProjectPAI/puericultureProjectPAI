@@ -110,7 +110,8 @@ class SecondHandServiceTest {
         List<SecondHandListItemDto> mockList =
                 List.of(
                         new SecondHandListItemDto(1L, "Poussette", 50L, "TRANSPORT_BEBE", null),
-                        new SecondHandListItemDto(2L, "Robe", 20L, "VETEMENTS", "http://image.jpg"));
+                        new SecondHandListItemDto(
+                                2L, "Robe", 20L, "VETEMENTS", "http://image.jpg"));
 
         when(secondHandRepository.findAllListItems()).thenReturn(mockList);
 
