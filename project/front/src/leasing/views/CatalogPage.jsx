@@ -21,21 +21,21 @@ export default function CatalogPage() {
 
   const [cities, setCities] = useState([]);
   const [city, setCity] = useState("");
-  const [startDate, setStartDate] = useState(() => {
-    const d = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
-    );
-    return d.toISOString().split("T")[0];
-  });
-  const [endDate, setEndDate] = useState(() => {
-    const d = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
-    );
-    d.setMonth(d.getMonth() + 1);
-    return d.toISOString().split("T")[0];
-  });
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [dateError, setDateError] = useState("");
   const [showNoResultModal, setShowNoResultModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
+
+  const loadProducts = () => {
+    setLoading(true);
+    setError("");
+    apiClient
+      .get("/public/leasing/products")
+      .then((res) => setProducts(res.data))
+      .catch(() => setError("Impossible de charger les articles."))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     apiClient
@@ -46,15 +46,26 @@ export default function CatalogPage() {
 
     apiClient
       .get("/public/leasing/products/cities")
-      .then((res) => {
-        setCities(res.data);
-        if (res.data.length > 0) setCity(res.data[0]);
-      })
+      .then((res) => setCities(res.data))
       .catch(() => setCities([]));
   }, []);
 
   const handleSearch = () => {
     const todayFrance = getTodayFrance();
+    const hasCity = !!city;
+    const hasStartDate = !!startDate;
+    const hasEndDate = !!endDate;
+
+    if (!hasCity && !hasStartDate && !hasEndDate) {
+      setDateError("");
+      loadProducts();
+      return;
+    }
+
+    if (hasStartDate !== hasEndDate) {
+      setDateError("Renseignez une date de début et une date de fin.");
+      return;
+    }
 
     if (
       (startDate && startDate < todayFrance) ||
@@ -66,8 +77,14 @@ export default function CatalogPage() {
       return;
     }
 
+    if (startDate && endDate && endDate < startDate) {
+      setDateError("La date de fin doit être après la date de début.");
+      return;
+    }
+
     setDateError("");
     setLoading(true);
+    setError("");
 
     const body = {};
     if (city) body.city = city;
@@ -82,6 +99,15 @@ export default function CatalogPage() {
       })
       .catch(() => setError("Erreur lors du filtrage."))
       .finally(() => setLoading(false));
+  };
+
+  const handleResetFilters = () => {
+    setCity("");
+    setStartDate("");
+    setEndDate("");
+    setDateError("");
+    setShowNoResultModal(false);
+    loadProducts();
   };
 
   return (
@@ -101,77 +127,97 @@ export default function CatalogPage() {
               </p>
             </div>
 
-            <span className="material-symbols-rounded text-[17px]">
-              filter_alt
-            </span>
-          </div>
-
-          <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[9px] py-[10px]">
-            <p className="text-[11px] font-medium">Ville de destination</p>
-
-            <div className="mt-[8px] flex h-[31px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
-              <span className="material-symbols-rounded text-[14px] text-[#7C7A8A]">
-                location_on
-              </span>
-
-              <select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="h-full flex-1 bg-white text-[10px] outline-none"
-              >
-                <option value="">Toutes les villes</option>
-                {cities.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <p className="mt-[14px] text-[11px] font-medium">
-              Dates de location
-            </p>
-
-            <div className="mt-[7px] flex flex-col md:flex-row md:gap-4">
-              <div className="flex items-center gap-[6px] flex-1">
-                <span className="w-[28px] text-right text-[10px] font-bold">
-                  - du
-                </span>
-
-                <DateInput
-                  value={startDate}
-                  onChange={setStartDate}
-                  hasError={!!dateError}
-                />
-              </div>
-
-              <div className="flex items-center gap-[6px] flex-1 mt-[7px] md:mt-0">
-                <span className="w-[28px] text-right text-[10px] font-bold">
-                  - au
-                </span>
-
-                <DateInput
-                  value={endDate}
-                  onChange={setEndDate}
-                  hasError={!!dateError}
-                />
-              </div>
-            </div>
-
-            {dateError && (
-              <p className="mt-[8px] text-[8px] leading-[11px] text-red-500">
-                {dateError}
-              </p>
-            )}
-
             <button
               type="button"
-              onClick={handleSearch}
-              className="mt-[10px] h-[28px] w-full rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
+              aria-label={
+                showFilters ? "Masquer les filtres" : "Afficher les filtres"
+              }
+              onClick={() => setShowFilters((value) => !value)}
+              className="flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
             >
-              Rechercher
+              <span className="material-symbols-rounded text-[17px]">
+                filter_alt
+              </span>
             </button>
-          </section>
+          </div>
+
+          {showFilters && (
+            <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[9px] py-[10px]">
+              <p className="text-[11px] font-medium">Ville de destination</p>
+
+              <div className="mt-[8px] flex h-[31px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
+                <span className="material-symbols-rounded text-[14px] text-[#7C7A8A]">
+                  location_on
+                </span>
+
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="h-full flex-1 bg-white text-[10px] outline-none"
+                >
+                  <option value="">Toutes les villes</option>
+                  {cities.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <p className="mt-[14px] text-[11px] font-medium">
+                Dates de location
+              </p>
+
+              <div className="mt-[7px] flex flex-col md:flex-row md:gap-4">
+                <div className="flex items-center gap-[6px] flex-1">
+                  <span className="w-[28px] text-right text-[10px] font-bold">
+                    - du
+                  </span>
+
+                  <DateInput
+                    value={startDate}
+                    onChange={setStartDate}
+                    hasError={!!dateError}
+                  />
+                </div>
+
+                <div className="flex items-center gap-[6px] flex-1 mt-[7px] md:mt-0">
+                  <span className="w-[28px] text-right text-[10px] font-bold">
+                    - au
+                  </span>
+
+                  <DateInput
+                    value={endDate}
+                    onChange={setEndDate}
+                    hasError={!!dateError}
+                  />
+                </div>
+              </div>
+
+              {dateError && (
+                <p className="mt-[8px] text-[8px] leading-[11px] text-red-500">
+                  {dateError}
+                </p>
+              )}
+
+              <div className="mt-[10px] flex gap-[8px]">
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="h-[28px] flex-1 rounded-[4px] border border-[#040037] bg-white text-[9px] font-bold text-[#040037]"
+                >
+                  Réinitialiser
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="h-[28px] flex-1 rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
+                >
+                  Rechercher
+                </button>
+              </div>
+            </section>
+          )}
         </section>
 
         <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
@@ -199,18 +245,20 @@ export default function CatalogPage() {
               <article
                 key={product.id}
                 onClick={() => {
-                  if (!product.available) return;
                   const params = new URLSearchParams();
                   if (startDate) params.set("startDate", startDate);
                   if (endDate) params.set("endDate", endDate);
+                  const queryString = params.toString();
                   navigate(
-                    `/leasing/products/${product.id}?${params.toString()}`,
+                    `/leasing/products/${product.id}${
+                      queryString ? `?${queryString}` : ""
+                    }`,
                   );
                 }}
                 className={`h-[170px] rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
                   product.available
                     ? "cursor-pointer"
-                    : "pointer-events-none opacity-50"
+                    : "cursor-pointer opacity-50"
                 }`}
               >
                 <img
@@ -250,28 +298,28 @@ export default function CatalogPage() {
       <Navbar />
 
       {showNoResultModal && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#040037]/40">
-          <div className="relative w-[180px] rounded-[4px] bg-white p-[16px] text-center shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#040037]/60 p-2 backdrop-blur-xs">
+          <div className="relative flex w-[240px] flex-col rounded-[8px] border border-[#E6E6E6] bg-white p-[16px] text-center shadow-2xl">
             <button
               type="button"
               onClick={() => setShowNoResultModal(false)}
-              className="absolute right-[8px] top-[7px]"
+              className="absolute right-[10px] top-[9px] text-[#7C7A8A] hover:text-[#040037]"
             >
-              <span className="material-symbols-rounded text-[13px]">
+              <span className="material-symbols-rounded text-[14px]">
                 close
               </span>
             </button>
 
-            <p className="mb-[18px] mt-[12px] text-[10px] text-[#7C7A8A]">
-              Aucun article disponible pour ces critères.
+            <p className="mb-[18px] mt-[18px] text-[10px] font-bold text-[#040037]">
+              Aucun article correspondant
             </p>
 
             <button
               type="button"
               onClick={() => setShowNoResultModal(false)}
-              className="h-[28px] w-[95px] rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
+              className="mx-auto h-[28px] w-[95px] rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
             >
-              Ok
+              Retour
             </button>
           </div>
         </div>

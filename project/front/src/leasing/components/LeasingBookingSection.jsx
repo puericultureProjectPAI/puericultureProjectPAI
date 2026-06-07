@@ -108,8 +108,8 @@ export default function LeasingBookingSection({
         {/* Inline date editor */}
         {isEditing && (
           <div className="flex flex-col gap-[8px]">
-            <div className="flex gap-[8px]">
-              <div className="flex-1 flex flex-col gap-[2px]">
+            <div className="flex flex-wrap gap-[8px]">
+              <div className="flex min-w-0 flex-[1_1_150px] flex-col gap-[2px]">
                 <label
                   htmlFor="booking-start"
                   className="font-normal text-[14px] text-[#757388]"
@@ -122,10 +122,10 @@ export default function LeasingBookingSection({
                   min={todayStr}
                   value={editStart}
                   onChange={(e) => setEditStart(e.target.value)}
-                  className="w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
+                  className="min-w-0 w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
                 />
               </div>
-              <div className="flex-1 flex flex-col gap-[2px]">
+              <div className="flex min-w-0 flex-[1_1_150px] flex-col gap-[2px]">
                 <label
                   htmlFor="booking-end"
                   className="font-normal text-[14px] text-[#757388]"
@@ -138,7 +138,7 @@ export default function LeasingBookingSection({
                   min={editStart || todayStr}
                   value={editEnd}
                   onChange={(e) => setEditEnd(e.target.value)}
-                  className="w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
+                  className="min-w-0 w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
                 />
               </div>
             </div>

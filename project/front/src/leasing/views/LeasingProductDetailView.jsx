@@ -11,6 +11,19 @@ import "../leasing.css";
 const fallbackImage = (title) =>
   `https://placehold.co/260x200?text=${encodeURIComponent(title || "Produit")}`;
 
+const getTodayFrance = () =>
+  new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }))
+    .toISOString()
+    .split("T")[0];
+
+const getDateInOneMonthFrance = () => {
+  const date = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
+  );
+  date.setMonth(date.getMonth() + 1);
+  return date.toISOString().split("T")[0];
+};
+
 function formatAgeRange(minMonths, maxMonths) {
   if (minMonths == null && maxMonths == null) return null;
   const fmt = (m) => {
@@ -26,8 +39,9 @@ function formatAgeRange(minMonths, maxMonths) {
 export default function LeasingProductDetailView() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const initialStartDate = searchParams.get("startDate") || "";
-  const initialEndDate = searchParams.get("endDate") || "";
+  const initialStartDate = searchParams.get("startDate") || getTodayFrance();
+  const initialEndDate =
+    searchParams.get("endDate") || getDateInOneMonthFrance();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,7 +57,7 @@ export default function LeasingProductDetailView() {
 
   if (loading) {
     return (
-      <main className="w-full max-w-2xl mx-auto flex h-screen items-center justify-center bg-white text-[#040037]">
+      <main className="flex h-screen w-full items-center justify-center bg-white text-[#040037]">
         <p className="text-[11px] text-[#7C7A8A]">Chargement…</p>
       </main>
     );
@@ -51,7 +65,7 @@ export default function LeasingProductDetailView() {
 
   if (error || !product) {
     return (
-      <main className="w-full max-w-2xl mx-auto flex h-screen items-center justify-center bg-white text-[#040037]">
+      <main className="flex h-screen w-full items-center justify-center bg-white text-[#040037]">
         <p className="text-[11px] text-red-500">
           {error || "Produit introuvable."}
         </p>
@@ -105,7 +119,7 @@ export default function LeasingProductDetailView() {
   );
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden w-full max-w-2xl mx-auto bg-white text-[#040037]">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-[#040037]">
       <Header />
       <LeasingBackHeader rightElement={shareButton} />
 
@@ -136,10 +150,9 @@ export default function LeasingProductDetailView() {
           {images.length === 1 && <div className="pt-[8px]" />}
         </section>
 
-        {/* Content — single column mobile, 2-column grid on desktop */}
-        <div className="md:grid md:grid-cols-2 md:gap-6 md:px-6 md:pt-4">
-          {/* Left col on desktop: title, price, description, details */}
-          <section className="px-[14px] md:px-0 md:pb-[80px]">
+        {/* Content — vertical layout on mobile and desktop */}
+        <div className="w-full px-[14px] md:px-6 md:pt-4">
+          <section className="pb-[12px]">
             {/* Badge */}
             <div className="mb-[6px] flex justify-end">
               <span className="rounded-full border border-[#040037] px-[8px] py-[2px] text-[8px]">
@@ -182,8 +195,7 @@ export default function LeasingProductDetailView() {
             )}
           </section>
 
-          {/* Right col on desktop: booking section */}
-          <section className="md:pt-[28px]">
+          <section>
             <LeasingBookingSection
               leasingId={id}
               productTitle={product.postTitle}
