@@ -39,7 +39,7 @@ export default function LeasingProductDetailView() {
 
   if (loading) {
     return (
-      <main className="mx-auto flex h-screen w-[260px] items-center justify-center bg-white text-[#040037]">
+      <main className="w-full max-w-2xl mx-auto flex h-screen items-center justify-center bg-white text-[#040037]">
         <p className="text-[11px] text-[#7C7A8A]">Chargement…</p>
       </main>
     );
@@ -47,7 +47,7 @@ export default function LeasingProductDetailView() {
 
   if (error || !product) {
     return (
-      <main className="mx-auto flex h-screen w-[260px] items-center justify-center bg-white text-[#040037]">
+      <main className="w-full max-w-2xl mx-auto flex h-screen items-center justify-center bg-white text-[#040037]">
         <p className="text-[11px] text-red-500">
           {error || "Produit introuvable."}
         </p>
@@ -82,7 +82,7 @@ export default function LeasingProductDetailView() {
   ].filter((d) => d.value);
 
   return (
-    <main className="mx-auto h-screen w-[260px] overflow-y-auto bg-white text-[#040037]">
+    <main className="w-full max-w-2xl mx-auto min-h-screen overflow-y-auto bg-white text-[#040037]">
       {/* Header */}
       <header className="flex items-center justify-between px-[12px] py-[10px]">
         <button onClick={() => navigate(-1)} className="p-[2px]">
@@ -110,12 +110,12 @@ export default function LeasingProductDetailView() {
         </button>
       </header>
 
-      {/* Image carousel */}
+      {/* Image carousel — full width on mobile, fixed height on desktop */}
       <section>
         <img
           src={images[currentImage]}
           alt={product.postTitle}
-          className="h-[200px] w-full object-cover"
+          className="h-[200px] md:h-[280px] w-full object-cover"
           onError={(e) => {
             e.currentTarget.src = fallbackImage(product.postTitle);
           }}
@@ -136,56 +136,63 @@ export default function LeasingProductDetailView() {
         {images.length === 1 && <div className="pt-[8px]" />}
       </section>
 
-      {/* Content */}
-      <section className="px-[14px] pb-[80px]">
-        {/* Badge */}
-        <div className="mb-[6px] flex justify-end">
-          <span className="rounded-full border border-[#040037] px-[8px] py-[2px] text-[8px]">
-            Location
-          </span>
-        </div>
-
-        {/* Title + Price */}
-        <div className="mb-[10px] flex items-baseline justify-between">
-          <h1 className="text-[16px] font-bold">{product.postTitle}</h1>
-          {priceDisplay && (
-            <span className="ml-[8px] whitespace-nowrap text-[14px] font-bold">
-              {priceDisplay}
+      {/* Content — single column mobile, 2-column grid on desktop */}
+      <div className="md:grid md:grid-cols-2 md:gap-6 md:px-6 md:pt-4">
+        {/* Left col on desktop: title, price, description, details */}
+        <section className="px-[14px] md:px-0 md:pb-[80px]">
+          {/* Badge */}
+          <div className="mb-[6px] flex justify-end">
+            <span className="rounded-full border border-[#040037] px-[8px] py-[2px] text-[8px]">
+              Location
             </span>
+          </div>
+
+          {/* Title + Price */}
+          <div className="mb-[10px] flex items-baseline justify-between">
+            <h1 className="text-[16px] font-bold">{product.postTitle}</h1>
+            {priceDisplay && (
+              <span className="ml-[8px] whitespace-nowrap text-[14px] font-bold">
+                {priceDisplay}
+              </span>
+            )}
+          </div>
+
+          {/* Description */}
+          {product.description && (
+            <div className="mb-[12px] mt-[10px]">
+              <p className="mb-[4px] text-[9px] font-semibold">Description</p>
+              <p className="rounded-[4px] border border-[#E6E6E6] p-[8px] text-[8px] leading-[1.4]">
+                {product.description}
+              </p>
+            </div>
           )}
-        </div>
 
-        {/* Booking Selection Section */}
-        <LeasingBookingSection
-          leasingId={id}
-          productTitle={product.postTitle}
-          pricePerMonth={product.pricePerMonth}
-          pricePerDay={product.pricePerDay}
-        />
+          {/* Details */}
+          {details.length > 0 && (
+            <div className="mb-[16px] flex flex-col gap-[6px]">
+              {details.map(({ label, value, green }) => (
+                <div key={label} className="flex gap-[6px] text-[9px]">
+                  <span className="min-w-[80px] font-bold">{label}</span>
+                  <span className={green ? "text-[#2E7D32]" : ""}>{value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
-        {/* Description */}
-        {product.description && (
-          <div className="mb-[12px] mt-[10px]">
-            <p className="mb-[4px] text-[9px] font-semibold">Description</p>
-            <p className="rounded-[4px] border border-[#E6E6E6] p-[8px] text-[8px] leading-[1.4]">
-              {product.description}
-            </p>
-          </div>
-        )}
+        {/* Right col on desktop: booking section */}
+        <section className="md:pt-[28px]">
+          <LeasingBookingSection
+            leasingId={id}
+            productTitle={product.postTitle}
+            pricePerMonth={product.pricePerMonth}
+            pricePerDay={product.pricePerDay}
+          />
+        </section>
+      </div>
 
-        {/* Details */}
-        {details.length > 0 && (
-          <div className="mb-[16px] flex flex-col gap-[6px]">
-            {details.map(({ label, value, green }) => (
-              <div key={label} className="flex gap-[6px] text-[9px]">
-                <span className="min-w-[80px] font-bold">{label}</span>
-                <span className={green ? "text-[#2E7D32]" : ""}>{value}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Reviews & Actions Section */}
+      {/* Reviews — full width below both columns */}
+      <section className="px-[14px] md:px-6 pb-[80px]">
         <LeasingReviewsSection leasingId={id} />
       </section>
 

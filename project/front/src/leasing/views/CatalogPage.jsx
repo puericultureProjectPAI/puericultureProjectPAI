@@ -72,7 +72,7 @@ export default function CatalogPage() {
   };
 
   return (
-    <main className="relative mx-auto h-screen w-[320px] overflow-y-auto bg-white text-[#040037]">
+    <main className="relative w-full max-w-5xl mx-auto min-h-screen overflow-y-auto bg-white text-[#040037]">
       <header className="flex h-[48px] items-center justify-between bg-[#040037] px-[12px] text-white">
         <span className="text-[17px] font-bold tracking-widest">KIABI</span>
 
@@ -84,7 +84,7 @@ export default function CatalogPage() {
         </div>
       </header>
 
-      <section className="px-[10px] pt-[12px]">
+      <section className="px-4 md:px-6 pt-[12px]">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-[13px] font-bold leading-none">
@@ -125,28 +125,30 @@ export default function CatalogPage() {
 
           <p className="mt-[14px] text-[11px] font-medium">Dates de location</p>
 
-          <div className="mt-[7px] flex items-center gap-[6px]">
-            <span className="w-[28px] text-right text-[10px] font-bold">
-              - du
-            </span>
+          <div className="mt-[7px] flex flex-col md:flex-row md:gap-4">
+            <div className="flex items-center gap-[6px] flex-1">
+              <span className="w-[28px] text-right text-[10px] font-bold">
+                - du
+              </span>
 
-            <DateInput
-              value={startDate}
-              onChange={setStartDate}
-              hasError={!!dateError}
-            />
-          </div>
+              <DateInput
+                value={startDate}
+                onChange={setStartDate}
+                hasError={!!dateError}
+              />
+            </div>
 
-          <div className="mt-[7px] flex items-center gap-[6px]">
-            <span className="w-[28px] text-right text-[10px] font-bold">
-              - au
-            </span>
+            <div className="flex items-center gap-[6px] flex-1 mt-[7px] md:mt-0">
+              <span className="w-[28px] text-right text-[10px] font-bold">
+                - au
+              </span>
 
-            <DateInput
-              value={endDate}
-              onChange={setEndDate}
-              hasError={!!dateError}
-            />
+              <DateInput
+                value={endDate}
+                onChange={setEndDate}
+                hasError={!!dateError}
+              />
+            </div>
           </div>
 
           {dateError && (
@@ -165,7 +167,7 @@ export default function CatalogPage() {
         </section>
       </section>
 
-      <section className="grid grid-cols-2 gap-x-[12px] gap-y-[12px] px-[20px] pt-[14px] pb-[75px]">
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-[75px]">
         {loading && (
           <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
             Chargement…
@@ -283,7 +285,7 @@ function DateInput({ value, onChange, hasError }) {
 
 function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-1/2 flex h-[50px] w-[320px] -translate-x-1/2 items-center justify-around border-t border-[#E6E6E6] bg-white">
+    <nav className="fixed bottom-0 left-0 right-0 flex h-[50px] w-full items-center justify-around border-t border-[#E6E6E6] bg-white">
       {[
         { icon: "home", label: "Accueil", active: true },
         { icon: "search", label: "Rechercher" },

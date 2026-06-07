@@ -125,7 +125,7 @@ export function useLeasingReviewsData(leasingId) {
     return `Il y a ${months} mois`;
   };
 
-  const reviews = (responseData?.reviews || []).map((r) => ({
+  const reviews = (responseData?.reviews || []).slice(0, 3).map((r) => ({
     reviewerName: r.reviewerName,
     rating: r.rating,
     comment: r.comment || "Aucun commentaire.",
