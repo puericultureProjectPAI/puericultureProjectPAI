@@ -1,6 +1,7 @@
 package com.puericulture.secondhand.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.*;
 
 /** */
@@ -31,6 +32,6 @@ public class ExternalProduct {
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
-    @Column(name = "price", columnDefinition = "float8")
-    private Double price;
+    @Column(name = "price")
+    private BigDecimal price;
 }
