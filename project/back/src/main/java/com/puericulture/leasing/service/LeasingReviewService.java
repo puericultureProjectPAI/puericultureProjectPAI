@@ -40,7 +40,10 @@ public class LeasingReviewService {
                                     if (dto.getReviewerName() != null) {
                                         String name = dto.getReviewerName().trim();
                                         String[] parts = name.split(" ");
-                                        dto.setReviewerName(parts[0]);
+                                        dto.setReviewerName(
+                                                parts.length > 0 && !parts[0].isEmpty()
+                                                        ? parts[0]
+                                                        : "Parent Anonyme");
                                     } else {
                                         dto.setReviewerName("Parent Anonyme");
                                     }

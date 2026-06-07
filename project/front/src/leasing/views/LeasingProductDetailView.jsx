@@ -21,7 +21,7 @@ function formatAgeRange(minMonths, maxMonths) {
   return `${fmt(minMonths ?? 0)} - ${fmt(maxMonths ?? 0)}`;
 }
 
-export default function ProductDetailPage() {
+export default function LeasingProductDetailView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
