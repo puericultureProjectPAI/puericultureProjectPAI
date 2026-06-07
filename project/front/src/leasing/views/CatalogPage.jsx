@@ -239,7 +239,7 @@ export default function CatalogPage() {
 
                 <p className="mt-[3px] text-[9px] font-bold leading-none">
                   {product.available
-                    ? `${product.pricePerMonth / 100}€/mois`
+                    ? `${product.pricePerMonth}€/mois`
                     : "Indisponible"}
                 </p>
               </article>

@@ -22,11 +22,6 @@ export default function ReviewFormModal({ leasingId, onClose }) {
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
-      leasingOrderId: Yup.number()
-        .typeError("L'ID de commande doit être un nombre")
-        .integer("L'ID de commande doit être un entier")
-        .positive("L'ID de commande doit être supérieur à 0")
-        .required("Identifiant de commande requis"),
       rating: Yup.number()
         .min(1, "1 étoile minimum")
         .max(5, "5 étoiles maximum")

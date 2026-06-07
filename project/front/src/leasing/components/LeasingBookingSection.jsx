@@ -39,10 +39,7 @@ export default function LeasingBookingSection({
       Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     const months = Math.floor(diffDays / 30);
     const remainingDays = diffDays % 30;
-    return (
-      months * (Number(pricePerMonth) / 100) +
-      remainingDays * (Number(pricePerDay) / 100)
-    );
+    return months * Number(pricePerMonth) + remainingDays * Number(pricePerDay);
   };
 
   const editError =

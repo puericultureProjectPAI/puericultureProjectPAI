@@ -6,6 +6,7 @@ import { useSubmitBooking, useLeasingProfile } from "../hooks/useLeasing";
 import { useAuth } from "../../common/security/AuthContext";
 import Header from "../../common/views/Header";
 import Navbar from "../../common/views/NavBar";
+import LeasingBackHeader from "../components/LeasingBackHeader";
 
 const formatDateFR = (dateStr) => {
   if (!dateStr) return "";
@@ -93,6 +94,7 @@ export default function LeasingBookingPage() {
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037] font-['Figtree',sans-serif]">
       <Header />
+      <LeasingBackHeader />
 
       <main className="flex-1 overflow-y-auto">
         {successData ? (
@@ -129,7 +131,7 @@ export default function LeasingBookingPage() {
                   Prix total :
                 </span>
                 <span className="font-bold text-[16px] text-[#040037]">
-                  {(successData.totalPrice / 100).toLocaleString("fr-FR", {
+                  {Number(successData.totalPrice).toLocaleString("fr-FR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}

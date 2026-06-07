@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
+import Header from "../../common/views/Header";
 import NavBar from "../../common/views/NavBar";
+import LeasingBackHeader from "../components/LeasingBackHeader";
 import LeasingBookingSection from "../components/LeasingBookingSection";
 import LeasingReviewsSection from "../components/LeasingReviewsSection";
 import "../leasing.css";
@@ -23,7 +25,6 @@ function formatAgeRange(minMonths, maxMonths) {
 
 export default function LeasingProductDetailView() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialStartDate = searchParams.get("startDate") || "";
   const initialEndDate = searchParams.get("endDate") || "";
@@ -65,7 +66,7 @@ export default function LeasingProductDetailView() {
 
   const priceDisplay =
     product.pricePerMonth != null
-      ? (product.pricePerMonth / 100).toLocaleString("fr-FR", {
+      ? Number(product.pricePerMonth).toLocaleString("fr-FR", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }) + " €"
@@ -84,34 +85,29 @@ export default function LeasingProductDetailView() {
     },
   ].filter((d) => d.value);
 
+  const shareButton = (
+    <button
+      aria-label="Partager"
+      onClick={() => {
+        if (navigator.share) {
+          navigator.share({
+            title: product.postTitle,
+            url: window.location.href,
+          });
+        } else {
+          navigator.clipboard.writeText(window.location.href);
+        }
+      }}
+      className="p-[2px]"
+    >
+      <span className="material-symbols-rounded text-[20px]">ios_share</span>
+    </button>
+  );
+
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden w-full max-w-2xl mx-auto bg-white text-[#040037]">
-      {/* Header */}
-      <header className="flex items-center justify-between px-[12px] py-[10px] shrink-0">
-        <button onClick={() => navigate(-1)} className="p-[2px]">
-          <span className="material-symbols-rounded text-[20px]">
-            arrow_back
-          </span>
-        </button>
-        <button
-          aria-label="Partager"
-          onClick={() => {
-            if (navigator.share) {
-              navigator.share({
-                title: product.postTitle,
-                url: window.location.href,
-              });
-            } else {
-              navigator.clipboard.writeText(window.location.href);
-            }
-          }}
-          className="p-[2px]"
-        >
-          <span className="material-symbols-rounded text-[20px]">
-            ios_share
-          </span>
-        </button>
-      </header>
+      <Header />
+      <LeasingBackHeader rightElement={shareButton} />
 
       <main className="flex-1 overflow-y-auto">
         {/* Image carousel — full width on mobile, fixed height on desktop */}
