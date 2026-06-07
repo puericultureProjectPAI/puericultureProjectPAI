@@ -187,6 +187,7 @@ export default function LeasingProductDetailView() {
             productTitle={product.postTitle}
             pricePerMonth={product.pricePerMonth}
             pricePerDay={product.pricePerDay}
+            firstImageUrl={images[0]}
           />
         </section>
       </div>

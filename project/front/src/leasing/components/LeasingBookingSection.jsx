@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../common/security/AuthContext";
-import BookingSummaryModal from "./BookingSummaryModal";
 
 export default function LeasingBookingSection({
   leasingId,
   productTitle,
   pricePerMonth,
   pricePerDay,
+  firstImageUrl,
 }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -58,11 +57,18 @@ export default function LeasingBookingSection({
 
   const handleBookClick = () => {
     if (!isAuthenticated) {
-      // Redirect to connection screen if unauthorized
       navigate("/connection");
       return;
     }
-    setIsModalOpen(true);
+    navigate(`/leasing/booking/${leasingId}`, {
+      state: {
+        productTitle,
+        startDate,
+        endDate,
+        totalPrice,
+        firstImageUrl,
+      },
+    });
   };
 
   const isFormValid = startDate && endDate && !errorText && totalPrice > 0;
@@ -152,18 +158,6 @@ export default function LeasingBookingSection({
       >
         Réserver
       </button>
-
-      {/* Confirmation Modal */}
-      {isModalOpen && (
-        <BookingSummaryModal
-          leasingId={leasingId}
-          productTitle={productTitle}
-          startDate={startDate}
-          endDate={endDate}
-          totalPrice={totalPrice}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
     </div>
   );
 }
