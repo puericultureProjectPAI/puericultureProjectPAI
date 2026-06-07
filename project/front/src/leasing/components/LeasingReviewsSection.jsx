@@ -1,53 +1,17 @@
 import { useState } from "react";
 import { useLeasingReviewsData } from "../hooks/useLeasing";
 import ReviewFormModal from "./ReviewFormModal";
-import heartplusIcon from "../../assets/icons/heartplus.svg";
 
 export default function LeasingReviewsSection({ leasingId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showMessageInfo, setShowMessageInfo] = useState(false);
 
   const { reviews, averageRating, totalReviews, isLoading } =
     useLeasingReviewsData(leasingId);
 
   return (
     <div className="w-full flex flex-col font-['Figtree',sans-serif]">
-      {/* Wishlist */}
-      <div className="h-px w-full bg-[rgba(0,0,0,0.1)]" />
-      <div className="flex justify-center items-center py-[10px] gap-[6px] cursor-pointer hover:opacity-80 transition-opacity">
-        <img
-          src={heartplusIcon}
-          alt=""
-          className="w-[16px] h-[16px]"
-          style={{
-            filter:
-              "brightness(0) saturate(100%) invert(5%) sepia(56%) saturate(3000%) hue-rotate(230deg) brightness(94%) contrast(103%)",
-          }}
-        />
-        <span className="text-[#040037] font-semibold text-[16px]">
-          Ajouter à ma wishlist
-        </span>
-      </div>
-      <div className="h-px w-full bg-[rgba(0,0,0,0.1)]" />
-
-      {/* Envoyer un message */}
-      <button
-        onClick={() => setShowMessageInfo(true)}
-        className="bg-[#040037] text-white w-full rounded-[8px] h-[40px] flex items-center justify-center gap-[8px] mt-[12px] hover:bg-[#040037]/90 transition active:scale-[0.98]"
-      >
-        <span className="material-symbols-rounded text-[20px]">send</span>
-        <span className="font-semibold text-[16px]">Envoyer un message</span>
-      </button>
-
-      {showMessageInfo && (
-        <div className="font-regular text-[14px] text-[#040037] bg-[#F2F2F9] rounded-[8px] p-[12px] text-center mt-[8px]">
-          Messagerie en cours de développement. Votre demande sera transmise
-          prochainement.
-        </div>
-      )}
-
       {/* Donner votre avis */}
-      <div className="h-px w-full bg-[rgba(0,0,0,0.1)] mt-[12px]" />
+      <div className="h-px w-full bg-[rgba(0,0,0,0.1)]" />
       <button
         onClick={() => setIsModalOpen(true)}
         className="bg-white border border-[#040037] text-[#040037] w-full rounded-[8px] h-[40px] flex items-center justify-center gap-[12px] mt-[12px] hover:bg-gray-50 transition active:scale-[0.98]"

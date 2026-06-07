@@ -2,58 +2,58 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../common/security/AuthContext";
 
+const formatDateFR = (dateStr) => {
+  if (!dateStr) return "";
+  const [year, month, day] = dateStr.split("-");
+  return `${day}/${month}/${year}`;
+};
+
 export default function LeasingBookingSection({
   leasingId,
   productTitle,
   pricePerMonth,
   pricePerDay,
   firstImageUrl,
+  initialStartDate = "",
+  initialEndDate = "",
 }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [savedStart, setSavedStart] = useState(initialStartDate);
+  const [savedEnd, setSavedEnd] = useState(initialEndDate);
+  const [editStart, setEditStart] = useState(initialStartDate);
+  const [editEnd, setEditEnd] = useState(initialEndDate);
+  const [isEditing, setIsEditing] = useState(
+    !initialStartDate || !initialEndDate,
+  );
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Calculate pricing dynamically in real-time when dates change (PUE-53)
-  let totalPrice = 0;
-  let durationText = "";
-  let errorText = "";
+  const calcPrice = (start, end) => {
+    if (!start || !end) return 0;
+    const s = new Date(start);
+    const e = new Date(end);
+    if (s > e) return 0;
+    const diffDays =
+      Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const months = Math.floor(diffDays / 30);
+    const remainingDays = diffDays % 30;
+    return (
+      months * (Number(pricePerMonth) / 100) +
+      remainingDays * (Number(pricePerDay) / 100)
+    );
+  };
 
-  if (startDate && endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+  const editError =
+    editStart && editEnd && new Date(editStart) > new Date(editEnd)
+      ? "La date de début doit être antérieure à la date de fin."
+      : "";
 
-    if (start > end) {
-      errorText = "La date de début doit être antérieure à la date de fin.";
-    } else {
-      const diffTime = end.getTime() - start.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-      if (diffDays > 0) {
-        const months = Math.floor(diffDays / 30);
-        const remainingDays = diffDays % 30;
-
-        const pricePerMonthEuros = Number(pricePerMonth) / 100;
-        const pricePerDayEuros = Number(pricePerDay) / 100;
-
-        // Pricing formula matching backend logic
-        totalPrice =
-          months * pricePerMonthEuros + remainingDays * pricePerDayEuros;
-
-        durationText = `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
-        if (months > 0) {
-          durationText += ` (${months} mois${months > 1 ? "s" : ""}`;
-          if (remainingDays > 0) {
-            durationText += ` et ${remainingDays} jour${remainingDays > 1 ? "s" : ""}`;
-          }
-          durationText += ")";
-        }
-      }
-    }
-  }
+  const editValid =
+    editStart && editEnd && !editError && calcPrice(editStart, editEnd) > 0;
+  const hasSavedDates = savedStart && savedEnd;
+  const savedPrice = calcPrice(savedStart, savedEnd);
 
   const handleBookClick = () => {
     if (!isAuthenticated) {
@@ -63,101 +63,146 @@ export default function LeasingBookingSection({
     navigate(`/leasing/booking/${leasingId}`, {
       state: {
         productTitle,
-        startDate,
-        endDate,
-        totalPrice,
+        startDate: savedStart,
+        endDate: savedEnd,
+        totalPrice: savedPrice,
         firstImageUrl,
       },
     });
   };
 
-  const isFormValid = startDate && endDate && !errorText && totalPrice > 0;
+  const handleValider = () => {
+    setSavedStart(editStart);
+    setSavedEnd(editEnd);
+    setIsEditing(false);
+  };
+
+  const handleAnnuler = () => {
+    setEditStart(savedStart);
+    setEditEnd(savedEnd);
+    setIsEditing(false);
+  };
 
   return (
-    <div className="w-full px-[12px] pt-[12px] flex flex-col font-['Figtree',sans-serif] border-t border-[#F2F2F5] mt-[10px]">
-      <span className="text-[#7C7A8A] font-bold text-[9px] uppercase tracking-wider mb-[4px]">
-        Louer cet article
-      </span>
-
-      {/* Date Inputs Form */}
-      <div className="flex gap-[10px] w-full">
-        {/* Start Date */}
-        <div className="flex-1 flex flex-col gap-[2px]">
-          <label
-            htmlFor="startDateInput"
-            className="text-[7px] font-bold text-[#7C7A8A] uppercase"
-          >
-            Début
-          </label>
-          <input
-            id="startDateInput"
-            type="date"
-            min={todayStr}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="w-full border border-[#E6E6E6] rounded-[6px] p-[6px] text-[9px] font-semibold text-[#040037] focus:outline-none focus:border-[#040037] bg-white"
-          />
+    <div className="w-full px-[14px] py-[12px] font-['Figtree',sans-serif]">
+      <div className="border border-[rgba(117,115,136,0.75)] rounded-[8px] px-[12px] py-[12px] flex flex-col gap-[12px]">
+        {/* Dates recap */}
+        <div className="flex gap-[10px] items-center flex-wrap">
+          <span className="font-normal text-[16px] text-[#757388]">
+            Disponibilités :
+          </span>
+          {hasSavedDates && !isEditing ? (
+            <span className="font-bold text-[16px] text-[#040037]">
+              {formatDateFR(savedStart)} – {formatDateFR(savedEnd)}
+            </span>
+          ) : (
+            !isEditing && (
+              <span className="font-normal text-[16px] text-[#757388]">
+                Choisir des dates
+              </span>
+            )
+          )}
         </div>
 
-        {/* End Date */}
-        <div className="flex-1 flex flex-col gap-[2px]">
-          <label
-            htmlFor="endDateInput"
-            className="text-[7px] font-bold text-[#7C7A8A] uppercase"
-          >
-            Fin
-          </label>
-          <input
-            id="endDateInput"
-            type="date"
-            min={startDate || todayStr}
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="w-full border border-[#E6E6E6] rounded-[6px] p-[6px] text-[9px] font-semibold text-[#040037] focus:outline-none focus:border-[#040037] bg-white"
-          />
-        </div>
+        {/* Inline date editor */}
+        {isEditing && (
+          <div className="flex flex-col gap-[8px]">
+            <div className="flex gap-[8px]">
+              <div className="flex-1 flex flex-col gap-[2px]">
+                <label className="font-normal text-[14px] text-[#757388]">
+                  Début
+                </label>
+                <input
+                  type="date"
+                  min={todayStr}
+                  value={editStart}
+                  onChange={(e) => setEditStart(e.target.value)}
+                  className="w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
+                />
+              </div>
+              <div className="flex-1 flex flex-col gap-[2px]">
+                <label className="font-normal text-[14px] text-[#757388]">
+                  Fin
+                </label>
+                <input
+                  type="date"
+                  min={editStart || todayStr}
+                  value={editEnd}
+                  onChange={(e) => setEditEnd(e.target.value)}
+                  className="w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
+                />
+              </div>
+            </div>
+
+            {editError && (
+              <span className="text-[13px] text-red-500">{editError}</span>
+            )}
+
+            {editValid && (
+              <div className="flex justify-between items-center bg-[#F2F2F9] rounded-[6px] px-[8px] py-[6px]">
+                <span className="font-normal text-[14px] text-[#757388]">
+                  Estimation
+                </span>
+                <span className="font-bold text-[16px] text-[#040037]">
+                  {calcPrice(editStart, editEnd).toLocaleString("fr-FR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  €
+                </span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={handleValider}
+              disabled={!editValid}
+              className={`h-[40px] rounded-[8px] w-full font-semibold text-[16px] text-white transition ${
+                editValid
+                  ? "bg-[#040037] hover:bg-[#040037]/90 active:scale-[0.98]"
+                  : "bg-[rgba(117,115,136,0.5)] cursor-not-allowed"
+              }`}
+            >
+              Valider
+            </button>
+
+            {hasSavedDates && (
+              <button
+                type="button"
+                onClick={handleAnnuler}
+                className="font-normal text-[16px] text-[#757388] py-[4px] text-center hover:opacity-80 transition"
+              >
+                Annuler
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Boutons quand les dates sont confirmées */}
+        {!isEditing && (
+          <div className="flex flex-col gap-[12px]">
+            <button
+              type="button"
+              onClick={handleBookClick}
+              disabled={!hasSavedDates}
+              className={`h-[40px] rounded-[8px] w-full font-semibold text-[16px] border transition ${
+                hasSavedDates
+                  ? "bg-white border-[#040037] text-[#040037] hover:bg-gray-50 active:scale-[0.98]"
+                  : "bg-white border-[rgba(117,115,136,0.5)] text-[rgba(117,115,136,0.5)] cursor-not-allowed"
+              }`}
+            >
+              Réserver
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="bg-[#040037] text-white h-[40px] rounded-[8px] w-full font-semibold text-[16px] hover:bg-[#040037]/90 transition active:scale-[0.98]"
+            >
+              Modifier les dates
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* Real-time Pricing details display */}
-      {errorText && (
-        <span className="text-[8px] font-bold text-red-500 mt-[6px]">
-          {errorText}
-        </span>
-      )}
-
-      {isFormValid && (
-        <div className="flex justify-between items-center bg-[#F2F2F9] rounded-[6px] p-[8px] mt-[8px]">
-          <div className="flex flex-col">
-            <span className="text-[7px] text-[#7C7A8A] font-bold uppercase leading-none">
-              Durée
-            </span>
-            <span className="text-[8px] text-[#040037] font-semibold mt-[2px]">
-              {durationText}
-            </span>
-          </div>
-          <div className="flex flex-col items-end">
-            <span className="text-[7px] text-[#7C7A8A] font-bold uppercase leading-none">
-              Estimation total
-            </span>
-            <span className="text-[12px] text-[#040037] font-extrabold mt-[1px]">
-              {totalPrice.toLocaleString("fr-FR", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              })}
-              €
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* CTA Button */}
-      <button
-        onClick={handleBookClick}
-        disabled={!isFormValid}
-        className="w-full bg-[#040037] text-white rounded-[6px] py-[8px] text-[9px] font-extrabold uppercase mt-[8px] hover:bg-[#040037]/90 disabled:opacity-40 disabled:cursor-not-allowed transition active:scale-[0.98]"
-      >
-        Réserver
-      </button>
     </div>
   );
 }

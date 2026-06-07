@@ -21,8 +21,19 @@ export default function CatalogPage() {
 
   const [cities, setCities] = useState([]);
   const [city, setCity] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
+    );
+    return d.toISOString().split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const d = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
+    );
+    d.setMonth(d.getMonth() + 1);
+    return d.toISOString().split("T")[0];
+  });
   const [dateError, setDateError] = useState("");
   const [showNoResultModal, setShowNoResultModal] = useState(false);
 
@@ -187,10 +198,15 @@ export default function CatalogPage() {
             products.map((product) => (
               <article
                 key={product.id}
-                onClick={() =>
-                  product.available &&
-                  navigate(`/leasing/products/${product.id}`)
-                }
+                onClick={() => {
+                  if (!product.available) return;
+                  const params = new URLSearchParams();
+                  if (startDate) params.set("startDate", startDate);
+                  if (endDate) params.set("endDate", endDate);
+                  navigate(
+                    `/leasing/products/${product.id}?${params.toString()}`,
+                  );
+                }}
                 className={`h-[170px] rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
                   product.available
                     ? "cursor-pointer"
