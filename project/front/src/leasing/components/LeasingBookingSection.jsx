@@ -30,15 +30,19 @@ export default function LeasingBookingSection({
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  const calcPrice = (start, end) => {
+  const calcDays = (start, end) => {
     if (!start || !end) return 0;
     const s = new Date(start);
     const e = new Date(end);
     if (s > e) return 0;
-    const diffDays =
-      Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    const months = Math.floor(diffDays / 30);
-    const remainingDays = diffDays % 30;
+    return Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  };
+
+  const calcPrice = (start, end) => {
+    const days = calcDays(start, end);
+    if (days === 0) return 0;
+    const months = Math.floor(days / 30);
+    const remainingDays = days % 30;
     return months * Number(pricePerMonth) + remainingDays * Number(pricePerDay);
   };
 
@@ -146,14 +150,10 @@ export default function LeasingBookingSection({
             {editValid && (
               <div className="flex justify-between items-center bg-[#F2F2F9] rounded-[6px] px-[8px] py-[6px]">
                 <span className="font-normal text-[14px] text-[#757388]">
-                  Estimation
+                  {calcDays(editStart, editEnd)} jours
                 </span>
                 <span className="font-bold text-[16px] text-[#040037]">
-                  {calcPrice(editStart, editEnd).toLocaleString("fr-FR", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}{" "}
-                  €
+                  {calcPrice(editStart, editEnd).toLocaleString("fr-FR") + "€"}
                 </span>
               </div>
             )}
