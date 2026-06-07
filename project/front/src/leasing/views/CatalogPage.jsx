@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
+import Header from "../../common/views/Header";
+import Navbar from "../../common/views/NavBar";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
@@ -72,168 +74,164 @@ export default function CatalogPage() {
   };
 
   return (
-    <main className="relative w-full max-w-5xl mx-auto min-h-screen overflow-y-auto bg-white text-[#040037]">
-      <header className="flex h-[48px] items-center justify-between bg-[#040037] px-[12px] text-white">
-        <span className="text-[17px] font-bold tracking-widest">KIABI</span>
+    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037]">
+      <Header />
 
-        <div className="flex items-center gap-[13px]">
-          <span className="material-symbols-rounded text-[17px]">
-            qr_code_scanner
-          </span>
-          <span className="material-symbols-rounded text-[18px]">favorite</span>
-        </div>
-      </header>
+      <main className="flex-1 overflow-y-auto">
+        <section className="px-4 md:px-6 pt-[12px]">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-[13px] font-bold leading-none">
+                Articles disponibles à la location
+              </h2>
 
-      <section className="px-4 md:px-6 pt-[12px]">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-[13px] font-bold leading-none">
-              Articles disponibles à la location
-            </h2>
+              <p className="mt-[5px] text-[9px] leading-none text-[#7C7A8A]">
+                {loading ? "…" : `${products.length} articles`}
+              </p>
+            </div>
 
-            <p className="mt-[5px] text-[9px] leading-none text-[#7C7A8A]">
-              {loading ? "…" : `${products.length} articles`}
-            </p>
-          </div>
-
-          <span className="material-symbols-rounded text-[17px]">
-            filter_alt
-          </span>
-        </div>
-
-        <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[9px] py-[10px]">
-          <p className="text-[11px] font-medium">Ville de destination</p>
-
-          <div className="mt-[8px] flex h-[31px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
-            <span className="material-symbols-rounded text-[14px] text-[#7C7A8A]">
-              location_on
+            <span className="material-symbols-rounded text-[17px]">
+              filter_alt
             </span>
+          </div>
 
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="h-full flex-1 bg-white text-[10px] outline-none"
+          <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[9px] py-[10px]">
+            <p className="text-[11px] font-medium">Ville de destination</p>
+
+            <div className="mt-[8px] flex h-[31px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
+              <span className="material-symbols-rounded text-[14px] text-[#7C7A8A]">
+                location_on
+              </span>
+
+              <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="h-full flex-1 bg-white text-[10px] outline-none"
+              >
+                <option value="">Toutes les villes</option>
+                {cities.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <p className="mt-[14px] text-[11px] font-medium">
+              Dates de location
+            </p>
+
+            <div className="mt-[7px] flex flex-col md:flex-row md:gap-4">
+              <div className="flex items-center gap-[6px] flex-1">
+                <span className="w-[28px] text-right text-[10px] font-bold">
+                  - du
+                </span>
+
+                <DateInput
+                  value={startDate}
+                  onChange={setStartDate}
+                  hasError={!!dateError}
+                />
+              </div>
+
+              <div className="flex items-center gap-[6px] flex-1 mt-[7px] md:mt-0">
+                <span className="w-[28px] text-right text-[10px] font-bold">
+                  - au
+                </span>
+
+                <DateInput
+                  value={endDate}
+                  onChange={setEndDate}
+                  hasError={!!dateError}
+                />
+              </div>
+            </div>
+
+            {dateError && (
+              <p className="mt-[8px] text-[8px] leading-[11px] text-red-500">
+                {dateError}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleSearch}
+              className="mt-[10px] h-[28px] w-full rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
             >
-              <option value="">Toutes les villes</option>
-              {cities.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
+              Rechercher
+            </button>
+          </section>
+        </section>
 
-          <p className="mt-[14px] text-[11px] font-medium">Dates de location</p>
-
-          <div className="mt-[7px] flex flex-col md:flex-row md:gap-4">
-            <div className="flex items-center gap-[6px] flex-1">
-              <span className="w-[28px] text-right text-[10px] font-bold">
-                - du
-              </span>
-
-              <DateInput
-                value={startDate}
-                onChange={setStartDate}
-                hasError={!!dateError}
-              />
-            </div>
-
-            <div className="flex items-center gap-[6px] flex-1 mt-[7px] md:mt-0">
-              <span className="w-[28px] text-right text-[10px] font-bold">
-                - au
-              </span>
-
-              <DateInput
-                value={endDate}
-                onChange={setEndDate}
-                hasError={!!dateError}
-              />
-            </div>
-          </div>
-
-          {dateError && (
-            <p className="mt-[8px] text-[8px] leading-[11px] text-red-500">
-              {dateError}
+        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
+          {loading && (
+            <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+              Chargement…
             </p>
           )}
 
-          <button
-            type="button"
-            onClick={handleSearch}
-            className="mt-[10px] h-[28px] w-full rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
-          >
-            Rechercher
-          </button>
+          {error && (
+            <p className="col-span-2 text-center text-[9px] text-red-500">
+              {error}
+            </p>
+          )}
+
+          {!loading && !error && products.length === 0 && (
+            <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+              Aucun article disponible.
+            </p>
+          )}
+
+          {!loading &&
+            !error &&
+            products.map((product) => (
+              <article
+                key={product.id}
+                onClick={() =>
+                  product.available &&
+                  navigate(`/leasing/products/${product.id}`)
+                }
+                className={`h-[170px] rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
+                  product.available
+                    ? "cursor-pointer"
+                    : "pointer-events-none opacity-50"
+                }`}
+              >
+                <img
+                  src={product.firstImageUrl || fallbackImage(product.category)}
+                  alt={product.postTitle}
+                  className="h-[95px] w-full rounded-[5px] object-cover"
+                />
+
+                <div className="mt-[4px] flex justify-center gap-[4px]">
+                  <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
+                    Location
+                  </span>
+
+                  <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
+                    Troc
+                  </span>
+                </div>
+
+                <h3 className="mt-[5px] truncate text-[8px] leading-none">
+                  {product.postTitle}
+                </h3>
+
+                <p className="mt-[2px] truncate text-[7px] leading-none text-[#7C7A8A]">
+                  {product.category} · {product.condition}
+                </p>
+
+                <p className="mt-[3px] text-[9px] font-bold leading-none">
+                  {product.available
+                    ? `${product.pricePerMonth / 100}€/mois`
+                    : "Indisponible"}
+                </p>
+              </article>
+            ))}
         </section>
-      </section>
+      </main>
 
-      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-[75px]">
-        {loading && (
-          <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
-            Chargement…
-          </p>
-        )}
-
-        {error && (
-          <p className="col-span-2 text-center text-[9px] text-red-500">
-            {error}
-          </p>
-        )}
-
-        {!loading && !error && products.length === 0 && (
-          <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
-            Aucun article disponible.
-          </p>
-        )}
-
-        {!loading &&
-          !error &&
-          products.map((product) => (
-            <article
-              key={product.id}
-              onClick={() =>
-                product.available && navigate(`/leasing/products/${product.id}`)
-              }
-              className={`h-[170px] rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
-                product.available
-                  ? "cursor-pointer"
-                  : "pointer-events-none opacity-50"
-              }`}
-            >
-              <img
-                src={product.firstImageUrl || fallbackImage(product.category)}
-                alt={product.postTitle}
-                className="h-[95px] w-full rounded-[5px] object-cover"
-              />
-
-              <div className="mt-[4px] flex justify-center gap-[4px]">
-                <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
-                  Location
-                </span>
-
-                <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
-                  Troc
-                </span>
-              </div>
-
-              <h3 className="mt-[5px] truncate text-[8px] leading-none">
-                {product.postTitle}
-              </h3>
-
-              <p className="mt-[2px] truncate text-[7px] leading-none text-[#7C7A8A]">
-                {product.category} · {product.condition}
-              </p>
-
-              <p className="mt-[3px] text-[9px] font-bold leading-none">
-                {product.available
-                  ? `${product.pricePerMonth / 100}€/mois`
-                  : "Indisponible"}
-              </p>
-            </article>
-          ))}
-      </section>
-
-      <BottomNav />
+      <Navbar />
 
       {showNoResultModal && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#040037]/40">
@@ -262,7 +260,7 @@ export default function CatalogPage() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 
@@ -280,31 +278,5 @@ function DateInput({ value, onChange, hasError }) {
         className="w-full bg-transparent text-[8px] outline-none"
       />
     </div>
-  );
-}
-
-function BottomNav() {
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 flex h-[50px] w-full items-center justify-around border-t border-[#E6E6E6] bg-white">
-      {[
-        { icon: "home", label: "Accueil", active: true },
-        { icon: "search", label: "Rechercher" },
-        { icon: "add_circle", label: "Publier" },
-        { icon: "mail", label: "Messages" },
-        { icon: "person", label: "Profil" },
-      ].map((item) => (
-        <div
-          key={item.label}
-          className={`flex flex-col items-center justify-center gap-[2px] text-[7px] leading-none ${
-            item.active ? "text-[#040037]" : "text-[#7C7A8A]"
-          }`}
-        >
-          <span className="material-symbols-rounded text-[16px]">
-            {item.icon}
-          </span>
-          <span>{item.label}</span>
-        </div>
-      ))}
-    </nav>
   );
 }
