@@ -44,7 +44,7 @@ describe("LeasingBookingSection Component", () => {
 
     expect(getByLabelText("Début")).toBeDefined();
     expect(getByLabelText("Fin")).toBeDefined();
-    expect(getByText("Réserver")).toBeDefined();
+    expect(getByText("Valider")).toBeDefined();
   });
 
   it("calculates and displays the estimated price dynamically when dates are entered", async () => {
