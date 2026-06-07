@@ -8,7 +8,8 @@ import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
-import ProductDetailPage from "./leasing/views/ProductDetailPage";
+import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
+import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
@@ -47,7 +48,11 @@ export default function App() {
 
         {/* Leasing - public */}
         <Route path="/leasing/catalog" element={<CatalogPage />} />
-        <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
+        <Route
+          path="/leasing/products/:id"
+          element={<LeasingProductDetailView />}
+        />
+        <Route path="/leasing/booking/:id" element={<LeasingBookingPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
