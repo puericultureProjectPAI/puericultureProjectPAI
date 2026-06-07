@@ -106,10 +106,14 @@ export default function LeasingBookingSection({
           <div className="flex flex-col gap-[8px]">
             <div className="flex gap-[8px]">
               <div className="flex-1 flex flex-col gap-[2px]">
-                <label className="font-normal text-[14px] text-[#757388]">
+                <label
+                  htmlFor="booking-start"
+                  className="font-normal text-[14px] text-[#757388]"
+                >
                   Début
                 </label>
                 <input
+                  id="booking-start"
                   type="date"
                   min={todayStr}
                   value={editStart}
@@ -118,10 +122,14 @@ export default function LeasingBookingSection({
                 />
               </div>
               <div className="flex-1 flex flex-col gap-[2px]">
-                <label className="font-normal text-[14px] text-[#757388]">
+                <label
+                  htmlFor="booking-end"
+                  className="font-normal text-[14px] text-[#757388]"
+                >
                   Fin
                 </label>
                 <input
+                  id="booking-end"
                   type="date"
                   min={editStart || todayStr}
                   value={editEnd}
