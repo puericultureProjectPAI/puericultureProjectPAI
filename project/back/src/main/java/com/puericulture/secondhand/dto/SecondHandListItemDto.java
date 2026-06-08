@@ -1,18 +1,20 @@
 package com.puericulture.secondhand.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Second-hand product list item")
 public class SecondHandListItemDto {
-    private Long id;
-    private String title;
-    private Long price;
-    private String category;
-    private String imageUrl;
+    @Schema(description = "Product ID") private Long id;
+    @Schema(description = "Product title") private String title;
+    @Schema(description = "Product price in euros") private Long price;
+    @Schema(description = "Product category") private String category;
+    @Schema(description = "Product image URL") private String imageUrl;
 }

@@ -51,6 +51,7 @@ public class SecondHandService {
         secondHand.setCategory(ProductCategory.fromLabel(request.getCategory()));
         secondHand.setAuthor(author);
         secondHand.setPrice(request.getPrice());
+        secondHand.setCondition(request.getCondition());
 
         SecondHand saved = secondHandRepository.save(secondHand);
 
