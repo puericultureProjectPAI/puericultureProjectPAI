@@ -8,9 +8,7 @@
  */
 
 // Views
-export { default as TrocView } from "./views/TrocView";
+// (TrocView removed - replaced by detail/selection views)
 
 // Components
-export { default as ExchangeCard } from "./components/ExchangeCard";
-export { default as ExchangeList } from "./components/ExchangeList";
-export { default as ExchangeProposalForm } from "./components/ExchangeProposalForm";
+// Exchange management UI removed (not needed for detail/selection flows)

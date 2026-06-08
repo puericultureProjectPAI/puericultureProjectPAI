@@ -11,7 +11,8 @@ import CatalogPage from "./leasing/views/CatalogPage";
 import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
 import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
-import TrocView from "./troc/views/TrocView";
+import ProductTrocDetailView from "./troc/views/ProductTrocDetailView";
+import MyProductsSelectionView from "./troc/views/MyProductsSelectionView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
@@ -78,7 +79,14 @@ export default function App() {
                 path="/product/create"
                 element={<PublishAnnouncementView />}
               />
-              <Route path="/troc" element={<TrocView />} />
+              <Route
+                path="/troc/products/:id"
+                element={<ProductTrocDetailView />}
+              />
+              <Route
+                path="/troc/select-my-product/:receiverId"
+                element={<MyProductsSelectionView />}
+              />
             </Route>
 
             <Route path="*" element={<Navigate to="/home" replace />} />

@@ -3,6 +3,7 @@ package com.puericulture.troc.service;
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
+import com.puericulture.troc.dto.ProductTrocDetailDto;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
@@ -58,7 +59,27 @@ public class ProductTrocService {
         return trocMapper.toDto(createdTroc);
     }
 
-    private String defaultIfBlank(String value, String defaultValue) {
-        return value == null || value.isBlank() ? defaultValue : value;
+    @Transactional(readOnly = true)
+    public ProductTrocDetailDto getTrocDetail(Long id) {
+        ProductTroc troc =
+                trocRepository
+                        .findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Troc not found"));
+
+        ProductTrocDto baseDto = trocMapper.toDto(troc);
+
+        ProductTrocDetailDto dto = new ProductTrocDetailDto();
+
+        org.springframework.beans.BeanUtils.copyProperties(baseDto, dto);
+
+        // Map image URLs from attached images on Product
+        var images = troc.getImages();
+        if (images != null && !images.isEmpty()) {
+            java.util.List<String> urls = new java.util.ArrayList<>();
+            images.forEach(img -> urls.add(img.getImageUrl()));
+            dto.setImageUrls(urls);
+        }
+
+        return dto;
     }
 }

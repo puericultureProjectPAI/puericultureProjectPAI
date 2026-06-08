@@ -33,160 +33,37 @@ PENDING → (Accept) → ACCEPTED → (Confirm) → CONFIRMED
 PENDING → (Delete by proposer) → Cancelled
 ```
 
-## File Structure
+## File Structure (current)
 
 ```
 troc/
 ├── components/
-│   ├── ExchangeCard.jsx         # Single exchange card with actions
-│   ├── ExchangeList.jsx         # List view with filtering and tabs
-│   └── ExchangeProposalForm.jsx # Form to create new proposals
+│   ├── TrocBackHeader.jsx       # Back header used on detail pages
+│   └── TrocOfferSection.jsx     # CTA section to propose an exchange
 ├── hooks/
-│   └── useExchangeManager.jsx   # Custom hook for exchange operations
+│   └── useTroc.js               # Hook to publish a TROC announcement
 ├── utils/
-│   └── exchangeApi.jsx          # API service layer
+│   └── exchangeApi.jsx          # API service layer for exchanges
 ├── views/
-│   └── TrocView.jsx             # Main view/page component
+│   ├── ProductTrocDetailView.jsx
+│   └── MyProductsSelectionView.jsx
+├── api.js                       # small aggregation of exported api helpers
 ├── index.jsx                    # Module exports
 └── README.md                    # This file
 ```
 
 ## Component Documentation
 
-### TrocView
+### Product Detail & Selection Views
 
-Main page component that orchestrates the entire TROC experience.
+The module now focuses on the product detail flow required by the Figma spec:
 
-**Features:**
+- `ProductTrocDetailView.jsx`: product detail (images, description, CTA to propose exchange)
+- `MyProductsSelectionView.jsx`: lets the connected user choose one of their products to offer in exchange
 
-- Dashboard with statistics (pending, incoming, active, completed exchanges)
-- Tab-based navigation (Overview, Propose Exchange, Manage Exchanges)
-- User journey visualization
-- Quick action buttons
+Use the detail route to inspect the seeded product (see below): `/troc/products/100000`
 
-**Usage:**
-
-```jsx
-import { TrocView } from "./troc";
-
-function App() {
-  return <TrocView />;
-}
-```
-
-### ExchangeProposalForm
-
-Form component for proposing new exchanges.
-
-**Props:**
-
-- `availableProducts`: Array of products the current user can offer
-- `otherUserProducts`: Array of products from other users
-- `onSubmit`: Callback function when form is submitted
-- `loading`: Boolean indicating loading state
-- `error`: Error message to display
-- `success`: Success message to display
-- `onClearMessages`: Callback to clear messages
-
-**Features:**
-
-- Product selection dropdowns
-- Exchange preview
-- Form validation
-- Step-by-step instructions
-
-### ExchangeList
-
-Tabbed list component for viewing exchanges.
-
-**Props:**
-
-- `myExchanges`: User's proposed exchanges
-- `proposedToMeExchanges`: Exchanges proposed to user
-- `currentUserId`: ID of current user
-- `onAccept`: Handler for accepting exchanges
-- `onConfirm`: Handler for confirming exchanges
-- `onRefuse`: Handler for refusing exchanges
-- `onDelete`: Handler for deleting exchanges
-- `loading`: Boolean indicating loading state
-
-**Features:**
-
-- Tab switching between "My Exchanges" and "Proposed to Me"
-- Status filtering (All, Active, Pending)
-- Exchange statistics summary
-- Responsive grid layout
-
-### ExchangeCard
-
-Individual exchange display component.
-
-**Props:**
-
-- `exchange`: Exchange object
-- `isProposer`: Boolean indicating if user is proposer
-- `isReceiver`: Boolean indicating if user is receiver
-- `onAccept`: Accept handler
-- `onConfirm`: Confirm handler
-- `onRefuse`: Refuse handler
-- `onDelete`: Delete handler
-- `loading`: Boolean indicating loading state
-
-**Features:**
-
-- Status-based color coding
-- Product information display
-- Context-aware action buttons
-- Status description help text
-
-### useExchangeManager
-
-Custom React hook for managing exchange operations.
-
-**Returns Object:**
-
-```javascript
-{
-  // State
-  myExchanges: [],
-  proposedToMeExchanges: [],
-  exchangesForProduct: [],
-  loading: false,
-  error: null,
-  successMessage: null,
-
-  // Methods
-  fetchMyExchanges: async () => {},
-  fetchExchangesProposedToMe: async () => {},
-  fetchExchangesForProduct: async (productId) => {},
-  createNewExchange: async (proposerProduct, receiverProduct) => {},
-  acceptExchangeProposal: async (exchangeId) => {},
-  confirmExchangeProposal: async (exchangeId) => {},
-  refuseExchangeProposal: async (exchangeId) => {},
-  deleteExchangeProposal: async (exchangeId) => {},
-  clearSuccessMessage: () => {},
-  clearError: () => {},
-}
-```
-
-**Usage:**
-
-```jsx
-import { useExchangeManager } from './troc';
-
-function MyComponent() {
-  const exchangeManager = useExchangeManager();
-
-  useEffect(() => {
-    exchangeManager.fetchMyExchanges();
-    exchangeManager.fetchExchangesProposedToMe();
-  }, []);
-
-  return (
-    // Use exchangeManager state and methods
-  );
-}
-```
+Note: the previous management UI (list, cards, proposal form) was removed to keep the codebase focused on the detail + selection flows required by the current design.
 
 ## API Integration
 
@@ -201,7 +78,7 @@ The module integrates with backend API endpoints:
 - `DELETE /troc/exchanges/{id}` - Delete proposal
 - `GET /troc/exchanges/product/{id}/status` - Check product exchange status
 
-See `utils/exchangeApi.jsx` for implementation details.
+See `utils/exchangeApi.jsx` for exchange API helpers.
 
 ## Styling
 
@@ -217,17 +94,7 @@ The module uses Tailwind CSS for styling. Key classes used:
 
 1. **Authentication**: The module expects authentication via context from `common/security/AuthContext.jsx`
 
-2. **Mock Data**: `TrocView.jsx` uses mock products for demonstration. Replace with real API calls:
-
-   ```jsx
-   // Fetch from backend instead of mock data
-   const { data: availableProducts } = await apiClient.get(
-     "/products/my-available",
-   );
-   const { data: otherProducts } = await apiClient.get(
-     "/products/available-from-others",
-   );
-   ```
+2. **Seeding for UI testing**: A seeded product is added via migration `20260608_seed_troc_product.sql` with product id `100000`. Use `/troc/products/100000` to view it after applying migrations / seeding.
 
 3. **Chat Integration**: Exchange negotiation references chat but is not implemented. Connect with chat module after accepting exchanges.
 

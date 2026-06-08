@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Import Figtree from Google Fonts to match the design system */
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap");
+
+/* Apply the project font and base text color */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply font-figtree text-neutral bg-bg-base;
+}

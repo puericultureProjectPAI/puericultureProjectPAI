@@ -6,8 +6,5 @@
  * import { useExchangeManager, exchangeApi } from './troc/api';
  */
 
-// Hooks
-export { useExchangeManager } from "./hooks/useExchangeManager";
-
 // API Services
 export * as exchangeApi from "./utils/exchangeApi";
