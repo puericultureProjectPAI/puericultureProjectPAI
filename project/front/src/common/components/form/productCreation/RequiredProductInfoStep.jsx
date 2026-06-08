@@ -33,15 +33,11 @@ export default function RequiredProductInfoStep() {
       if (category) setFieldValue("category", category);
       if (confidenceScore !== undefined) setConfidenceScore(confidenceScore);
     } catch (error) {
-      // Distinguish business vs technical errors (for logs/metrics) but UX is identical.
-      const isBusinessInvalid =
-        error?.response?.status === 400 &&
-        (error?.response?.data?.code === "INVALID_CHILDCARE_PRODUCT" ||
-         error?.response?.data?.message === "Image not recognized as childcare product");
-
       console.error("Erreur IA Gemini", error);
       // Show required non-blocking notification (same message for both cases)
-      showNotification("L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.");
+      showNotification(
+        "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
+      );
     } finally {
       setIsAILoading(false);
     }

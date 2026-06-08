@@ -44,7 +44,11 @@ export function showNotification(message, duration = 5000) {
       setTimeout(() => {
         if (toast.parentNode) toast.parentNode.removeChild(toast);
         // remove container when empty
-        if (container && container.childElementCount === 0 && container.parentNode) {
+        if (
+          container &&
+          container.childElementCount === 0 &&
+          container.parentNode
+        ) {
           container.parentNode.removeChild(container);
         }
       }, 220);
@@ -64,7 +68,7 @@ export function showNotification(message, duration = 5000) {
       clearTimeout(timeout);
       if (toast.parentNode) toast.parentNode.removeChild(toast);
     };
-  } catch (e) {
+  } catch {
     // Swallow any errors to avoid breaking main flows
     // (e.g., server-side rendering where document isn't defined)
     return () => {};
