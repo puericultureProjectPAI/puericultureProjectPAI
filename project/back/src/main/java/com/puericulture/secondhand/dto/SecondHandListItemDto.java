@@ -12,9 +12,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "Second-hand product list item")
 public class SecondHandListItemDto {
-    @Schema(description = "Product ID") private Long id;
-    @Schema(description = "Product title") private String title;
-    @Schema(description = "Product price in euros") private Long price;
-    @Schema(description = "Product category") private String category;
-    @Schema(description = "Product image URL") private String imageUrl;
+    @Schema(description = "Product ID")
+    private Long id;
+
+    @Schema(description = "Product title")
+    private String title;
+
+    @Schema(description = "Product price in euros")
+    private Long price;
+
+    @Schema(description = "Product category")
+    private String category;
+
+    @Schema(description = "Product image URL")
+    private String imageUrl;
 }
