@@ -1,5 +1,5 @@
 import { Field, useFormikContext } from "formik";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CONDITION_OPTIONS } from "../../../../troc/constants/publicationOptions.js";
 import useConditionAnalysis from "../../../../troc/hooks/useConditionAnalysis.js";
 import FieldError from "../FieldError.jsx";
@@ -16,9 +16,11 @@ export default function TrocSpecificStep() {
   } = useConditionAnalysis();
 
   const firstImage = Array.isArray(values.images) ? values.images[0] : null;
+  const analyzedUrlRef = useRef(null);
 
   useEffect(() => {
-    if (firstImage) {
+    if (firstImage && firstImage !== analyzedUrlRef.current) {
+      analyzedUrlRef.current = firstImage;
       analyzeCondition(firstImage);
     }
   }, [firstImage]);
