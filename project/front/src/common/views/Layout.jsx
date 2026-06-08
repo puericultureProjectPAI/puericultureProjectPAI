@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import InstallPWA from "../components/InstallPWA";
 import Footer from "./Footer";
 import Header from "./Header";
-import Navbar from "./NavBar";
 
 const Layout = () => {
   const location = useLocation();
@@ -20,7 +19,6 @@ const Layout = () => {
         <Outlet />
       </main>
 
-      {!isPublicationFlow && <Navbar />}
       {!isPublicationFlow && <Footer />}
     </div>
   );

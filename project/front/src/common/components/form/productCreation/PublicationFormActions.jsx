@@ -9,15 +9,8 @@ export default function PublicationFormActions({
     const errors = await validateForm();
     const stepFields = {
       1: ["mode"],
-      2: [
-        "images",
-        "title",
-        "description",
-        "category",
-        "condition",
-        "estimatedPrice",
-      ],
-      3: [],
+      2: ["images", "title", "description", "category", "condition"],
+      3: ["rentalStartDate", "rentalEndDate", "dailyPrice"],
       4: [],
     }[step];
 

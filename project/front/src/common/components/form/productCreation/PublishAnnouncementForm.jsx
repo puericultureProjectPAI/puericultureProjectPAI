@@ -42,12 +42,15 @@ const validationSchemas = {
     description: Yup.string().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
     condition: Yup.string().required("L’état est obligatoire"),
-    estimatedPrice: Yup.number()
+  }),
+  3: Yup.object({
+    rentalStartDate: Yup.string().required("La date de début est obligatoire"),
+    rentalEndDate: Yup.string().required("La date de fin est obligatoire"),
+    dailyPrice: Yup.number()
       .typeError("Le prix doit être un nombre")
       .min(0, "Le prix doit être positif")
-      .required("Le prix est obligatoire"),
+      .required("Le prix par jour est obligatoire"),
   }),
-  3: Yup.object({}),
   4: Yup.object({}),
 };
 
@@ -71,12 +74,22 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         const payload = {
           title: values.title,
           description: values.description,
-          estimatedPrice: Number(values.estimatedPrice),
+          estimatedPrice: Number(
+            values.dailyPrice || values.estimatedPrice || 0,
+          ),
           images: values.images,
           price: values.price ? Number(values.price) : 0,
           city: values.city,
           category: values.category,
           condition: values.condition,
+          brand: values.brand,
+          ageRange: values.ageRange,
+          maxWeightKg: values.maxWeightKg,
+          lengthCm: values.lengthCm,
+          widthCm: values.widthCm,
+          rentalStartDate: values.rentalStartDate,
+          rentalEndDate: values.rentalEndDate,
+          dailyPrice: values.dailyPrice ? Number(values.dailyPrice) : 0,
         };
 
         const isCreated = await onSubmit(values.mode, payload);

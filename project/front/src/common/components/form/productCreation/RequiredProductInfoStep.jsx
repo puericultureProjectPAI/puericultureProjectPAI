@@ -1,6 +1,7 @@
 import { Field } from "formik";
 import {
   AGE_RANGE_OPTIONS,
+  CITY_OPTIONS,
   CONDITION_OPTIONS,
   PRODUCT_CATEGORIES,
   WEIGHT_OPTIONS,
@@ -10,6 +11,7 @@ import MyImageInput from "../MyImageInput.jsx";
 
 const fieldClassName =
   "w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
+
 const labelClassName =
   "mb-[7px] block text-[16px] font-extrabold leading-tight text-[#080036]";
 
@@ -19,6 +21,7 @@ export default function RequiredProductInfoStep() {
       <p className="mb-[10px] text-center text-[16px] font-medium text-[#3957d8]">
         Max 5 photos JPG ou PNG
       </p>
+
       <MyImageInput name="images" maxImages={5} />
 
       <label className={`${labelClassName} mt-[15px]`} htmlFor="title">
@@ -93,10 +96,10 @@ export default function RequiredProductInfoStep() {
         className={fieldClassName}
         id="brand"
         name="brand"
-        placeholder="Ex : IKEA"
+        placeholder="Ex : KIABI"
       />
 
-      <div className="mt-[16px] grid grid-cols-2 gap-[16px]">
+      <div className="mt-[18px] grid grid-cols-2 gap-[16px]">
         <div>
           <label className={labelClassName} htmlFor="ageRange">
             Tranche d'âge
@@ -136,43 +139,58 @@ export default function RequiredProductInfoStep() {
         </div>
       </div>
 
-      <label className={`${labelClassName} mt-[16px]`} htmlFor="lengthCm">
+      <label className={`${labelClassName} mt-[18px]`} htmlFor="lengthCm">
         Dimensions
       </label>
-      <div className="grid grid-cols-2 gap-[12px]">
+      <div className="grid grid-cols-2 gap-[16px]">
         <div className="relative">
           <Field
-            className="w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] pr-[44px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]"
+            className={`${fieldClassName} pr-[44px]`}
             id="lengthCm"
             name="lengthCm"
             placeholder="Long"
+            type="number"
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#2f2d3c]">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#555261]">
             cm
           </span>
         </div>
+
         <div className="relative">
           <Field
-            className="w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] pr-[44px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]"
+            className={`${fieldClassName} pr-[44px]`}
             id="widthCm"
             name="widthCm"
             placeholder="Larg"
+            type="number"
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#2f2d3c]">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#555261]">
             cm
           </span>
         </div>
       </div>
 
-      <label className={`${labelClassName} mt-[16px]`} htmlFor="estimatedPrice">
+      <label className={`${labelClassName} mt-[18px]`} htmlFor="city">
+        Ville
+      </label>
+      <Field as="select" className={fieldClassName} id="city" name="city">
+        <option value="">Select</option>
+        {CITY_OPTIONS.map((city) => (
+          <option key={city} value={city}>
+            {city}
+          </option>
+        ))}
+      </Field>
+
+      <label className={`${labelClassName} mt-[18px]`} htmlFor="price">
         Prix
       </label>
       <div className="relative">
         <Field
-          className={`${fieldClassName} pr-9`}
-          id="estimatedPrice"
+          className={`${fieldClassName} pr-[42px]`}
+          id="price"
           min="0"
-          name="estimatedPrice"
+          name="price"
           placeholder="0,00"
           step="0.01"
           type="number"
@@ -181,7 +199,6 @@ export default function RequiredProductInfoStep() {
           €
         </span>
       </div>
-      <FieldError name="estimatedPrice" />
     </div>
   );
 }
