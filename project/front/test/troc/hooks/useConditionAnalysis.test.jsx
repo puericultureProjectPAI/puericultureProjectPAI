@@ -25,6 +25,7 @@ describe("useConditionAnalysis", () => {
     expect(result.current.isAnalyzing).toBe(false);
     expect(result.current.error).toBeNull();
     expect(result.current.multipleItemsDetected).toBe(false);
+    expect(result.current.hasAnalyzed).toBe(false);
   });
 
   it("retourne la suggestion et le score de confiance après une analyse réussie", async () => {
@@ -73,6 +74,29 @@ describe("useConditionAnalysis", () => {
     expect(result.current.suggestion).toBeNull();
   });
 
+  it("ne retourne pas de suggestion si la qualité de l'image est insuffisante", async () => {
+    mockPost.mockResolvedValue({
+      data: {
+        condition: null,
+        confidenceScore: 0,
+        multipleItemsDetected: false,
+      },
+    });
+
+    const { result } = renderHook(() => useConditionAnalysis());
+
+    act(() => {
+      result.current.analyzeCondition(IMAGE_URL);
+    });
+
+    await waitFor(() => expect(result.current.isAnalyzing).toBe(false));
+
+    expect(result.current.suggestion).toBeNull();
+    expect(result.current.multipleItemsDetected).toBe(false);
+    expect(result.current.error).toBeNull();
+    expect(result.current.hasAnalyzed).toBe(true);
+  });
+
   it("affiche un message d'erreur si l'appel API échoue", async () => {
     mockPost.mockRejectedValue(new Error("Network Error"));
 
@@ -85,7 +109,7 @@ describe("useConditionAnalysis", () => {
     await waitFor(() => expect(result.current.isAnalyzing).toBe(false));
 
     expect(result.current.error).toBe(
-      "L'analyse automatique a échoué. Veuillez renseigner l'état manuellement.",
+      "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement.",
     );
     expect(result.current.suggestion).toBeNull();
   });

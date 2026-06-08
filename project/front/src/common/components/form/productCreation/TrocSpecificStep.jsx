@@ -13,6 +13,7 @@ export default function TrocSpecificStep() {
     isAnalyzing,
     error,
     multipleItemsDetected,
+    hasAnalyzed,
   } = useConditionAnalysis();
 
   const firstImage = Array.isArray(values.images) ? values.images[0] : null;
@@ -71,14 +72,24 @@ export default function TrocSpecificStep() {
           </p>
         )}
 
-        {!isAnalyzing && suggestion && (
-          <div className="mb-2 flex items-center gap-2 rounded-md border border-[#5362d6] bg-white px-3 py-2 text-xs text-[#5362d6]">
-            <span>Suggestion IA : {suggestion}</span>
-            {confidenceScore > 0 && (
-              <span className="ml-auto text-[#9b99b5]">
-                {confidenceScore}% de confiance
-              </span>
-            )}
+        {!isAnalyzing && confidenceScore > 0 && (
+          <div
+            className={`mb-2 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold ${
+              confidenceScore >= 70
+                ? "border-green-300 bg-green-100 text-green-700"
+                : confidenceScore >= 35
+                  ? "border-orange-300 bg-orange-100 text-orange-700"
+                  : "border-red-300 bg-red-100 text-red-700"
+            }`}
+          >
+            <span>
+              {confidenceScore >= 70
+                ? "🟢"
+                : confidenceScore >= 35
+                  ? "🟠"
+                  : "🔴"}
+            </span>
+            <span>Fiabilité IA : {confidenceScore}%</span>
           </div>
         )}
 
@@ -89,9 +100,17 @@ export default function TrocSpecificStep() {
           </p>
         )}
 
-        {!isAnalyzing && error && (
-          <p className="mb-2 text-xs text-orange-500">{error}</p>
-        )}
+        {!isAnalyzing &&
+          (error ||
+            (hasAnalyzed &&
+              !suggestion &&
+              !multipleItemsDetected &&
+              !error)) && (
+            <p className="mb-2 text-xs text-orange-500">
+              {error ||
+                "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement."}
+            </p>
+          )}
 
         <Field
           as="select"

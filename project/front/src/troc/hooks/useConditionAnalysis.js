@@ -7,6 +7,7 @@ export default function useConditionAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
   const [multipleItemsDetected, setMultipleItemsDetected] = useState(false);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
 
   const analyzeCondition = async (imageUrl) => {
     if (!imageUrl) return;
@@ -29,10 +30,11 @@ export default function useConditionAnalysis() {
       }
     } catch {
       setError(
-        "L'analyse automatique a échoué. Veuillez renseigner l'état manuellement.",
+        "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement.",
       );
     } finally {
       setIsAnalyzing(false);
+      setHasAnalyzed(true);
     }
   };
 
@@ -41,6 +43,7 @@ export default function useConditionAnalysis() {
     setConfidenceScore(null);
     setError(null);
     setMultipleItemsDetected(false);
+    setHasAnalyzed(false);
   };
 
   return {
@@ -50,6 +53,7 @@ export default function useConditionAnalysis() {
     isAnalyzing,
     error,
     multipleItemsDetected,
+    hasAnalyzed,
     reset,
   };
 }
