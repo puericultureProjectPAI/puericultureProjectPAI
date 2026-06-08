@@ -35,6 +35,94 @@ INSERT INTO auth.users (
     )
 ON CONFLICT (id) DO NOTHING;
 
+-- 1b. Utilisateur auth complet pour tester le pack arrivee
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email,
+    encrypted_password, email_confirmed_at, invited_at,
+    confirmation_token, confirmation_sent_at,
+    recovery_token, recovery_sent_at,
+    email_change_token_new, email_change, email_change_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data, raw_user_meta_data,
+    is_super_admin,
+    created_at, updated_at,
+    phone, phone_confirmed_at,
+    phone_change, phone_change_token, phone_change_sent_at,
+    email_change_token_current, email_change_confirm_status,
+    banned_until, reauthentication_token, reauthentication_sent_at
+) VALUES (
+    '00000000-0000-0000-0000-000000000269',
+    '00000000-0000-0000-0000-000000000000',
+    'authenticated',
+    'authenticated',
+    'pack@test.local',
+    extensions.crypt('Test1234!', extensions.gen_salt('bf')),
+    NOW(),
+    NULL,
+    '',
+    NULL,
+    '',
+    NULL,
+    '',
+    '',
+    NULL,
+    NULL,
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    '{"last_name":"Pack","first_name":"Maria","birth_date":"1992-06-08"}'::jsonb,
+    false,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL,
+    '',
+    '',
+    NULL,
+    '',
+    0,
+    NULL,
+    '',
+    NULL
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 1c. Identite email du compte de test pack arrivee
+INSERT INTO auth.identities (
+    id, user_id, provider_id, identity_data, provider,
+    last_sign_in_at, created_at, updated_at
+) VALUES (
+    '00000000-0000-0000-0000-000000000269',
+    '00000000-0000-0000-0000-000000000269',
+    '00000000-0000-0000-0000-000000000269',
+    '{"sub":"00000000-0000-0000-0000-000000000269","email":"pack@test.local","email_verified":true,"phone_verified":false,"provider_id":"00000000-0000-0000-0000-000000000269"}'::jsonb,
+    'email',
+    NOW(), NOW(), NOW()
+)
+ON CONFLICT (provider_id, provider) DO NOTHING;
+
+-- 1d. Profil complet + enfant pour tester le pack arrivee
+UPDATE public.person
+SET
+    first_name = 'Maria',
+    name = 'Pack',
+    city = 'Paris',
+    street = '1 rue du Pack',
+    genre = 'F',
+    date_of_birth = '1992-06-08'
+WHERE id = '00000000-0000-0000-0000-000000000269';
+
+INSERT INTO public.children (person_id, name, birthdate, gender)
+SELECT
+    '00000000-0000-0000-0000-000000000269',
+    'Lucas',
+    CURRENT_DATE - INTERVAL '10 months',
+    'M'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM public.children
+    WHERE person_id = '00000000-0000-0000-0000-000000000269'
+      AND name = 'Lucas'
+);
+
 -- 2. Produits (6 articles leasing, IDs générés par PostgreSQL)
 INSERT INTO public.products (author_id, post_title, description, category, city, condition, brand, dimensions, min_age_months, max_age_months, max_weight_kg) VALUES
     ('00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',       'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'Poussette',  'Paris',     'Très bon état',  'Babyzen',      '52x44x18 cm',  0,  48, 22),
