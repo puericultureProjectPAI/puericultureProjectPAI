@@ -62,8 +62,8 @@ class LeasingBookingServiceTest {
         LeasingReservationRequestDto request =
                 LeasingReservationRequestDto.builder()
                         .productId(1L)
-                        .startDate(LocalDate.now().plusDays(1))
-                        .endDate(LocalDate.now().plusDays(15)) // 15 days total
+                        .startDate(LocalDate.now().plusDays(3))
+                        .endDate(LocalDate.now().plusDays(17)) // 15 days total
                         .deliveryStreet("123 Rue Kiabi")
                         .deliveryZipCode("59000")
                         .deliveryCity("Lille")
@@ -97,10 +97,10 @@ class LeasingBookingServiceTest {
         LeasingReservationRequestDto request =
                 LeasingReservationRequestDto.builder()
                         .productId(1L)
-                        .startDate(LocalDate.now().plusDays(1))
+                        .startDate(LocalDate.now().plusDays(3))
                         .endDate(
                                 LocalDate.now()
-                                        .plusDays(35)) // 35 days total -> 1 month (30 days) and 5
+                                        .plusDays(37)) // 35 days total -> 1 month (30 days) and 5
                         // days
                         .deliveryStreet("123 Rue Kiabi")
                         .deliveryZipCode("59000")
@@ -137,7 +137,7 @@ class LeasingBookingServiceTest {
         LeasingReservationRequestDto request =
                 LeasingReservationRequestDto.builder()
                         .productId(99L)
-                        .startDate(LocalDate.now().plusDays(1))
+                        .startDate(LocalDate.now().plusDays(3))
                         .endDate(LocalDate.now().plusDays(5))
                         .build();
 
@@ -165,6 +165,23 @@ class LeasingBookingServiceTest {
     }
 
     @Test
+    void createReservation_ThrowsBadRequest_WhenStartDateIsTooSoon() {
+        LeasingReservationRequestDto request =
+                LeasingReservationRequestDto.builder()
+                        .productId(1L)
+                        .startDate(LocalDate.now().plusDays(2))
+                        .endDate(LocalDate.now().plusDays(5))
+                        .build();
+
+        when(personRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(leasingArticleRepository.findById(1L)).thenReturn(Optional.of(article));
+
+        assertThatThrownBy(() -> leasingBookingService.createReservation(request, userIdStr))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("La date de début doit être au moins 3 jours après aujourd'hui.");
+    }
+
+    @Test
     void createReservation_ThrowsBadRequest_WhenStartDateAfterEndDate() {
         LeasingReservationRequestDto request =
                 LeasingReservationRequestDto.builder()
@@ -185,7 +202,7 @@ class LeasingBookingServiceTest {
         LeasingReservationRequestDto request =
                 LeasingReservationRequestDto.builder()
                         .productId(1L)
-                        .startDate(LocalDate.now().plusDays(1))
+                        .startDate(LocalDate.now().plusDays(3))
                         .endDate(LocalDate.now().plusDays(5))
                         .build();
 

@@ -11,17 +11,35 @@ import "../leasing.css";
 const fallbackImage = (title) =>
   `https://placehold.co/260x200?text=${encodeURIComponent(title || "Produit")}`;
 
-const getTodayFrance = () =>
-  new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }))
-    .toISOString()
-    .split("T")[0];
-
-const getDateInOneMonthFrance = () => {
+const getDateInFrance = (daysFromToday = 0) => {
   const date = new Date(
     new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
   );
+  date.setDate(date.getDate() + daysFromToday);
+  return date.toISOString().split("T")[0];
+};
+
+const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
+
+const getDateInOneMonthFrance = (startDate) => {
+  const date = new Date(
+    startDate ??
+      new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
+  );
   date.setMonth(date.getMonth() + 1);
   return date.toISOString().split("T")[0];
+};
+
+const getConditionColor = (condition) => {
+  const normalized = condition
+    ?.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  if (normalized === "etat correct") return "text-[#CF4B01]";
+  if (normalized === "use") return "text-[#E91C2E]";
+  if (normalized === "tres bon etat") return "text-[#2E7D32]";
+  return "";
 };
 
 function formatAgeRange(minMonths, maxMonths) {
@@ -39,9 +57,10 @@ function formatAgeRange(minMonths, maxMonths) {
 export default function LeasingProductDetailView() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const initialStartDate = searchParams.get("startDate") || getTodayFrance();
+  const minRentalStartDate = getMinimumRentalStartDateFrance();
+  const initialStartDate = searchParams.get("startDate") || minRentalStartDate;
   const initialEndDate =
-    searchParams.get("endDate") || getDateInOneMonthFrance();
+    searchParams.get("endDate") || getDateInOneMonthFrance(initialStartDate);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,7 +77,7 @@ export default function LeasingProductDetailView() {
   if (loading) {
     return (
       <main className="flex h-screen w-full items-center justify-center bg-white text-[#040037]">
-        <p className="text-[11px] text-[#7C7A8A]">Chargement…</p>
+        <p className="text-[16px] text-[#7C7A8A]">Chargement…</p>
       </main>
     );
   }
@@ -66,7 +85,7 @@ export default function LeasingProductDetailView() {
   if (error || !product) {
     return (
       <main className="flex h-screen w-full items-center justify-center bg-white text-[#040037]">
-        <p className="text-[11px] text-red-500">
+        <p className="text-[16px] text-red-500">
           {error || "Produit introuvable."}
         </p>
       </main>
@@ -89,7 +108,11 @@ export default function LeasingProductDetailView() {
   const ageRange = formatAgeRange(product.minAgeMonths, product.maxAgeMonths);
 
   const details = [
-    { label: "Etat", value: product.condition, green: true },
+    {
+      label: "Etat",
+      value: product.condition,
+      valueClassName: getConditionColor(product.condition),
+    },
     { label: "Marque", value: product.brand },
     { label: "Dimension", value: product.dimensions },
     { label: "Tranche d'âge", value: ageRange },
@@ -155,16 +178,18 @@ export default function LeasingProductDetailView() {
           <section className="pb-[12px]">
             {/* Badge */}
             <div className="mb-[6px] flex justify-end">
-              <span className="rounded-full border border-[#040037] px-[8px] py-[2px] text-[8px]">
+              <span className="rounded-full border border-[#040037] px-[9px] py-[2px] text-[12px]">
                 Location
               </span>
             </div>
 
             {/* Title + Price */}
             <div className="mb-[10px] flex items-baseline justify-between">
-              <h1 className="text-[16px] font-bold">{product.postTitle}</h1>
+              <h1 className="text-[22px] font-bold leading-tight">
+                {product.postTitle}
+              </h1>
               {priceDisplay && (
-                <span className="ml-[8px] whitespace-nowrap text-[14px] font-bold">
+                <span className="ml-[8px] whitespace-nowrap text-[18px] font-bold">
                   {priceDisplay}
                 </span>
               )}
@@ -173,8 +198,10 @@ export default function LeasingProductDetailView() {
             {/* Description */}
             {product.description && (
               <div className="mb-[12px] mt-[10px]">
-                <p className="mb-[4px] text-[9px] font-semibold">Description</p>
-                <p className="rounded-[4px] border border-[#E6E6E6] p-[8px] text-[8px] leading-[1.4]">
+                <p className="mb-[4px] text-[16px] font-semibold">
+                  Description
+                </p>
+                <p className="rounded-[4px] border border-[#E6E6E6] p-[10px] text-[15px] leading-[1.45]">
                   {product.description}
                 </p>
               </div>
@@ -183,12 +210,10 @@ export default function LeasingProductDetailView() {
             {/* Details */}
             {details.length > 0 && (
               <div className="mb-[16px] flex flex-col gap-[6px]">
-                {details.map(({ label, value, green }) => (
-                  <div key={label} className="flex gap-[6px] text-[9px]">
-                    <span className="min-w-[80px] font-bold">{label}</span>
-                    <span className={green ? "text-[#2E7D32]" : ""}>
-                      {value}
-                    </span>
+                {details.map(({ label, value, valueClassName }) => (
+                  <div key={label} className="flex gap-[8px] text-[15px]">
+                    <span className="min-w-[112px] font-bold">{label}</span>
+                    <span className={valueClassName}>{value}</span>
                   </div>
                 ))}
               </div>
@@ -204,6 +229,7 @@ export default function LeasingProductDetailView() {
               firstImageUrl={images[0]}
               initialStartDate={initialStartDate}
               initialEndDate={initialEndDate}
+              minStartDate={minRentalStartDate}
             />
           </section>
         </div>

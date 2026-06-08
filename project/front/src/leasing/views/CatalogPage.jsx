@@ -7,10 +7,15 @@ import Navbar from "../../common/views/NavBar";
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
-const getTodayFrance = () =>
-  new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }))
-    .toISOString()
-    .split("T")[0];
+const getDateInFrance = (daysFromToday = 0) => {
+  const date = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
+  );
+  date.setDate(date.getDate() + daysFromToday);
+  return date.toISOString().split("T")[0];
+};
+
+const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
 
 export default function CatalogPage() {
   const navigate = useNavigate();
@@ -26,6 +31,7 @@ export default function CatalogPage() {
   const [dateError, setDateError] = useState("");
   const [showNoResultModal, setShowNoResultModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  const minRentalStartDate = getMinimumRentalStartDateFrance();
 
   const loadProducts = () => {
     setLoading(true);
@@ -51,7 +57,6 @@ export default function CatalogPage() {
   }, []);
 
   const handleSearch = () => {
-    const todayFrance = getTodayFrance();
     const hasCity = !!city;
     const hasStartDate = !!startDate;
     const hasEndDate = !!endDate;
@@ -68,11 +73,11 @@ export default function CatalogPage() {
     }
 
     if (
-      (startDate && startDate < todayFrance) ||
-      (endDate && endDate < todayFrance)
+      (startDate && startDate < minRentalStartDate) ||
+      (endDate && endDate < minRentalStartDate)
     ) {
       setDateError(
-        "Cette date est déjà passée — choisissez une date à partir d'aujourd'hui.",
+        "La date de début doit être au moins 3 jours après aujourd'hui.",
       );
       return;
     }
@@ -178,6 +183,7 @@ export default function CatalogPage() {
                     value={startDate}
                     onChange={setStartDate}
                     hasError={!!dateError}
+                    min={minRentalStartDate}
                   />
                 </div>
 
@@ -190,6 +196,7 @@ export default function CatalogPage() {
                     value={endDate}
                     onChange={setEndDate}
                     hasError={!!dateError}
+                    min={startDate || minRentalStartDate}
                   />
                 </div>
               </div>
@@ -324,7 +331,7 @@ export default function CatalogPage() {
   );
 }
 
-function DateInput({ value, onChange, hasError }) {
+function DateInput({ value, onChange, hasError, min }) {
   return (
     <div
       className={`flex h-[38px] flex-1 items-center justify-between rounded-[4px] border px-[8px] ${
@@ -334,6 +341,7 @@ function DateInput({ value, onChange, hasError }) {
       <input
         type="date"
         value={value}
+        min={min}
         onChange={(e) => onChange(e.target.value)}
         className="w-full bg-transparent text-[13px] outline-none"
       />

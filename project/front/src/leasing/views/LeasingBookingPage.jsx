@@ -14,6 +14,11 @@ const formatDateFR = (dateStr) => {
   return `${day}/${month}/${year}`;
 };
 
+const formatReservationNumber = (reservationNumber) =>
+  reservationNumber
+    ? `N°${String(reservationNumber).replace(/^RES-/, "")}`
+    : "";
+
 export default function LeasingBookingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -36,7 +41,7 @@ export default function LeasingBookingPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/connection");
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
@@ -115,7 +120,7 @@ export default function LeasingBookingPage() {
                   Numéro de réservation :
                 </span>
                 <span className="font-bold text-[16px] text-[#040037]">
-                  {successData.reservationNumber}
+                  {formatReservationNumber(successData.reservationNumber)}
                 </span>
               </div>
               <div className="flex flex-wrap gap-[4px]">
