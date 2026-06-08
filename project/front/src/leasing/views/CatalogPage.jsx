@@ -1,119 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { apiClient } from "../../common/utils/apiClient";
 import Header from "../../common/views/Header";
 import Navbar from "../../common/views/NavBar";
+import useCatalogFilters from "../hooks/useCatalogFilters";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
-const getDateInFrance = (daysFromToday = 0) => {
-  const date = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
-  );
-  date.setDate(date.getDate() + daysFromToday);
-  return date.toISOString().split("T")[0];
-};
-
-const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
-
 export default function CatalogPage() {
   const navigate = useNavigate();
-
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const [cities, setCities] = useState([]);
-  const [city, setCity] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [dateError, setDateError] = useState("");
-  const [showNoResultModal, setShowNoResultModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  const minRentalStartDate = getMinimumRentalStartDateFrance();
-
-  const loadProducts = () => {
-    setLoading(true);
-    setError("");
-    apiClient
-      .get("/public/leasing/products")
-      .then((res) => setProducts(res.data))
-      .catch(() => setError("Impossible de charger les articles."))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    apiClient
-      .get("/public/leasing/products")
-      .then((res) => setProducts(res.data))
-      .catch(() => setError("Impossible de charger les articles."))
-      .finally(() => setLoading(false));
-
-    apiClient
-      .get("/public/leasing/products/cities")
-      .then((res) => setCities(res.data))
-      .catch(() => setCities([]));
-  }, []);
-
-  const handleSearch = () => {
-    const hasCity = !!city;
-    const hasStartDate = !!startDate;
-    const hasEndDate = !!endDate;
-
-    if (!hasCity && !hasStartDate && !hasEndDate) {
-      setDateError("");
-      loadProducts();
-      return;
-    }
-
-    if (hasStartDate !== hasEndDate) {
-      setDateError("Renseignez une date de début et une date de fin.");
-      return;
-    }
-
-    if (
-      (startDate && startDate < minRentalStartDate) ||
-      (endDate && endDate < minRentalStartDate)
-    ) {
-      setDateError(
-        "La date de début doit être au moins 3 jours après aujourd'hui.",
-      );
-      return;
-    }
-
-    if (startDate && endDate && endDate < startDate) {
-      setDateError("La date de fin doit être après la date de début.");
-      return;
-    }
-
-    setDateError("");
-    setLoading(true);
-    setError("");
-
-    const body = {};
-    if (city) body.city = city;
-    if (startDate) body.startDate = startDate;
-    if (endDate) body.endDate = endDate;
-
-    apiClient
-      .post("/public/leasing/products/filter", body)
-      .then((res) => {
-        setProducts(res.data);
-        if (res.data.length === 0) setShowNoResultModal(true);
-      })
-      .catch(() => setError("Erreur lors du filtrage."))
-      .finally(() => setLoading(false));
-  };
-
-  const handleResetFilters = () => {
-    setCity("");
-    setStartDate("");
-    setEndDate("");
-    setDateError("");
-    setShowNoResultModal(false);
-    loadProducts();
-  };
+  const {
+    products,
+    loading,
+    error,
+    cities,
+    city,
+    setCity,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    dateError,
+    showNoResultModal,
+    setShowNoResultModal,
+    minRentalStartDate,
+    handleSearch,
+    handleResetFilters,
+  } = useCatalogFilters();
 
   return (
     <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037]">
@@ -227,7 +141,7 @@ export default function CatalogPage() {
           )}
         </section>
 
-        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
+        <section className="grid grid-cols-2 gap-4 px-4 pb-4 pt-[14px] md:grid-cols-3 md:px-6 lg:grid-cols-4">
           {loading && (
             <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
@@ -262,7 +176,7 @@ export default function CatalogPage() {
                     }`,
                   );
                 }}
-                className={`h-[220px] rounded-[6px] bg-white p-[8px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
+                className={`min-h-[236px] rounded-[6px] bg-white p-[8px] pb-[16px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
                   product.available
                     ? "cursor-pointer"
                     : "cursor-pointer opacity-50"
@@ -274,7 +188,7 @@ export default function CatalogPage() {
                   className="h-[120px] w-full rounded-[5px] object-cover"
                 />
 
-                <div className="mt-[6px] flex justify-center">
+                <div className="mt-[6px] flex justify-end">
                   <span className="rounded-full border border-[#040037] px-[9px] text-[12px] leading-[18px]">
                     {product.badgeLabel || "Location"}
                   </span>
