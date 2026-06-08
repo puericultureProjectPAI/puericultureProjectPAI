@@ -10,9 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,5 +62,30 @@ public class TrocController {
             @AuthenticationPrincipal String authenticatedPersonId,
             @Valid @RequestBody TrocRequest request) {
         return productTrocService.createTroc(request, UUID.fromString(authenticatedPersonId));
+    }
+
+    @Operation(
+            summary = "List all available troc products",
+            description = "Returns the full catalog of available products registered for troc. ")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Catalog retrieved successfully.",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ProductTrocDto.class))),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Internal server error. Database query failed.",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponse.class)))
+            })
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductTrocDto>> getProducts() {
+        return ResponseEntity.ok(productTrocService.findAllAvailable());
     }
 }

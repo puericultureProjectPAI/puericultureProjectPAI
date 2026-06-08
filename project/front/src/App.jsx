@@ -11,6 +11,7 @@ import CatalogPage from "./leasing/views/CatalogPage";
 import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
 import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
+import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import ProductTrocDetailView from "./troc/views/ProductTrocDetailView";
 import MyProductsSelectionView from "./troc/views/MyProductsSelectionView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
@@ -79,6 +80,7 @@ export default function App() {
                 path="/product/create"
                 element={<PublishAnnouncementView />}
               />
+              <Route path="/troc/catalog" element={<TrocCatalogPage />} />
               <Route
                 path="/troc/products/:id"
                 element={<ProductTrocDetailView />}
