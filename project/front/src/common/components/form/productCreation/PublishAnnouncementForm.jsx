@@ -32,6 +32,13 @@ const initialValues = {
   price: "",
 };
 
+const priceSchema = Yup.number()
+  .transform((value, originalValue) =>
+    originalValue === "" || originalValue === null ? undefined : value,
+  )
+  .typeError("Le prix doit être un nombre")
+  .min(0, "Le prix doit être positif");
+
 const validationSchemas = {
   1: Yup.object({
     mode: Yup.string().oneOf(["TROC", "SECOND_HAND", "LOCATION"]).required(),
@@ -44,12 +51,31 @@ const validationSchemas = {
     condition: Yup.string().required("L’état est obligatoire"),
   }),
   3: Yup.object({
-    rentalStartDate: Yup.string().required("La date de début est obligatoire"),
-    rentalEndDate: Yup.string().required("La date de fin est obligatoire"),
-    dailyPrice: Yup.number()
-      .typeError("Le prix doit être un nombre")
-      .min(0, "Le prix doit être positif")
-      .required("Le prix par jour est obligatoire"),
+    rentalStartDate: Yup.string().when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("La date de début est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    rentalEndDate: Yup.string().when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("La date de fin est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    dailyPrice: priceSchema.when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("Le prix par jour est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    estimatedPrice: priceSchema.when("mode", {
+      is: "TROC",
+      then: (schema) => schema.required("Le prix estimé est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    price: priceSchema.when("mode", {
+      is: "SECOND_HAND",
+      then: (schema) => schema.required("Le prix est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   }),
   4: Yup.object({}),
 };
