@@ -20,6 +20,7 @@ export default function MyImageInput({
   label,
   maxImages = DEFAULT_MAX,
   productId,
+  onChange,
   ...props
 }) {
   const [field, meta] = useField(props);
@@ -30,6 +31,9 @@ export default function MyImageInput({
   const urls = Array.isArray(field.value) ? field.value : [];
 
   const handleFileChange = async (e) => {
+    if (onChange) {
+      onChange(e);
+    }
     const selected = Array.from(e.target.files);
     e.target.value = "";
 
