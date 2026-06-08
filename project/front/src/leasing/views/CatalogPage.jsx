@@ -32,6 +32,7 @@ export default function CatalogPage() {
   const [dateError, setDateError] = useState("");
   const [showNoResultModal, setShowNoResultModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  const [appliedFilters, setAppliedFilters] = useState(null);
   const minRentalStartDate = getMinimumRentalStartDateFrance();
 
   const loadProducts = () => {
@@ -64,6 +65,7 @@ export default function CatalogPage() {
 
     if (!hasCity && !hasStartDate && !hasEndDate) {
       setDateError("");
+      setAppliedFilters(null);
       loadProducts();
       return;
     }
@@ -91,6 +93,7 @@ export default function CatalogPage() {
     setDateError("");
     setLoading(true);
     setError("");
+    setShowNoResultModal(false);
 
     const body = {};
     if (city) body.city = city;
@@ -101,7 +104,15 @@ export default function CatalogPage() {
       .post("/public/leasing/products/filter", body)
       .then((res) => {
         setProducts(res.data);
-        if (res.data.length === 0) setShowNoResultModal(true);
+        if (res.data.length === 0) {
+          setAppliedFilters(null);
+          setShowNoResultModal(true);
+          return;
+        }
+
+        setAppliedFilters(
+          city && startDate && endDate ? { city, startDate, endDate } : null,
+        );
       })
       .catch(() => setError("Erreur lors du filtrage."))
       .finally(() => setLoading(false));
@@ -112,6 +123,7 @@ export default function CatalogPage() {
     setStartDate("");
     setEndDate("");
     setDateError("");
+    setAppliedFilters(null);
     setShowNoResultModal(false);
     loadProducts();
   };
@@ -228,11 +240,11 @@ export default function CatalogPage() {
           )}
         </section>
 
-        {city && startDate && endDate && (
+        {appliedFilters && (
           <ArrivalPackBanner
-            city={city}
-            startDate={startDate}
-            endDate={endDate}
+            city={appliedFilters.city}
+            startDate={appliedFilters.startDate}
+            endDate={appliedFilters.endDate}
           />
         )}
 

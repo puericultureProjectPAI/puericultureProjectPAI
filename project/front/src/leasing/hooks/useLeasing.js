@@ -87,6 +87,29 @@ export function useSubmitBooking(leasingId) {
   });
 }
 
+export function useSubmitPackBooking() {
+  return useMutation({
+    mutationFn: async ({
+      productIds,
+      startDate,
+      endDate,
+      deliveryStreet,
+      deliveryZipCode,
+      deliveryCity,
+    }) => {
+      const response = await apiClient.post("/leasing/reservations/pack", {
+        productIds,
+        startDate,
+        endDate,
+        deliveryStreet,
+        deliveryZipCode,
+        deliveryCity,
+      });
+      return response.data;
+    },
+  });
+}
+
 /**
  * Hook to retrieve user profile address for leasing delivery.
  * Backend: GET /leasing/profile (JWT protected via apiClient interceptor)

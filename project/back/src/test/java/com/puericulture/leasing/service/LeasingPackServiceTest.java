@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +34,8 @@ class LeasingPackServiceTest {
     @Mock private LeasingProductMapper leasingProductMapper;
 
     @Mock private PersonRepository personRepository;
+
+    @Spy private LeasingPriceService leasingPriceService = new LeasingPriceService();
 
     @InjectMocks private LeasingPackService leasingPackService;
 
@@ -67,11 +70,14 @@ class LeasingPackServiceTest {
 
         assertEquals(10, pack.getChildAgeMonths());
         verify(leasingProductRepository)
-                .findAvailableProductByCategoryAndCity(eq("Poussette"), eq("Paris"), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("Poussette"), eq("Paris"), any(), any(), eq(10));
         verify(leasingProductRepository)
-                .findAvailableProductByCategoryAndCity(eq("Couchage"), eq("Paris"), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("Couchage"), eq("Paris"), any(), any(), eq(10));
         verify(leasingProductRepository)
-                .findAvailableProductByCategoryAndCity(eq("Siège auto"), eq("Paris"), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("Siège auto"), eq("Paris"), any(), any(), eq(10));
     }
 
     @Test
@@ -85,9 +91,11 @@ class LeasingPackServiceTest {
 
         assertEquals(3, pack.getChildAgeMonths());
         verify(leasingProductRepository)
-                .findAvailableProductByCategoryAndCity(eq("Couchage"), eq("Lyon"), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("Couchage"), eq("Lyon"), any(), any(), eq(3));
         verify(leasingProductRepository, never())
-                .findAvailableProductByCategoryAndCity(eq("Siège auto"), any(), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("Siège auto"), any(), any(), any(), any());
     }
 
     @Test
@@ -97,13 +105,29 @@ class LeasingPackServiceTest {
 
         LeasingPackDto pack =
                 leasingPackService.generateArrivalPack(
-                        "Bordeaux", LocalDate.now(), LocalDate.now().plusDays(2), false, null);
+                        "Bordeaux", LocalDate.now(), LocalDate.now().plusDays(1), false, null);
 
         assertEquals(24, pack.getChildAgeMonths());
         verify(leasingProductRepository)
                 .findAvailableProductByCategoryAndCity(
-                        eq("Poussette"), eq("Bordeaux"), any(), any());
+                        eq("Poussette"), eq("Bordeaux"), any(), any(), eq(24));
         verify(leasingProductRepository, never())
-                .findAvailableProductByCategoryAndCity(eq("Couchage"), any(), any(), any());
+                .findAvailableProductByCategoryAndCity(eq("Couchage"), any(), any(), any(), any());
+    }
+
+    @Test
+    void testGenerateArrivalPack_CalculatesAgeAtStartDate() {
+        child.setBirthDate(Date.valueOf(LocalDate.now().minusMonths(5)));
+        LocalDate startDate = LocalDate.now().plusMonths(1);
+        when(personRepository.findById(personId)).thenReturn(Optional.of(person));
+
+        LeasingPackDto pack =
+                leasingPackService.generateArrivalPack(
+                        "Paris", startDate, startDate.plusDays(5), false, null);
+
+        assertEquals(6, pack.getChildAgeMonths());
+        verify(leasingProductRepository)
+                .findAvailableProductByCategoryAndCity(
+                        eq("Poussette"), eq("Paris"), any(), any(), eq(6));
     }
 }

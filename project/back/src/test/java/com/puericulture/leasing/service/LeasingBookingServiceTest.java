@@ -10,6 +10,7 @@ import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.config.errormanager.exception.BadRequestException;
 import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.config.errormanager.exception.UnauthorizedException;
+import com.puericulture.leasing.dto.LeasingPackReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationResponseDto;
 import com.puericulture.leasing.entity.ClientProduct;
@@ -19,6 +20,7 @@ import com.puericulture.leasing.repository.ClientProductRepository;
 import com.puericulture.leasing.repository.LeasingArticleRepository;
 import com.puericulture.leasing.repository.LeasingOrderRepository;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +38,7 @@ class LeasingBookingServiceTest {
     @Mock private ClientProductRepository clientProductRepository;
     @Mock private LeasingOrderRepository leasingOrderRepository;
     @Mock private PersonRepository personRepository;
+    @Spy private LeasingPriceService leasingPriceService = new LeasingPriceService();
 
     @InjectMocks private LeasingBookingService leasingBookingService;
 
@@ -214,6 +218,68 @@ class LeasingBookingServiceTest {
 
         assertThatThrownBy(() -> leasingBookingService.createReservation(request, userIdStr))
                 .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void createPackReservation_Success() {
+        LeasingArticle secondArticle = new LeasingArticle();
+        secondArticle.setId(2L);
+        secondArticle.setPostTitle("Lit parapluie");
+        secondArticle.setPricePerDay(4L);
+        secondArticle.setPricePerMonth(70L);
+        article.setPostTitle("Poussette Yoyo");
+
+        LeasingPackReservationRequestDto request =
+                LeasingPackReservationRequestDto.builder()
+                        .productIds(List.of(1L, 2L))
+                        .startDate(LocalDate.now().plusDays(3))
+                        .endDate(LocalDate.now().plusDays(7))
+                        .deliveryStreet("123 Rue Kiabi")
+                        .deliveryZipCode("59000")
+                        .deliveryCity("Lille")
+                        .build();
+
+        when(personRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(leasingArticleRepository.findById(1L)).thenReturn(Optional.of(article));
+        when(leasingArticleRepository.findById(2L)).thenReturn(Optional.of(secondArticle));
+        when(leasingOrderRepository.countOverlappingOrders(any(), any(), any())).thenReturn(0L);
+        when(clientProductRepository.save(any(ClientProduct.class)))
+                .thenAnswer(
+                        invocation -> {
+                            ClientProduct clientProduct = invocation.getArgument(0);
+                            if (clientProduct.getId() == null) {
+                                clientProduct.setId(
+                                        clientProduct.getProductId().equals(1L) ? 100L : 101L);
+                            }
+                            return clientProduct;
+                        });
+
+        var response = leasingBookingService.createPackReservation(request, userIdStr);
+
+        assertThat(response.getReservationNumbers()).containsExactly("RES-100", "RES-101");
+        assertThat(response.getProducts()).hasSize(2);
+        assertThat(response.getTotalPrice()).isEqualTo((5 * 5L) + (5 * 4L));
+        verify(clientProductRepository, times(4)).save(any(ClientProduct.class));
+        verify(leasingOrderRepository, times(2)).save(any(LeasingOrder.class));
+    }
+
+    @Test
+    void createPackReservation_ThrowsBadRequest_WhenProductDuplicated() {
+        LeasingPackReservationRequestDto request =
+                LeasingPackReservationRequestDto.builder()
+                        .productIds(List.of(1L, 1L))
+                        .startDate(LocalDate.now().plusDays(3))
+                        .endDate(LocalDate.now().plusDays(7))
+                        .deliveryStreet("123 Rue Kiabi")
+                        .deliveryZipCode("59000")
+                        .deliveryCity("Lille")
+                        .build();
+
+        when(personRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> leasingBookingService.createPackReservation(request, userIdStr))
+                .isInstanceOf(BadRequestException.class);
+        verify(leasingArticleRepository, never()).findById(any());
     }
 
     @Test

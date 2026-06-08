@@ -1,5 +1,7 @@
 package com.puericulture.leasing.controller;
 
+import com.puericulture.leasing.dto.LeasingPackReservationRequestDto;
+import com.puericulture.leasing.dto.LeasingPackReservationResponseDto;
 import com.puericulture.leasing.dto.LeasingProfileDto;
 import com.puericulture.leasing.dto.LeasingReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationResponseDto;
@@ -61,6 +63,17 @@ public class LeasingController {
             @AuthenticationPrincipal String authenticatedPersonId) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(leasingBookingService.createReservation(dto, authenticatedPersonId));
+    }
+
+    @Operation(
+            summary = "Reserve an arrival pack",
+            description = "Creates one leasing reservation per selected product in the pack")
+    @PostMapping("/reservations/pack")
+    public ResponseEntity<LeasingPackReservationResponseDto> createPackReservation(
+            @Valid @RequestBody LeasingPackReservationRequestDto dto,
+            @AuthenticationPrincipal String authenticatedPersonId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(leasingBookingService.createPackReservation(dto, authenticatedPersonId));
     }
 
     @Operation(

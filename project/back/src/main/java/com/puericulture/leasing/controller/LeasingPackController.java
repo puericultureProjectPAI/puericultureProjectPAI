@@ -1,10 +1,12 @@
 package com.puericulture.leasing.controller;
 
 import com.puericulture.leasing.dto.LeasingPackDto;
+import com.puericulture.leasing.dto.LeasingProductSummaryDto;
 import com.puericulture.leasing.service.LeasingPackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -72,5 +74,19 @@ public class LeasingPackController {
         return ResponseEntity.ok(
                 leasingPackService.generateArrivalPack(
                         city, startDate, endDate, carNeeded, childFirstName));
+    }
+
+    @Operation(
+            summary = "List eligible products for an arrival pack",
+            description =
+                    "Returns available leasing products matching the selected city, dates and child age.")
+    @GetMapping("/eligible-products")
+    public ResponseEntity<List<LeasingProductSummaryDto>> findEligibleProducts(
+            @RequestParam String city,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String childFirstName) {
+        return ResponseEntity.ok(
+                leasingPackService.findEligibleProducts(city, startDate, endDate, childFirstName));
     }
 }
