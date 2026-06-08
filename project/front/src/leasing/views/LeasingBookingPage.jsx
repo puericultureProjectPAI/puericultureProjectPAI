@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import { useSubmitBooking, useLeasingProfile } from "../hooks/useLeasing";
 import { useAuth } from "../../common/security/AuthContext";
 import Header from "../../common/views/Header";
-import Navbar from "../../common/views/NavBar";
 import LeasingBackHeader from "../components/LeasingBackHeader";
 
 const formatDateFR = (dateStr) => {
@@ -321,8 +320,6 @@ export default function LeasingBookingPage() {
           </div>
         )}
       </main>
-
-      <Navbar />
     </div>
   );
 }
