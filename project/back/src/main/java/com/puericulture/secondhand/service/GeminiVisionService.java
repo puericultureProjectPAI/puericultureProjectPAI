@@ -69,6 +69,10 @@ public class GeminiVisionService {
 
             return result;
 
+        } catch (
+                com.puericulture.config.errormanager.exception.InvalidChildcareProductException e) {
+            // Business error: let the global handler return 400 + INVALID_CHILDCARE_PRODUCT
+            throw e;
         } catch (Exception e) {
             log.error("Error during AI analysis: {}", e.getMessage());
             throw new ResponseStatusException(

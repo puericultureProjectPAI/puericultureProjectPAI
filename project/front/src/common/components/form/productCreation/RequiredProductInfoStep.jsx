@@ -34,10 +34,36 @@ export default function RequiredProductInfoStep() {
       if (confidenceScore !== undefined) setConfidenceScore(confidenceScore);
     } catch (error) {
       console.error("Erreur IA Gemini", error);
-      // Show required non-blocking notification (same message for both cases)
-      showNotification(
-        "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
-      );
+
+      if (error.response) {
+        // The server responded with an error status
+        const { status, data } = error.response;
+
+        if (status === 400 && data?.code === "INVALID_CHILDCARE_PRODUCT") {
+          // Business error: image is not a childcare product
+          showNotification(
+            "L'image ne semble pas être un article de puériculture. Veuillez remplir les champs manuellement.",
+          );
+        } else {
+          // Other server errors (5xx, 4xx unexpected)
+          showNotification(
+            "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
+          );
+        }
+      } else if (
+        error.code === "ECONNABORTED" ||
+        error.message?.includes("timeout")
+      ) {
+        // Timeout
+        showNotification(
+          "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
+        );
+      } else {
+        // Network error or other unexpected failure
+        showNotification(
+          "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
+        );
+      }
     } finally {
       setIsAILoading(false);
     }
