@@ -20,6 +20,21 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class CustomGlobalExceptionHandler {
 
     /**
+     * Gère le cas d'image non reconnue comme article de puériculture (400).
+     * Retourne un code métier explicite attendu par le frontend.
+     */
+    @ExceptionHandler(com.puericulture.config.errormanager.exception.InvalidChildcareProductException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidChildcareProductException(
+            com.puericulture.config.errormanager.exception.InvalidChildcareProductException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ErrorResponse.builder()
+                        .code("INVALID_CHILDCARE_PRODUCT")
+                        .message("Image not recognized as childcare product")
+                        .build());
+    }
+
+    /**
      * Gère les erreurs de type "Mauvaise Requête" (400).
      *
      * @param badRequestException L'exception contenant les détails de l'erreur client.

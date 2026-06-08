@@ -58,7 +58,15 @@ public class GeminiVisionService {
                         HttpStatus.SERVICE_UNAVAILABLE, "Gemini API Error");
             }
 
-            return parseAndValidateResponse(response.getBody());
+            ProductAnalysisResponse result = parseAndValidateResponse(response.getBody());
+
+            // If the AI is not confident that the image represents a puériculture item,
+            // return a business error so the frontend can inform the user and allow manual input.
+            if (result.getConfidenceScore() == null || result.getConfidenceScore() < 30.0) {
+                throw new com.puericulture.config.errormanager.exception.InvalidChildcareProductException();
+            }
+
+            return result;
 
         } catch (Exception e) {
             log.error("Error during AI analysis: {}", e.getMessage());
