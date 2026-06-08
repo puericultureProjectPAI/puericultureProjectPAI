@@ -16,6 +16,7 @@ export default function LeasingBookingSection({
   firstImageUrl,
   initialStartDate = "",
   initialEndDate = "",
+  minStartDate = "",
 }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -28,7 +29,7 @@ export default function LeasingBookingSection({
     !initialStartDate || !initialEndDate,
   );
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const minimumStartDate = minStartDate;
 
   const calcDays = (start, end) => {
     if (!start || !end) return 0;
@@ -47,9 +48,11 @@ export default function LeasingBookingSection({
   };
 
   const editError =
-    editStart && editEnd && new Date(editStart) > new Date(editEnd)
-      ? "La date de début doit être antérieure à la date de fin."
-      : "";
+    minimumStartDate && editStart && editStart < minimumStartDate
+      ? "La date de début doit être au moins 3 jours après aujourd'hui."
+      : editStart && editEnd && new Date(editStart) > new Date(editEnd)
+        ? "La date de début doit être antérieure à la date de fin."
+        : "";
 
   const editValid =
     editStart && editEnd && !editError && calcPrice(editStart, editEnd) > 0;
@@ -58,7 +61,7 @@ export default function LeasingBookingSection({
 
   const handleBookClick = () => {
     if (!isAuthenticated) {
-      navigate("/connection");
+      navigate("/login");
       return;
     }
     navigate(`/leasing/booking/${leasingId}`, {
@@ -89,16 +92,16 @@ export default function LeasingBookingSection({
       <div className="border border-[rgba(117,115,136,0.75)] rounded-[8px] px-[12px] py-[12px] flex flex-col gap-[12px]">
         {/* Dates recap */}
         <div className="flex gap-[10px] items-center flex-wrap">
-          <span className="font-normal text-[16px] text-[#757388]">
+          <span className="font-normal text-[17px] text-[#757388]">
             Disponibilités :
           </span>
           {hasSavedDates && !isEditing ? (
-            <span className="font-bold text-[16px] text-[#040037]">
+            <span className="font-bold text-[17px] text-[#040037]">
               {formatDateFR(savedStart)} – {formatDateFR(savedEnd)}
             </span>
           ) : (
             !isEditing && (
-              <span className="font-normal text-[16px] text-[#757388]">
+              <span className="font-normal text-[17px] text-[#757388]">
                 Choisir des dates
               </span>
             )
@@ -112,44 +115,44 @@ export default function LeasingBookingSection({
               <div className="flex min-w-0 flex-[1_1_150px] flex-col gap-[2px]">
                 <label
                   htmlFor="booking-start"
-                  className="font-normal text-[14px] text-[#757388]"
+                  className="font-normal text-[15px] text-[#757388]"
                 >
                   Début
                 </label>
                 <input
                   id="booking-start"
                   type="date"
-                  min={todayStr}
+                  min={minimumStartDate}
                   value={editStart}
                   onChange={(e) => setEditStart(e.target.value)}
-                  className="min-w-0 w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
+                  className="min-w-0 w-full border border-[#757388] rounded-[8px] p-[8px] text-[15px] text-[#040037] focus:outline-none bg-white"
                 />
               </div>
               <div className="flex min-w-0 flex-[1_1_150px] flex-col gap-[2px]">
                 <label
                   htmlFor="booking-end"
-                  className="font-normal text-[14px] text-[#757388]"
+                  className="font-normal text-[15px] text-[#757388]"
                 >
                   Fin
                 </label>
                 <input
                   id="booking-end"
                   type="date"
-                  min={editStart || todayStr}
+                  min={editStart || minimumStartDate}
                   value={editEnd}
                   onChange={(e) => setEditEnd(e.target.value)}
-                  className="min-w-0 w-full border border-[#757388] rounded-[8px] p-[8px] text-[14px] text-[#040037] focus:outline-none bg-white"
+                  className="min-w-0 w-full border border-[#757388] rounded-[8px] p-[8px] text-[15px] text-[#040037] focus:outline-none bg-white"
                 />
               </div>
             </div>
 
             {editError && (
-              <span className="text-[13px] text-red-500">{editError}</span>
+              <span className="text-[14px] text-red-500">{editError}</span>
             )}
 
             {editValid && (
               <div className="flex justify-between items-center bg-[#F2F2F9] rounded-[6px] px-[8px] py-[6px]">
-                <span className="font-normal text-[14px] text-[#757388]">
+                <span className="font-normal text-[15px] text-[#757388]">
                   {calcDays(editStart, editEnd)} jours
                 </span>
                 <span className="font-bold text-[16px] text-[#040037]">

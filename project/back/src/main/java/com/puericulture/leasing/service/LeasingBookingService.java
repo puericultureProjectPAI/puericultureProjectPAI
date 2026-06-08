@@ -124,9 +124,10 @@ public class LeasingBookingService {
                                                         + dto.getProductId()));
 
         // 3. Validate dates
-        LocalDate today = LocalDate.now();
-        if (dto.getStartDate().isBefore(today)) {
-            throw new BadRequestException("La date de début ne peut pas être dans le passé");
+        LocalDate minimumStartDate = LocalDate.now().plusDays(3);
+        if (dto.getStartDate().isBefore(minimumStartDate)) {
+            throw new BadRequestException(
+                    "La date de début doit être au moins 3 jours après aujourd'hui.");
         }
         if (dto.getStartDate().isAfter(dto.getEndDate())) {
             throw new BadRequestException(

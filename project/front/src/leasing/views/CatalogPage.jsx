@@ -7,10 +7,15 @@ import Navbar from "../../common/views/NavBar";
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
-const getTodayFrance = () =>
-  new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }))
-    .toISOString()
-    .split("T")[0];
+const getDateInFrance = (daysFromToday = 0) => {
+  const date = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
+  );
+  date.setDate(date.getDate() + daysFromToday);
+  return date.toISOString().split("T")[0];
+};
+
+const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
 
 export default function CatalogPage() {
   const navigate = useNavigate();
@@ -26,6 +31,7 @@ export default function CatalogPage() {
   const [dateError, setDateError] = useState("");
   const [showNoResultModal, setShowNoResultModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  const minRentalStartDate = getMinimumRentalStartDateFrance();
 
   const loadProducts = () => {
     setLoading(true);
@@ -51,7 +57,6 @@ export default function CatalogPage() {
   }, []);
 
   const handleSearch = () => {
-    const todayFrance = getTodayFrance();
     const hasCity = !!city;
     const hasStartDate = !!startDate;
     const hasEndDate = !!endDate;
@@ -68,11 +73,11 @@ export default function CatalogPage() {
     }
 
     if (
-      (startDate && startDate < todayFrance) ||
-      (endDate && endDate < todayFrance)
+      (startDate && startDate < minRentalStartDate) ||
+      (endDate && endDate < minRentalStartDate)
     ) {
       setDateError(
-        "Cette date est déjà passée — choisissez une date à partir d'aujourd'hui.",
+        "La date de début doit être au moins 3 jours après aujourd'hui.",
       );
       return;
     }
@@ -118,11 +123,11 @@ export default function CatalogPage() {
         <section className="px-4 md:px-6 pt-[12px]">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-[13px] font-bold leading-none">
+              <h2 className="text-[18px] font-bold leading-tight">
                 Articles disponibles à la location
               </h2>
 
-              <p className="mt-[5px] text-[9px] leading-none text-[#7C7A8A]">
+              <p className="mt-[5px] text-[13px] leading-none text-[#7C7A8A]">
                 {loading ? "…" : `${products.length} articles`}
               </p>
             </div>
@@ -133,27 +138,27 @@ export default function CatalogPage() {
                 showFilters ? "Masquer les filtres" : "Afficher les filtres"
               }
               onClick={() => setShowFilters((value) => !value)}
-              className="flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
+              className="flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
             >
-              <span className="material-symbols-rounded text-[17px]">
+              <span className="material-symbols-rounded text-[20px]">
                 filter_alt
               </span>
             </button>
           </div>
 
           {showFilters && (
-            <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[9px] py-[10px]">
-              <p className="text-[11px] font-medium">Ville de destination</p>
+            <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
+              <p className="text-[14px] font-medium">Ville de destination</p>
 
-              <div className="mt-[8px] flex h-[31px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
-                <span className="material-symbols-rounded text-[14px] text-[#7C7A8A]">
+              <div className="mt-[8px] flex h-[38px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
+                <span className="material-symbols-rounded text-[18px] text-[#7C7A8A]">
                   location_on
                 </span>
 
                 <select
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="h-full flex-1 bg-white text-[10px] outline-none"
+                  className="h-full flex-1 bg-white text-[14px] outline-none"
                 >
                   <option value="">Toutes les villes</option>
                   {cities.map((c) => (
@@ -164,13 +169,13 @@ export default function CatalogPage() {
                 </select>
               </div>
 
-              <p className="mt-[14px] text-[11px] font-medium">
+              <p className="mt-[14px] text-[14px] font-medium">
                 Dates de location
               </p>
 
               <div className="mt-[7px] flex flex-col md:flex-row md:gap-4">
                 <div className="flex items-center gap-[6px] flex-1">
-                  <span className="w-[28px] text-right text-[10px] font-bold">
+                  <span className="w-[36px] text-right text-[13px] font-bold">
                     - du
                   </span>
 
@@ -178,11 +183,12 @@ export default function CatalogPage() {
                     value={startDate}
                     onChange={setStartDate}
                     hasError={!!dateError}
+                    min={minRentalStartDate}
                   />
                 </div>
 
                 <div className="flex items-center gap-[6px] flex-1 mt-[7px] md:mt-0">
-                  <span className="w-[28px] text-right text-[10px] font-bold">
+                  <span className="w-[36px] text-right text-[13px] font-bold">
                     - au
                   </span>
 
@@ -190,28 +196,29 @@ export default function CatalogPage() {
                     value={endDate}
                     onChange={setEndDate}
                     hasError={!!dateError}
+                    min={startDate || minRentalStartDate}
                   />
                 </div>
               </div>
 
               {dateError && (
-                <p className="mt-[8px] text-[8px] leading-[11px] text-red-500">
+                <p className="mt-[8px] text-[12px] leading-[16px] text-red-500">
                   {dateError}
                 </p>
               )}
 
-              <div className="mt-[10px] flex gap-[8px]">
+              <div className="mt-[12px] flex flex-col gap-[8px]">
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-[28px] flex-1 rounded-[4px] border border-[#040037] bg-white text-[9px] font-bold text-[#040037]"
+                  className="h-[40px] w-full rounded-[4px] border border-[#040037] bg-white text-[15px] font-bold text-[#040037]"
                 >
                   Réinitialiser
                 </button>
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="h-[28px] flex-1 rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
+                  className="h-[40px] w-full rounded-[4px] bg-[#040037] text-[15px] font-bold text-white"
                 >
                   Rechercher
                 </button>
@@ -222,19 +229,19 @@ export default function CatalogPage() {
 
         <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
           {loading && (
-            <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+            <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
             </p>
           )}
 
           {error && (
-            <p className="col-span-2 text-center text-[9px] text-red-500">
+            <p className="col-span-2 text-center text-[13px] text-red-500">
               {error}
             </p>
           )}
 
           {!loading && !error && products.length === 0 && (
-            <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+            <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Aucun article disponible.
             </p>
           )}
@@ -255,7 +262,7 @@ export default function CatalogPage() {
                     }`,
                   );
                 }}
-                className={`h-[170px] rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
+                className={`h-[220px] rounded-[6px] bg-white p-[8px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
                   product.available
                     ? "cursor-pointer"
                     : "cursor-pointer opacity-50"
@@ -264,28 +271,24 @@ export default function CatalogPage() {
                 <img
                   src={product.firstImageUrl || fallbackImage(product.category)}
                   alt={product.postTitle}
-                  className="h-[95px] w-full rounded-[5px] object-cover"
+                  className="h-[120px] w-full rounded-[5px] object-cover"
                 />
 
-                <div className="mt-[4px] flex justify-center gap-[4px]">
-                  <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
-                    Location
-                  </span>
-
-                  <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
-                    Troc
+                <div className="mt-[6px] flex justify-center">
+                  <span className="rounded-full border border-[#040037] px-[9px] text-[12px] leading-[18px]">
+                    {product.badgeLabel || "Location"}
                   </span>
                 </div>
 
-                <h3 className="mt-[5px] truncate text-[8px] leading-none">
+                <h3 className="mt-[7px] truncate text-[14px] leading-tight">
                   {product.postTitle}
                 </h3>
 
-                <p className="mt-[2px] truncate text-[7px] leading-none text-[#7C7A8A]">
+                <p className="mt-[3px] truncate text-[12px] leading-tight text-[#7C7A8A]">
                   {product.category} · {product.condition}
                 </p>
 
-                <p className="mt-[3px] text-[9px] font-bold leading-none">
+                <p className="mt-[4px] text-[14px] font-bold leading-tight">
                   {product.available
                     ? `${product.pricePerMonth}€/mois`
                     : "Indisponible"}
@@ -299,25 +302,25 @@ export default function CatalogPage() {
 
       {showNoResultModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#040037]/60 p-2 backdrop-blur-xs">
-          <div className="relative flex w-[240px] flex-col rounded-[8px] border border-[#E6E6E6] bg-white p-[16px] text-center shadow-2xl">
+          <div className="relative flex w-[280px] max-w-[calc(100%-32px)] flex-col rounded-[8px] border border-[#E6E6E6] bg-white p-[18px] text-center shadow-2xl">
             <button
               type="button"
               onClick={() => setShowNoResultModal(false)}
               className="absolute right-[10px] top-[9px] text-[#7C7A8A] hover:text-[#040037]"
             >
-              <span className="material-symbols-rounded text-[14px]">
+              <span className="material-symbols-rounded text-[18px]">
                 close
               </span>
             </button>
 
-            <p className="mb-[18px] mt-[18px] text-[10px] font-bold text-[#040037]">
+            <p className="mb-[20px] mt-[22px] text-[16px] font-bold text-[#040037]">
               Aucun article correspondant
             </p>
 
             <button
               type="button"
               onClick={() => setShowNoResultModal(false)}
-              className="mx-auto h-[28px] w-[95px] rounded-[4px] bg-[#040037] text-[9px] font-bold text-white"
+              className="h-[40px] w-full rounded-[4px] bg-[#040037] text-[15px] font-bold text-white"
             >
               Retour
             </button>
@@ -328,18 +331,19 @@ export default function CatalogPage() {
   );
 }
 
-function DateInput({ value, onChange, hasError }) {
+function DateInput({ value, onChange, hasError, min }) {
   return (
     <div
-      className={`flex h-[28px] flex-1 items-center justify-between rounded-[4px] border px-[8px] ${
+      className={`flex h-[38px] flex-1 items-center justify-between rounded-[4px] border px-[8px] ${
         hasError ? "border-red-500" : "border-[#A6A3B8]"
       }`}
     >
       <input
         type="date"
         value={value}
+        min={min}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent text-[8px] outline-none"
+        className="w-full bg-transparent text-[13px] outline-none"
       />
     </div>
   );
