@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { apiClient } from "../../common/utils/apiClient";
 import { createExchange } from "../utils/exchangeApi";
 import TrocBackHeader from "../components/TrocBackHeader";
+import useTroc from "../hooks/useTroc";
+// (icons removed per design)
 
 const fallbackImage = (title) =>
   `https://placehold.co/260x200?text=${encodeURIComponent(title || "Produit")}`;
@@ -10,37 +11,32 @@ const fallbackImage = (title) =>
 export default function MyProductsSelectionView() {
   const { receiverId } = useParams();
   const navigate = useNavigate();
-  const [myProducts, setMyProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { products: myProducts, loading, error, fetchMyProducts } = useTroc();
+  const [localError, setLocalError] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    // `loading` is initialized to true; perform fetch and update state when complete
-    apiClient
-      .get("/products/my-available")
-      .then((res) => setMyProducts(res.data || []))
-      .catch((err) => {
-        console.error(err);
-        setError("Impossible de charger vos produits.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    fetchMyProducts();
+  }, [fetchMyProducts]);
 
-  const handleSelect = async (product) => {
+  const handleContinue = async () => {
+    if (!selectedId) return setLocalError("Sélectionnez un produit.");
     try {
       await createExchange({
-        proposerProductId: product.id,
+        proposerProductId: selectedId,
         receiverProductId: parseInt(receiverId, 10),
       });
       navigate("/troc", { replace: true });
     } catch (err) {
       console.error(err);
-      setError("Impossible de proposer l'échange.");
+      setLocalError("Impossible de proposer l'échange.");
     }
   };
 
   if (loading) return <div className="p-4">Chargement…</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  const displayError = error || localError;
+  if (displayError)
+    return <div className="p-4 text-red-500">{displayError}</div>;
 
   return (
     <div className="flex h-[100dvh] w-full flex-col bg-bg-base text-neutral">
@@ -59,37 +55,70 @@ export default function MyProductsSelectionView() {
               </div>
             )}
 
-            {myProducts.map((p) => (
-              <div
-                key={p.id}
-                className="bg-white rounded-lg border shadow-sm p-3 flex flex-col justify-between"
-              >
-                <div className="flex gap-3">
-                  <img
-                    src={p.imageUrls?.[0] ?? fallbackImage(p.postTitle)}
-                    alt={p.postTitle}
-                    className="h-20 w-28 object-cover rounded"
-                    onError={(e) =>
-                      (e.currentTarget.src = fallbackImage(p.postTitle))
-                    }
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base">{p.postTitle}</h3>
-                    <div className="text-sm text-subtle mt-1">{p.category}</div>
-                    <div className="text-sm text-subtle mt-2">{p.city}</div>
+            {myProducts.map((p) => {
+              const selected = selectedId === p.id;
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => setSelectedId(p.id)}
+                  role="button"
+                  tabIndex={0}
+                  className={`bg-white rounded-lg border shadow-sm p-3 flex items-center justify-between cursor-pointer focus:outline-none ${selected ? "border-2 border-[#040037]" : ""}`}
+                >
+                  <div className="flex gap-3 items-center">
+                    <div className="h-28 w-28 flex items-center justify-center rounded-lg bg-[#FBF9FD] overflow-hidden">
+                      <img
+                        src={p.imageUrls?.[0] ?? fallbackImage(p.postTitle)}
+                        alt={p.postTitle}
+                        className="h-full w-full object-contain"
+                        onError={(e) =>
+                          (e.currentTarget.src = fallbackImage(p.postTitle))
+                        }
+                      />
+                    </div>
+                    <div className="flex-1 pl-2">
+                      <h3 className="font-semibold text-base">{p.postTitle}</h3>
+                      <div className="text-sm text-subtle mt-1">
+                        {p.category}
+                      </div>
+                      <div className="text-sm text-subtle mt-2">
+                        <span>{p.city}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {selected ? (
+                      <span className="text-[#040037] font-semibold">
+                        Sélectionné
+                      </span>
+                    ) : (
+                      <span className="text-[#7C7A8A]">›</span>
+                    )}
                   </div>
                 </div>
+              );
+            })}
+          </div>
 
-                <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => handleSelect(p)}
-                    className="px-4 py-2 bg-[#040037] text-white rounded-lg font-semibold"
-                  >
-                    Proposer ce produit
-                  </button>
-                </div>
-              </div>
-            ))}
+          {/* Footer actions (Continue / Retour) */}
+          <div className="mt-6">
+            <button
+              onClick={handleContinue}
+              disabled={!selectedId}
+              className={`w-full h-11 rounded-full font-semibold text-base ${selectedId ? "bg-[#040037] text-white" : "bg-[#E9E9EE] text-[#999]"} transition`}
+            >
+              Continuer
+            </button>
+
+            <div className="mt-3 text-center">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-sm text-[#7C7A8A]"
+              >
+                Retour
+              </button>
+            </div>
           </div>
         </div>
       </main>

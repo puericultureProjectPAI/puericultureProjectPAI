@@ -91,4 +91,17 @@ public class ProductTrocService {
 
         return dto;
     }
+
+    @Transactional(readOnly = true)
+    public java.util.List<ProductTrocDto> findMyAvailableProducts(UUID authorId) {
+        java.util.List<ProductTroc> trocs =
+                trocRepository.findByAuthorIdAndStatus(authorId, ProductTrocStatus.AVAILABLE);
+
+        java.util.List<ProductTrocDto> dtos = new java.util.ArrayList<>();
+        for (ProductTroc troc : trocs) {
+            dtos.add(trocMapper.toDto(troc));
+        }
+
+        return dtos;
+    }
 }

@@ -9,3 +9,8 @@ export async function getProducts() {
   const response = await apiClient.get("/troc/products");
   return response.data;
 }
+
+export async function getMyAvailableProducts() {
+  const response = await apiClient.get("/products/my-available");
+  return response.data;
+}

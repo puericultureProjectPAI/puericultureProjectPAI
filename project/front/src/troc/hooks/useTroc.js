@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { createTroc, getProducts } from "../utils/trocApi";
+import { useState, useCallback } from "react";
+import {
+  createTroc,
+  getProducts,
+  getMyAvailableProducts,
+} from "../utils/trocApi";
 
 export default function useTroc() {
   const [error, setError] = useState("");
@@ -50,11 +54,32 @@ export default function useTroc() {
     }
   };
 
+  const fetchMyProducts = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await getMyAvailableProducts();
+      setProducts(response || []);
+      return true;
+    } catch (requestError) {
+      setError("Impossible de récupérer vos produits.");
+      console.error(
+        "Erreur lors de la récupération des produits",
+        requestError,
+      );
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     error,
     loading,
     publishTroc,
     getProductsTroc,
+    fetchMyProducts,
     success,
     products,
   };
