@@ -51,7 +51,7 @@ export default function MyProductsSelectionView() {
   return (
     <div className="flex flex-col bg-white w-full min-h-full">
       {/* Titre */}
-      <div className="flex flex-row justify-center items-center self-stretch gap-2.5 px-3 py-2">
+      <div className="flex flex-row justify-center items-center self-stretch gap-2.5 px-6 py-2">
         <h2 className="text-[20px] font-bold text-[#040037]">
           Sélectionnez un article à échanger
         </h2>
@@ -112,11 +112,11 @@ export default function MyProductsSelectionView() {
         <div className="flex-1" />
 
         {/* Boutons d'action */}
-        <div className="flex flex-col items-center self-stretch gap-2.5 p-2.5 pb-4">
+        <div className="flex flex-col self-stretch gap-2.5 pb-4">
           <button
             type="button"
             onClick={handleContinue}
-            className="w-[330px] h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center"
+            className="w-full h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center"
           >
             <span className="text-[16px] font-semibold">Continuer</span>
           </button>
@@ -124,7 +124,7 @@ export default function MyProductsSelectionView() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="w-[330px] flex items-end justify-center gap-2.5 px-2 py-2"
+            className="w-full flex items-end justify-center gap-2.5 px-2 py-2"
           >
             <span className="text-[16px] text-[#757388]">Retour</span>
           </button>

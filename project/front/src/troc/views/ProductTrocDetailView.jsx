@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
 import { useAuth } from "../../common/security/AuthContext";
+import sendIcon from "../../assets/send-icon-inverse-m.svg";
+import shareIcon from "../../assets/share-icon-subtle.svg";
 
 const fallbackImage = (title) =>
   `https://placehold.co/382x176?text=${encodeURIComponent(title || "Produit")}`;
@@ -94,19 +96,7 @@ export default function ProductTrocDetailView() {
         </button>
 
         <button className="flex items-center px-1 py-0" aria-label="Partager">
-          {/* share-icon-subtle */}
-          <svg
-            width="24"
-            height="27"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0018 12.08c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81A2.99 2.99 0 006 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"
-              fill="#757388"
-            />
-          </svg>
+          <img src={shareIcon} alt="" width={24} height={27} />
         </button>
       </div>
 
@@ -243,18 +233,9 @@ export default function ProductTrocDetailView() {
         <button
           type="button"
           onClick={handlePropose}
-          className="w-[330px] h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center gap-3"
+          className="w-full h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center gap-3"
         >
-          {/* send-icon-inverse-m */}
-          <svg
-            width="24"
-            height="21"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M2 12L22 2v20L2 12z" fill="white" />
-          </svg>
+          <img src={sendIcon} alt="" width={24} height={21} />
           <span className="text-[16px] font-semibold">Proposer un échange</span>
         </button>
       </div>
