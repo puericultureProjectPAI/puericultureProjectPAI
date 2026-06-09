@@ -1,11 +1,34 @@
 import { useState } from "react";
-import { QUARTERLY_DATA } from "../utils/recommendations";
+import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
 
-export default function TimelineFrise() {
-  const [activePeriodId, setActivePeriodId] = useState(QUARTERLY_DATA[0].id);
-  const activePeriod = QUARTERLY_DATA.find((p) => p.id === activePeriodId);
+export default function TimelineFrise({ timelineId }) {
+  const { periods, isLoading, error } = useTimelineData(timelineId);
+  const [activePeriodId, setActivePeriodId] = useState(null);
+
+  const activePeriod =
+    periods?.find((p) => p.id === activePeriodId) ?? periods?.[0] ?? null;
+
+  const handleSelectPeriod = (periodId) => {
+    setActivePeriodId(periodId);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10 flex items-center justify-center">
+        <p className="text-gray-500">Chargement de la timeline...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10 flex items-center justify-center">
+        <p className="text-red-500">Erreur: {error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10">
@@ -19,13 +42,13 @@ export default function TimelineFrise() {
 
       {/* FRISE */}
       <TimelineNavigator
-        periods={QUARTERLY_DATA}
+        periods={periods}
         activePeriodId={activePeriodId}
-        onSelectPeriod={setActivePeriodId}
+        onSelectPeriod={handleSelectPeriod}
       />
 
       {/* CONTENU */}
-      <TimelinePeriod period={activePeriod} />
+      {activePeriod && <TimelinePeriod period={activePeriod} />}
     </div>
   );
 }

@@ -1,9 +1,36 @@
 /* @vitest-environment jsdom */
 
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
+
+const { uploadMock } = vi.hoisted(() => ({
+  uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
+}));
+
+vi.mock("../../../src/common/hooks/useProductImage", () => ({
+  useProductImage: () => ({
+    uploadImage: uploadMock,
+    deleteImage: vi.fn().mockResolvedValue(true),
+    isUploading: false,
+    isDeleting: false,
+    error: null,
+  }),
+}));
+
+vi.mock("../../../src/common/utils/apiClient.jsx", () => ({
+  apiClient: {
+    post: vi.fn(),
+    get: vi.fn(),
+  },
+}));
 
 describe("PublishAnnouncementForm", () => {
   it("submits the expected payload after the full Troc publication flow", async () => {
@@ -14,13 +41,16 @@ describe("PublishAnnouncementForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
-    await screen.findByText(/Max 5 photos JPG ou PNG/i);
+    await screen.findByLabelText(/Nom de l'article/i);
     const fileInput = container.querySelector('input[type="file"]');
     const file = new File(["image content"], "poussette.png", {
       type: "image/png",
     });
 
-    fireEvent.change(fileInput, { target: { files: [file] } });
+    await act(async () => {
+      fireEvent.change(fileInput, { target: { files: [file] } });
+    });
+
     fireEvent.change(screen.getByLabelText(/Nom de l'article/i), {
       target: { value: "Poussette bébé" },
     });
@@ -55,7 +85,7 @@ describe("PublishAnnouncementForm", () => {
       title: "Poussette bébé",
       description: "Poussette bébé en très bon état",
       estimatedPrice: 40,
-      imageReference: "poussette.png",
+      images: ["https://example.com/photo.jpg"],
       city: "Lille",
       category: "Poussettes, porte-bébés et sièges auto",
       condition: "Très bon état",
