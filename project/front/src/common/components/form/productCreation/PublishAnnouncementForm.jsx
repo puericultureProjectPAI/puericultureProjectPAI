@@ -6,7 +6,6 @@ import OptionalProductInfoStep from "./OptionalProductInfoStep.jsx";
 import PublicationFormActions from "./PublicationFormActions.jsx";
 import PublicationMobileShell from "./PublicationMobileShell.jsx";
 import RequiredProductInfoStep from "./RequiredProductInfoStep.jsx";
-import TrocSpecificStep from "./TrocSpecificStep.jsx";
 
 const initialValues = {
   mode: "SECOND_HAND",
@@ -77,7 +76,6 @@ const validationSchemas = {
       otherwise: (schema) => schema.notRequired(),
     }),
   }),
-  4: Yup.object({}),
 };
 
 export default function PublishAnnouncementForm({ error, onSubmit, success }) {
@@ -109,10 +107,10 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           category: values.category,
           condition: values.condition,
           brand: values.brand,
-          ageRange: values.ageRange,
-          maxWeightKg: values.maxWeightKg,
-          lengthCm: values.lengthCm,
-          widthCm: values.widthCm,
+          minAgeMonths: parseInt(values.ageRange.split("-")[0]),
+          maxAgeMonths: parseInt(values.ageRange.split("-")[1]),
+          maxWeightKg: parseInt(values.maxWeightKg.split("-")[1]),
+          dimensions: values.lengthCm + "x" + values.widthCm + "cm",
           rentalStartDate: values.rentalStartDate,
           rentalEndDate: values.rentalEndDate,
           dailyPrice: values.dailyPrice ? Number(values.dailyPrice) : 0,
@@ -137,7 +135,6 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
             {step === 1 && <ModeSelectionStep />}
             {step === 2 && <RequiredProductInfoStep />}
             {step === 3 && <OptionalProductInfoStep />}
-            {step === 4 && <TrocSpecificStep />}
             <PublicationFormActions
               isSubmitting={isSubmitting}
               setStep={setStep}

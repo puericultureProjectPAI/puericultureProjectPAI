@@ -185,8 +185,8 @@ export default function RequiredProductInfoStep() {
           >
             <option value="">Select</option>
             {AGE_RANGE_OPTIONS.map((ageRange) => (
-              <option key={ageRange} value={ageRange}>
-                {ageRange}
+              <option key={ageRange.value} value={ageRange.value}>
+                {ageRange.label}
               </option>
             ))}
           </Field>
@@ -204,8 +204,8 @@ export default function RequiredProductInfoStep() {
           >
             <option value="">Select</option>
             {WEIGHT_OPTIONS.map((weight) => (
-              <option key={weight} value={weight}>
-                {weight}
+              <option key={weight.value} value={weight.value}>
+                {weight.label}
               </option>
             ))}
           </Field>

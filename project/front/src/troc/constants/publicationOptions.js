@@ -50,17 +50,17 @@ export const PUBLISH_MODES = [
 ];
 
 export const AGE_RANGE_OPTIONS = [
-  "0-6 mois",
-  "6-12 mois",
-  "1-3 ans",
-  "3-6 ans",
-  "6 ans et +",
+  { label: "0-6 mois", value: "0-6" },
+  { label: "6-12 mois", value: "6-12" },
+  { label: "1-3 ans", value: "12-36" },
+  { label: "3-6 ans", value: "36-72" },
+  { label: "6 ans et +", value: "72-99" },
 ];
 
 export const WEIGHT_OPTIONS = [
-  "0-9 kg",
-  "9-15 kg",
-  "15-22 kg",
-  "22-36 kg",
-  "36 kg et +",
+  { label: "0-9 kg", value: "0-9" },
+  { label: "9-15 kg", value: "9-15" },
+  { label: "15-22 kg", value: "15-22" },
+  { label: "22-36 kg", value: "22-36" },
+  { label: "36 kg et +", value: "36-50" },
 ];

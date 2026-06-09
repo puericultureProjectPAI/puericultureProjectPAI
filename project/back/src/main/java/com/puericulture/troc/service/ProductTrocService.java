@@ -63,6 +63,12 @@ public class ProductTrocService {
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
 
+        troc.setDimensions(request.getDimensions());
+        troc.setMaxWeightKg(request.getMaxWeightKg());
+        troc.setMinAgeMonths(request.getMinAgeMonths());
+        troc.setMaxAgeMonths(request.getMaxAgeMonths());
+        troc.setCondition(request.getCondition());
+
         ProductTroc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);
     }
