@@ -25,6 +25,13 @@ vi.mock("../../../src/common/hooks/useProductImage", () => ({
   }),
 }));
 
+vi.mock("../../../src/common/utils/apiClient.jsx", () => ({
+  apiClient: {
+    post: vi.fn(),
+    get: vi.fn(),
+  },
+}));
+
 describe("PublishAnnouncementForm", () => {
   it("submits the expected payload after the full Troc publication flow", async () => {
     const onSubmit = vi.fn().mockResolvedValue(true);
