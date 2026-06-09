@@ -7,6 +7,7 @@ import com.puericulture.common.repository.PersonPreferencesRepository;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.config.errormanager.exception.ForbiddenException;
 import com.puericulture.forwardtrading.dto.OnBoardingDto;
+import com.puericulture.forwardtrading.dto.OnBoardingDto.ChildDto;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import com.puericulture.forwardtrading.entity.Timelines;
 import com.puericulture.forwardtrading.mapper.ChildrenMapper;
@@ -17,7 +18,9 @@ import com.puericulture.forwardtrading.repository.TimelineRepository;
 import com.puericulture.forwardtrading.utils.timeline.generator.TimelineGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,9 +50,13 @@ public class OnBoardingService {
                 personPreferencesMapper.toPersonPreferences(onBoardingDto);
         personPreferences.setPerson(person);
         personPreferencesRepository.save(personPreferences);
-
+        if (onBoardingDto.getDueDate() != null) {
+            ChildDto childDto = new ChildDto();
+            childDto.setBirthDate(onBoardingDto.getDueDate());
+            onBoardingDto.getChildren().add(childDto);
+        }
         List<ChildrenEntity> children =
-                onBoardingDto.getChildren().stream()
+                Optional.ofNullable(onBoardingDto.getChildren()).orElse(new ArrayList<>()).stream()
                         .map(
                                 child -> {
                                     ChildrenEntity childrenEntity =
