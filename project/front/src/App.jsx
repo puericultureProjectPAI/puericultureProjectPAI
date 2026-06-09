@@ -40,13 +40,6 @@ export default function App() {
       );
   }, []);
 
-  if (
-    globalThis.location.pathname === "/" ||
-    globalThis.location.pathname === "/product/create"
-  ) {
-    return <PublishAnnouncementView />;
-  }
-
   return (
     <AuthProvider>
       <Routes>
