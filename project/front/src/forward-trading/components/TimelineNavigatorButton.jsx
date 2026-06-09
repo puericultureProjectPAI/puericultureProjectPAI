@@ -7,13 +7,16 @@ export default function TimelineNavigatorButton({
   index,
 }) {
   const styles = getStatusConfig(item.status);
-
   const scaleOrigin = index === 0 ? "origin-left" : "origin-center";
 
   return (
     <button
       type="button"
-      onClick={() => onSelectPeriod(item.id)}
+      onClick={(e) => {
+        onSelectPeriod(item.id);
+        // ⚠️ FIX ACCESSIBILITÉ : Retire le focus du bouton immédiatement après le clic
+        e.currentTarget.blur();
+      }}
       style={{
         WebkitTapHighlightColor: "transparent",
         outline: "none",
@@ -40,7 +43,6 @@ export default function TimelineNavigatorButton({
       >
         <span className={`text-xs font-bold ${styles.text}`}>{item.type}</span>
       </div>
-
       <span
         className={`text-[10px] font-bold uppercase tracking-wider text-center transition-colors ${
           isActive ? "text-blue-600 font-extrabold" : styles.label
