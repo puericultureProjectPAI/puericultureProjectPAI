@@ -1,25 +1,38 @@
+const getStepFields = (step, values) => {
+  if (step === 1) {
+    return ["mode"];
+  }
+
+  if (step === 2) {
+    return ["images", "title", "description", "category", "condition"];
+  }
+
+  if (step === 3 && values.mode === "TROC") {
+    return ["estimatedPrice"];
+  }
+
+  if (step === 3 && values.mode === "LOCATION") {
+    return ["rentalStartDate", "rentalEndDate", "dailyPrice"];
+  }
+
+  if (step === 3 && values.mode === "SECOND_HAND") {
+    return ["price"];
+  }
+
+  return [];
+};
+
 export default function PublicationFormActions({
   isSubmitting,
   setStep,
   setTouched,
   step,
   validateForm,
+  values,
 }) {
   const goNext = async () => {
     const errors = await validateForm();
-    const stepFields = {
-      1: ["mode"],
-      2: [
-        "images",
-        "title",
-        "description",
-        "category",
-        "condition",
-        "estimatedPrice",
-      ],
-      3: [],
-      4: [],
-    }[step];
+    const stepFields = getStepFields(step, values);
 
     const stepErrors = stepFields.filter((field) => errors[field]);
     if (stepErrors.length > 0) {
@@ -69,7 +82,7 @@ export default function PublicationFormActions({
         Continuer
       </button>
 
-      {step === 2 && (
+      {step > 1 && (
         <button
           className="text-[17px] font-medium text-[#777388] transition hover:text-[#080036]"
           onClick={() => setStep(step - 1)}

@@ -64,18 +64,21 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.change(screen.getByLabelText(/État/i), {
       target: { value: "Très bon état" },
     });
-    fireEvent.change(screen.getByLabelText(/Prix/i), {
-      target: { value: "40" },
+    fireEvent.change(screen.getByLabelText(/Marque/i), {
+      target: { value: "MacLaren" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
-    await screen.findByText(/^Troc$/i);
-    fireEvent.change(screen.getByLabelText(/Ville/i), {
-      target: { value: "Lille" },
+    await screen.findByText(/Location/i);
+    fireEvent.change(screen.getByLabelText(/Du/i), {
+      target: { value: "01/07/2026" },
     });
-    fireEvent.change(screen.getByLabelText(/Je cherche/i), {
-      target: { value: "Lit parapluie" },
+    fireEvent.change(screen.getByLabelText(/Au/i), {
+      target: { value: "05/07/2026" },
+    });
+    fireEvent.change(screen.getByLabelText(/Prix \/ jour/i), {
+      target: { value: "40" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
@@ -95,10 +98,18 @@ describe("PublishAnnouncementForm", () => {
       description: "Poussette bébé en très bon état",
       estimatedPrice: 40,
       images: ["https://example.com/photo.jpg"],
-      city: "Lille",
+      city: "",
       category: "Poussettes, porte-bébés et sièges auto",
       condition: "Très bon état",
       price: 0,
+      brand: "MacLaren",
+      ageRange: "",
+      maxWeightKg: "",
+      lengthCm: "",
+      widthCm: "",
+      rentalStartDate: "01/07/2026",
+      rentalEndDate: "05/07/2026",
+      dailyPrice: 40,
     });
   });
 });

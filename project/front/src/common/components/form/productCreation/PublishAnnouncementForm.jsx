@@ -32,6 +32,13 @@ const initialValues = {
   price: "",
 };
 
+const priceSchema = Yup.number()
+  .transform((value, originalValue) =>
+    originalValue === "" || originalValue === null ? undefined : value,
+  )
+  .typeError("Le prix doit être un nombre")
+  .min(0, "Le prix doit être positif");
+
 const validationSchemas = {
   1: Yup.object({
     mode: Yup.string().oneOf(["TROC", "SECOND_HAND", "LOCATION"]).required(),
@@ -42,12 +49,34 @@ const validationSchemas = {
     description: Yup.string().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
     condition: Yup.string().required("L’état est obligatoire"),
-    estimatedPrice: Yup.number()
-      .typeError("Le prix doit être un nombre")
-      .min(0, "Le prix doit être positif")
-      .required("Le prix est obligatoire"),
   }),
-  3: Yup.object({}),
+  3: Yup.object({
+    rentalStartDate: Yup.string().when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("La date de début est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    rentalEndDate: Yup.string().when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("La date de fin est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    dailyPrice: priceSchema.when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("Le prix par jour est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    estimatedPrice: priceSchema.when("mode", {
+      is: "TROC",
+      then: (schema) => schema.required("Le prix estimé est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    price: priceSchema.when("mode", {
+      is: "SECOND_HAND",
+      then: (schema) => schema.required("Le prix est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  }),
   4: Yup.object({}),
 };
 
@@ -71,12 +100,22 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         const payload = {
           title: values.title,
           description: values.description,
-          estimatedPrice: Number(values.estimatedPrice),
+          estimatedPrice: Number(
+            values.dailyPrice || values.estimatedPrice || 0,
+          ),
           images: values.images,
           price: values.price ? Number(values.price) : 0,
           city: values.city,
           category: values.category,
           condition: values.condition,
+          brand: values.brand,
+          ageRange: values.ageRange,
+          maxWeightKg: values.maxWeightKg,
+          lengthCm: values.lengthCm,
+          widthCm: values.widthCm,
+          rentalStartDate: values.rentalStartDate,
+          rentalEndDate: values.rentalEndDate,
+          dailyPrice: values.dailyPrice ? Number(values.dailyPrice) : 0,
         };
 
         const isCreated = await onSubmit(values.mode, payload);
