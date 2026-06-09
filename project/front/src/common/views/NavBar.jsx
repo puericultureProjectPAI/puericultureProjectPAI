@@ -21,7 +21,7 @@ export default function Navbar() {
     <div className="flex justify-between px-6 py-3">
       {buttons.map((b) => (
         <IconButton
-          key={b.path}
+          key={b.label}
           active={location.pathname === b.path}
           onClick={() => navigate(b.path)}
           icon={b.icon}
