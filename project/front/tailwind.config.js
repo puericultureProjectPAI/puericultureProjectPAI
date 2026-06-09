@@ -7,16 +7,8 @@ export default {
         figtree: ["Figtree", "sans-serif"],
       },
       colors: {
-        "bg-base": "#FFFFFF",
-        "bg-brand": "#06032B",
-
-        "text-brand": "#06032B",
         "feedback-text-inverse": "#FFFFFF",
-        "feedback-text-subtle": "#757388",
-        "feedback-text-brand": "#E91C2E",
 
-        "feedback-border-neutral": "#D1D1D6",
-        "feedback-border-brand": "#06032B",
         "feedback-border-alert": "#E91C2E",
 
         "feedback-icon-brand": "#FF9D00",
@@ -27,6 +19,14 @@ export default {
         info: "#E8F3FF",
         "info-medium": "#E8F3FFBF",
         "info-low": "#E8F3FF80",
+        "bg-base": "#FFFFFF",
+        "bg-brand": "#000028",
+        "text-brand": "#000040",
+        "icon-subtle": "#757388",
+        "feedback-text-subtle": "#757388",
+        "feedback-text-brand": "#000040",
+        "feedback-border-neutral": "#D6D6E0",
+        "feedback-border-brand": "#000040",
 
         //feed-back-background
         "feedback-background-service": "#006EFB",
