@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../utils/supabaseClient";
+
+import InstallPWA from "../components/InstallPWA";
 import LoginForm from "../components/LoginForm";
 
 /**
@@ -34,14 +36,20 @@ export default function Connection() {
   };
 
   return (
-    <LoginForm
-      email={email}
-      setEmail={setEmail}
-      password={password}
-      setPassword={setPassword}
-      onLogin={handleLogin}
-      status={status}
-      error={error}
-    />
+    <div className="flex flex-col min-h-screen">
+      <LoginForm
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        onLogin={handleLogin}
+        status={status}
+        error={error}
+      />
+
+      <div className="mt-auto">
+        <InstallPWA />
+      </div>
+    </div>
   );
 }
