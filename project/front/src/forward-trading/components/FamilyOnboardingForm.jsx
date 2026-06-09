@@ -10,6 +10,7 @@ import headerImage from "../../assets/onboarding/header_onboarding.png";
 import bottleIcon from "../../assets/onboarding/bottle-icon-brand.svg";
 import plusIcon from "../../assets/onboarding/plus-icon-subtle-s.svg";
 import successBg from "../../assets/onboarding/success_onboarding.png";
+import { createOnBoarding } from "../services/onBoardingServices";
 
 const validationSchema = Yup.object().shape({
   familyStatus: Yup.string().required("Veuillez sélectionner votre situation."),
@@ -96,24 +97,9 @@ export const FamilyOnboardingForm = ({ onComplete }) => {
     };
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setIsSuccess(true);
-      payload.children.forEach((child) => {
-        console.log(
-          `Enfant: ${child.name}, Né le: ${child.birthDate}, Genre: ${child.gender}`,
-        );
-      });
-    }, 1000);
-    /* --- REEL CODE API ---
-    mutation.mutate(payload, {
-      onSuccess: () => {
-        setSubmitting(false);
-        setIsSuccess(true);
-      },
-      onError: () => setSubmitting(false)
-    });
-    --------------------------------------------------------------------------*/
+    createOnBoarding(payload);
+    setSubmitting(false);
+    setIsSuccess(true);
   };
   if (isSuccess) {
     return <SuccessScreenOnBoarding onComplete={onComplete} />;
