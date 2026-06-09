@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { createExchange } from "../utils/exchangeApi";
-import TrocBackHeader from "../components/TrocBackHeader";
 import useTroc from "../hooks/useTroc";
-// (icons removed per design)
 
 const fallbackImage = (title) =>
-  `https://placehold.co/260x200?text=${encodeURIComponent(title || "Produit")}`;
+  `https://placehold.co/182x182?text=${encodeURIComponent(title || "Produit")}`;
 
 export default function MyProductsSelectionView() {
   const { receiverId } = useParams();
@@ -33,95 +31,105 @@ export default function MyProductsSelectionView() {
     }
   };
 
-  if (loading) return <div className="p-4">Chargement…</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <p className="text-[16px] text-[#757388]">Chargement…</p>
+      </div>
+    );
+  }
+
   const displayError = error || localError;
-  if (displayError)
-    return <div className="p-4 text-red-500">{displayError}</div>;
+  if (displayError) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <p className="text-[16px] text-red-500">{displayError}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-[100dvh] w-full flex-col bg-bg-base text-neutral">
-      <TrocBackHeader title="Sélectionnez votre produit" />
+    <div className="flex flex-col bg-white w-full min-h-full">
+      {/* Titre */}
+      <div className="flex flex-row justify-center items-center self-stretch gap-2.5 px-3 py-2">
+        <h2 className="text-[20px] font-bold text-[#040037]">
+          Sélectionnez un article à échanger
+        </h2>
+      </div>
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-4 py-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Choisissez un de vos produits
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {myProducts.length === 0 && (
-              <div className="p-4 bg-white rounded border">
-                Vous n'avez pas de produit disponible.
-              </div>
-            )}
-
+      {/* Grille produits + boutons */}
+      <div className="flex flex-col flex-1 self-stretch gap-2.5 px-6">
+        {/* Grille 2 colonnes */}
+        {myProducts.length === 0 ? (
+          <div className="flex items-center justify-center py-8">
+            <p className="text-[16px] text-[#757388]">
+              Vous n'avez pas de produit disponible.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-wrap justify-center gap-5 py-0 px-3">
             {myProducts.map((p) => {
               const selected = selectedId === p.id;
               return (
-                <div
+                <button
                   key={p.id}
+                  type="button"
                   onClick={() => setSelectedId(p.id)}
-                  role="button"
-                  tabIndex={0}
-                  className={`bg-white rounded-lg border shadow-sm p-3 flex items-center justify-between cursor-pointer focus:outline-none ${selected ? "border-2 border-[#040037]" : ""}`}
+                  className={`flex flex-col w-[182px] pb-5 rounded-lg overflow-hidden bg-white shadow-[0_2px_2px_rgba(0,0,0,0.1)] transition-all ${
+                    selected ? "ring-2 ring-[#040037]" : ""
+                  }`}
                 >
-                  <div className="flex gap-3 items-center">
-                    <div className="h-28 w-28 flex items-center justify-center rounded-lg bg-[#FBF9FD] overflow-hidden">
-                      <img
-                        src={p.imageUrls?.[0] ?? fallbackImage(p.postTitle)}
-                        alt={p.postTitle}
-                        className="h-full w-full object-contain"
-                        onError={(e) =>
-                          (e.currentTarget.src = fallbackImage(p.postTitle))
-                        }
-                      />
-                    </div>
-                    <div className="flex-1 pl-2">
-                      <h3 className="font-semibold text-base">{p.postTitle}</h3>
-                      <div className="text-sm text-subtle mt-1">
-                        {p.category}
-                      </div>
-                      <div className="text-sm text-subtle mt-2">
-                        <span>{p.city}</span>
-                      </div>
-                    </div>
+                  {/* Image */}
+                  <div className="w-full h-[182px] overflow-hidden rounded-sm">
+                    <img
+                      src={p.imageUrls?.[0] ?? fallbackImage(p.postTitle)}
+                      alt={p.postTitle}
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImage(p.postTitle);
+                      }}
+                    />
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    {selected ? (
-                      <span className="text-[#040037] font-semibold">
-                        Sélectionné
-                      </span>
-                    ) : (
-                      <span className="text-[#7C7A8A]">›</span>
+                  {/* Informations */}
+                  <div className="flex flex-col self-stretch gap-1 px-3 pt-1">
+                    <p className="text-[16px] text-[#000000] text-center">
+                      {p.postTitle}
+                    </p>
+                    {selected && p.estimatedPrice != null && (
+                      <p className="text-[16px] font-semibold text-[#040037] text-center">
+                        {p.estimatedPrice}€
+                      </p>
                     )}
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
+        )}
 
-          {/* Footer actions (Continue / Retour) */}
-          <div className="mt-6">
-            <button
-              onClick={handleContinue}
-              disabled={!selectedId}
-              className={`w-full h-11 rounded-full font-semibold text-base ${selectedId ? "bg-[#040037] text-white" : "bg-[#E9E9EE] text-[#999]"} transition`}
-            >
-              Continuer
-            </button>
+        {/* Espaceur */}
+        <div className="flex-1" />
 
-            <div className="mt-3 text-center">
-              <button
-                onClick={() => navigate(-1)}
-                className="text-sm text-[#7C7A8A]"
-              >
-                Retour
-              </button>
-            </div>
-          </div>
+        {/* Boutons d'action */}
+        <div className="flex flex-col items-center self-stretch gap-2.5 p-2.5 pb-4">
+          <button
+            type="button"
+            onClick={handleContinue}
+            className="w-[330px] h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center"
+          >
+            <span className="text-[16px] font-semibold">Continuer</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-[330px] flex items-end justify-center gap-2.5 px-2 py-2"
+          >
+            <span className="text-[16px] text-[#757388]">Retour</span>
+          </button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

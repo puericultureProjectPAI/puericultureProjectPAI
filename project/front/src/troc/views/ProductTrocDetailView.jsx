@@ -1,16 +1,30 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
-// Header and NavBar are provided by the global `Layout`; avoid double rendering here
-import TrocBackHeader from "../components/TrocBackHeader";
-import TrocOfferSection from "../components/TrocOfferSection";
-import "../troc.css";
+import { useAuth } from "../../common/security/AuthContext";
 
 const fallbackImage = (title) =>
-  `https://placehold.co/260x200?text=${encodeURIComponent(title || "Produit")}`;
+  `https://placehold.co/382x176?text=${encodeURIComponent(title || "Produit")}`;
+
+function formatAgeRange(minMonths, maxMonths) {
+  if (minMonths == null && maxMonths == null) return "—";
+  if (
+    minMonths != null &&
+    maxMonths != null &&
+    minMonths % 12 === 0 &&
+    maxMonths % 12 === 0
+  ) {
+    return `${Math.floor(minMonths / 12)} - ${Math.floor(maxMonths / 12)} ans`;
+  }
+  if (minMonths != null && maxMonths != null)
+    return `${minMonths} - ${maxMonths} mois`;
+  return "—";
+}
 
 export default function ProductTrocDetailView() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,19 +40,19 @@ export default function ProductTrocDetailView() {
 
   if (loading) {
     return (
-      <main className="flex h-screen w-full items-center justify-center bg-white text-[#040037]">
-        <p className="text-sm text-[#7C7A8A]">Chargement…</p>
-      </main>
+      <div className="flex items-center justify-center py-16">
+        <p className="text-[16px] text-[#757388]">Chargement…</p>
+      </div>
     );
   }
 
   if (error || !product) {
     return (
-      <main className="flex h-screen w-full items-center justify-center bg-white text-[#040037]">
-        <p className="text-sm text-red-500">
+      <div className="flex items-center justify-center py-16">
+        <p className="text-[16px] text-red-500">
           {error || "Produit introuvable."}
         </p>
-      </main>
+      </div>
     );
   }
 
@@ -47,169 +61,203 @@ export default function ProductTrocDetailView() {
       ? product.imageUrls
       : [fallbackImage(product.postTitle)];
 
-  function formatAgeRange(minMonths, maxMonths) {
-    if (
-      (minMonths === null || minMonths === undefined) &&
-      (maxMonths === null || maxMonths === undefined)
-    )
-      return "—";
-    // Prefer showing years when values are multiples of 12
-    if (
-      minMonths != null &&
-      maxMonths != null &&
-      minMonths % 12 === 0 &&
-      maxMonths % 12 === 0
-    ) {
-      return `${Math.floor(minMonths / 12)} - ${Math.floor(maxMonths / 12)} ans`;
-    }
-    if (minMonths != null && maxMonths != null)
-      return `${minMonths} - ${maxMonths} mois`;
-    return "—";
-  }
+  const handlePropose = () => {
+    if (!isAuthenticated) navigate("/connection");
+    else navigate(`/troc/select-my-product/${product.id}`);
+  };
 
   return (
-    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-[#040037]">
-      <TrocBackHeader />
+    <div className="flex flex-col items-center gap-4 px-6 py-4 bg-white w-full">
+      {/* Ligne liens : retour + partage */}
+      <div className="flex flex-row items-center justify-between self-stretch py-2">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center px-2 py-2"
+          aria-label="Retour"
+        >
+          {/* arrow-left-icon-brand-l */}
+          <svg
+            width="18"
+            height="32"
+            viewBox="0 0 18 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 6L5 16L14 26"
+              stroke="#040037"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
 
-      <main className="flex-1 overflow-y-auto">
-        <section className="relative px-4 pt-4">
-          <div className="mx-auto max-w-3xl">
-            <div className="rounded-xl bg-[#FBF9FD] p-4">
-              <img
-                src={images[currentImage]}
-                alt={product.postTitle}
-                className="h-[240px] md:h-[340px] w-full object-contain rounded-lg"
-                onError={(e) => {
-                  e.currentTarget.src = fallbackImage(product.postTitle);
-                }}
-              />
-            </div>
+        <button className="flex items-center px-1 py-0" aria-label="Partager">
+          {/* share-icon-subtle */}
+          <svg
+            width="24"
+            height="27"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0018 12.08c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81A2.99 2.99 0 006 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"
+              fill="#757388"
+            />
+          </svg>
+        </button>
+      </div>
 
-            {/* Thumbnails / indicators (small dots) */}
-            {images.length > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-3">
-                {images.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentImage(i)}
-                    aria-label={`Image ${i + 1}`}
-                    className={`h-2 w-2 rounded-full transition-colors ${
-                      i === currentImage ? "bg-[#040037]" : "bg-[#C9C7D1]"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        <div className="w-full px-4 md:px-6 md:pt-4">
-          <section className="pb-4">
-            <div className="mb-3 flex justify-end">
-              <span className="rounded-full border border-[#040037] px-3 py-1 text-xs font-semibold">
-                Troc
-              </span>
-            </div>
-
-            <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div>
-                <h1 className="text-[32px] md:text-[32px] font-extrabold leading-tight text-[#040037]">
-                  {product.postTitle}
-                </h1>
-                <div className="mt-2 text-sm text-[#7C7A8A]">
-                  <span>{product.city}</span>
-                  <span className="mx-2">•</span>
-                  <span>{new Date(product.postDate).toLocaleDateString()}</span>
-                </div>
-              </div>
-
-              {product.estimatedPrice !== null &&
-                product.estimatedPrice !== undefined && (
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xs text-[#7C7A8A]">Estimation</span>
-                    <span className="text-xl font-bold text-[#040037]">
-                      {product.estimatedPrice >= 1000
-                        ? (product.estimatedPrice / 100).toFixed(2)
-                        : product.estimatedPrice}
-                      &nbsp;€
-                    </span>
-                  </div>
-                )}
-            </div>
-
-            {product.description && (
-              <div className="mb-4 mt-3">
-                <p className="mb-2 text-sm font-semibold">Description</p>
-                <p className="rounded-lg border border-[#F0F0F2] p-4 text-sm leading-relaxed text-[#333333] bg-white">
-                  {product.description}
-                </p>
-              </div>
-            )}
-
-            {/* Additional attributes from ProductDto */}
-            <section className="mb-6 mt-3">
-              <p className="mb-2 text-sm font-semibold">Détails</p>
-              <div className="bg-white rounded-lg border border-[#F0F0F2] overflow-hidden">
-                <div className="px-4 py-3 flex items-center justify-between border-b border-[#F7F7F8]">
-                  <div className="text-[20px] font-bold text-[#33323d]">
-                    État
-                  </div>
-                  <div
-                    className={`text-[16px] font-normal ${(product.condition || "").toLowerCase().includes("bon") ? "text-green-600" : "text-[#33323d]"}`}
-                  >
-                    {product.condition ?? "—"}
-                  </div>
-                </div>
-
-                <div className="px-4 py-3 flex items-center justify-between border-b border-[#F7F7F8]">
-                  <div className="text-[20px] font-bold text-[#33323d]">
-                    Marque
-                  </div>
-                  <div className="text-[16px] font-normal">
-                    {product.brand ?? "—"}
-                  </div>
-                </div>
-
-                <div className="px-4 py-3 flex items-center justify-between border-b border-[#F7F7F8]">
-                  <div className="text-[20px] font-bold text-[#33323d]">
-                    Dimensions
-                  </div>
-                  <div className="text-[16px] font-normal">
-                    {product.dimensions ?? "—"}
-                  </div>
-                </div>
-
-                <div className="px-4 py-3 flex items-center justify-between border-b border-[#F7F7F8]">
-                  <div className="text-[20px] font-bold text-[#33323d]">
-                    Tranche d'âge
-                  </div>
-                  <div className="text-[16px] font-normal">
-                    {formatAgeRange(product.minAgeMonths, product.maxAgeMonths)}
-                  </div>
-                </div>
-
-                <div className="px-4 py-3 flex items-center justify-between">
-                  <div className="text-[20px] font-bold text-[#33323d]">
-                    Poids max
-                  </div>
-                  <div className="text-[16px] font-normal">
-                    {product.maxWeightKg ?? product.maxWeight ?? "—"}{" "}
-                    {product.maxWeightKg || product.maxWeight ? "kg" : ""}
-                  </div>
-                </div>
-              </div>
-            </section>
-          </section>
-
-          <section>
-            <TrocOfferSection product={product} />
-          </section>
+      {/* Section image + points carousel */}
+      <div className="flex flex-col self-stretch gap-1">
+        <div className="rounded-lg overflow-hidden">
+          <img
+            src={images[currentImage]}
+            alt={product.postTitle}
+            className="w-full h-44 object-cover rounded-lg"
+            onError={(e) => {
+              e.currentTarget.src = fallbackImage(product.postTitle);
+            }}
+          />
         </div>
 
-        <section className="px-4 md:px-6 pb-6">
-          {/* Placeholder for reviews or exchanges list if needed in future */}
-        </section>
-      </main>
+        {images.length > 1 && (
+          <div className="flex flex-row justify-center items-center self-stretch gap-1 py-2.5">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentImage(i)}
+                aria-label={`Image ${i + 1}`}
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                  i === currentImage
+                    ? "bg-[#757388]"
+                    : "bg-[rgba(117,115,136,0.75)]"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Informations produit */}
+      <div className="flex flex-col self-stretch gap-3">
+        {/* Chip Troc */}
+        <div className="flex flex-row justify-end self-stretch">
+          <span className="border border-[#040037] rounded-[12px] px-3 text-[16px] text-[#040037] h-[35px] flex items-center">
+            Troc
+          </span>
+        </div>
+
+        {/* Titre */}
+        <h1 className="text-[32px] font-bold text-[#040037] leading-tight">
+          {product.postTitle}
+        </h1>
+
+        {/* Divider */}
+        <hr className="border-[#E3E3E3]" />
+
+        {/* Label Description */}
+        <p className="text-[16px] text-[#33323D]">Description</p>
+
+        {/* Boîte description */}
+        <div className="self-stretch border border-[#757388] rounded-lg p-3">
+          <p className="text-[16px] text-[#33323D] leading-relaxed whitespace-pre-wrap">
+            {product.description || "—"}
+          </p>
+        </div>
+
+        {/* Etat */}
+        <div className="flex flex-row items-center self-stretch gap-2.5">
+          <div className="w-[135px] shrink-0">
+            <span className="text-[20px] font-bold text-[#33323D]">Etat</span>
+          </div>
+          <span
+            className={`text-[16px] ${
+              (product.condition || "").toLowerCase().includes("bon")
+                ? "text-[#188638]"
+                : "text-[#33323D]"
+            }`}
+          >
+            {product.condition ?? "—"}
+          </span>
+        </div>
+
+        {/* Marque */}
+        <div className="flex flex-row items-center self-stretch gap-2.5">
+          <div className="w-[135px] shrink-0">
+            <span className="text-[20px] font-bold text-[#33323D]">Marque</span>
+          </div>
+          <span className="text-[16px] text-[#757388]">
+            {product.brand ?? "—"}
+          </span>
+        </div>
+
+        {/* Dimension */}
+        <div className="flex flex-row items-center self-stretch gap-2.5">
+          <div className="w-[135px] shrink-0">
+            <span className="text-[20px] font-bold text-[#33323D]">
+              Dimension
+            </span>
+          </div>
+          <span className="text-[16px] text-[#757388]">
+            {product.dimensions ?? "—"}
+          </span>
+        </div>
+
+        {/* Tranche d'âge */}
+        <div className="flex flex-row items-center self-stretch gap-2.5">
+          <div className="w-[135px] shrink-0">
+            <span className="text-[20px] font-bold text-[#33323D]">
+              Tranche d'âge
+            </span>
+          </div>
+          <span className="text-[16px] text-[#757388]">
+            {formatAgeRange(product.minAgeMonths, product.maxAgeMonths)}
+          </span>
+        </div>
+
+        {/* Poids max */}
+        <div className="flex flex-row items-center self-stretch gap-2.5">
+          <div className="w-[135px] shrink-0">
+            <span className="text-[20px] font-bold text-[#33323D]">
+              Poids max
+            </span>
+          </div>
+          <span className="text-[16px] text-[#757388]">
+            {product.maxWeightKg != null
+              ? `${product.maxWeightKg} kg`
+              : product.maxWeight != null
+                ? `${product.maxWeight} kg`
+                : "—"}
+          </span>
+        </div>
+      </div>
+
+      {/* Divider bas */}
+      <hr className="border-[#E3E3E3] self-stretch" />
+
+      {/* Bouton Proposer un échange */}
+      <div className="flex justify-center self-stretch pb-4">
+        <button
+          type="button"
+          onClick={handlePropose}
+          className="w-[330px] h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center gap-3"
+        >
+          {/* send-icon-inverse-m */}
+          <svg
+            width="24"
+            height="21"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M2 12L22 2v20L2 12z" fill="white" />
+          </svg>
+          <span className="text-[16px] font-semibold">Proposer un échange</span>
+        </button>
+      </div>
     </div>
   );
 }
