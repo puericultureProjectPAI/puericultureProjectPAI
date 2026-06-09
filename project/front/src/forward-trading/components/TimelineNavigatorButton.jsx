@@ -14,7 +14,6 @@ export default function TimelineNavigatorButton({
       type="button"
       onClick={(e) => {
         onSelectPeriod(item.id);
-        // ⚠️ FIX ACCESSIBILITÉ : Retire le focus du bouton immédiatement après le clic
         e.currentTarget.blur();
       }}
       style={{
