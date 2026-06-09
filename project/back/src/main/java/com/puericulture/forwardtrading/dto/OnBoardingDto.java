@@ -26,10 +26,8 @@ public class OnBoardingDto {
     private String familyStatus;
 
     @JsonProperty("dueDate")
-    @Schema(
-            description = "Expected due date. Null when familyStatus is 'parent'.",
-            example = "2026-10-15")
-    private String dueDate;
+    @NotNull @Schema(description = "Child's birth date", example = "2022-05-12")
+    private Date dueDate;
 
     @JsonProperty("children")
     @Valid
@@ -57,11 +55,11 @@ public class OnBoardingDto {
         @NotNull @Schema(description = "Child's birth date", example = "2022-05-12")
         private Date birthDate;
 
-        @JsonProperty("gender")
-        @NotNull @Schema(
-                description = "Child's gender",
-                example = "boy",
-                allowableValues = {"girl", "boy", "neutral"})
+        @Schema(
+                examples = {"m", "f", "s"},
+                maxLength = 1,
+                minLength = 1,
+                allowableValues = {"m", "f", "s"})
         private String gender;
     }
 }
