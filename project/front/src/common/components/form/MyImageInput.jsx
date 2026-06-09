@@ -1,30 +1,18 @@
 import { useField, useFormikContext } from "formik";
 import { useState } from "react";
-import { useProductImage } from "../../hooks/useProductImage";
+import { useImageManager } from "../../hooks/useImageManager";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const DEFAULT_MAX = 5;
 
-/**
- * Champ Formik pour l'upload d'images vers Cloudinary.
- *
- * Valeur Formik : string[] d'URLs uploadées.
- *
- * Props :
- *  - name        (requis) Nom du champ Formik
- *  - label       Libellé affiché
- *  - maxImages   Nombre max d'images (défaut 5)
- *  - productId   Si fourni, sauvegarde l'URL en base dès l'upload
- */
 export default function MyImageInput({
   label,
   maxImages = DEFAULT_MAX,
-  productId,
   ...props
 }) {
   const [field, meta] = useField(props);
   const { setFieldValue } = useFormikContext();
-  const { uploadImage, isUploading, error: uploadError } = useProductImage();
+  const { uploadImage, isUploading, error: uploadError } = useImageManager();
 
   const [limitWarning, setLimitWarning] = useState(false);
   const urls = Array.isArray(field.value) ? field.value : [];
@@ -50,7 +38,7 @@ export default function MyImageInput({
 
     const newUrls = [];
     for (const file of toUpload) {
-      const url = await uploadImage(file, productId);
+      const url = await uploadImage(file);
       if (url) newUrls.push(url);
     }
 
