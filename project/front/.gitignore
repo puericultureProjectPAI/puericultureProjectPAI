@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Images mocks
-./public/mock-uploads
+public/mock-uploads

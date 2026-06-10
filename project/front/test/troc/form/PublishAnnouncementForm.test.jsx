@@ -15,21 +15,14 @@ const { uploadMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
 }));
 
-vi.mock("../../../src/common/hooks/useProductImage", () => ({
-  useProductImage: () => ({
+vi.mock("../../../src/common/hooks/useImageManager", () => ({
+  useImageManager: () => ({
     uploadImage: uploadMock,
     deleteImage: vi.fn().mockResolvedValue(true),
     isUploading: false,
     isDeleting: false,
     error: null,
   }),
-}));
-
-vi.mock("../../../src/common/utils/apiClient.jsx", () => ({
-  apiClient: {
-    post: vi.fn(),
-    get: vi.fn(),
-  },
 }));
 
 describe("PublishAnnouncementForm", () => {

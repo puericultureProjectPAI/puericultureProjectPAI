@@ -7,6 +7,7 @@ export default {
         figtree: ["Figtree", "sans-serif"],
       },
       colors: {
+        "text-brand": "#06032B",
         "feedback-text-inverse": "#FFFFFF",
 
         "feedback-border-alert": "#E91C2E",
@@ -21,12 +22,11 @@ export default {
         "info-low": "#E8F3FF80",
         "bg-base": "#FFFFFF",
         "bg-brand": "#000028",
-        "text-brand": "#000040",
         "icon-subtle": "#757388",
         "feedback-text-subtle": "#757388",
-        "feedback-text-brand": "#000040",
-        "feedback-border-neutral": "#D6D6E0",
-        "feedback-border-brand": "#000040",
+        "feedback-text-brand": "#E91C2E",
+        "feedback-border-neutral": "#D1D1D6",
+        "feedback-border-brand": "#06032B",
 
         //feed-back-background
         "feedback-background-service": "#006EFB",
@@ -37,6 +37,7 @@ export default {
         "feedback-background-neutral": "#F2F2F9",
         "feedback-background-neutral-medium": "#F2F2F9BF",
         "feedback-background-neutral-low": "#F2F2F980",
+        "feedback-background-neutral-bold-low": "rgba(117, 115, 136, 0.50)",
 
         "feedback-background-success": "#EEFEF2",
         "feedback-background-success-medium": "#EEFEF2BF",
@@ -60,6 +61,10 @@ export default {
         "feedback-background-alert-bold-low": "#E91C2E80",
 
         "feedback-icon-subtle": "#757388",
+
+        //brand
+        "color-brand": "#040037",
+
         //TEXT
         subtle: "#757388",
         neutral: "#33323D",
