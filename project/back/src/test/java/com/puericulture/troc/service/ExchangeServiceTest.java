@@ -12,6 +12,7 @@ import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
+import com.puericulture.troc.repository.MessageRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,8 @@ class ExchangeServiceTest {
     @Mock private ProductTrocRepository productTrocRepository;
 
     @Mock private ExchangeMapper exchangeMapper;
+
+    @Mock private MessageRepository messageRepository;
 
     @InjectMocks private ExchangeService exchangeService;
 
