@@ -17,15 +17,13 @@ export default function BarcodeScanner({ onDetected }) {
           {error}
         </div>
       )}
-      <div
-        id="qr-reader"
-        className="w-full rounded-xl overflow-hidden shadow-sm bg-gray-100 min-h-[250px] relative border border-gray-200"
-      >
+      <div className="w-full rounded-xl overflow-hidden shadow-sm bg-gray-100 min-h-[250px] relative border border-gray-200">
         {!isScanning && !error && (
           <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
             Démarrage de la caméra...
           </div>
         )}
+        <div id="qr-reader" className="w-full" />
       </div>
     </div>
   );
