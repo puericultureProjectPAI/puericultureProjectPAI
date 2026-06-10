@@ -19,6 +19,11 @@ export default function BookingSummaryModal({
   const { data: profile } = useLeasingProfile();
   const bookingMutation = useSubmitBooking(leasingId);
 
+  const formatReservationNumber = (reservationNumber) =>
+    reservationNumber
+      ? `N°${String(reservationNumber).replace(/^RES-/, "")}`
+      : "";
+
   // Formik configuration with Yup validation schema
   const formik = useFormik({
     initialValues: {
@@ -75,10 +80,10 @@ export default function BookingSummaryModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-[#040037]/60 backdrop-blur-xs font-['Figtree',sans-serif]">
       {/* Modal Container */}
-      <div className="w-[240px] bg-white rounded-[8px] border border-[#E6E6E6] shadow-2xl overflow-hidden flex flex-col animate-fadeIn">
+      <div className="w-[280px] max-w-[calc(100%-32px)] bg-white rounded-[8px] border border-[#E6E6E6] shadow-2xl overflow-hidden flex flex-col animate-fadeIn">
         {/* Header */}
         <div className="flex items-center justify-between px-[12px] py-[10px] border-b border-[#F2F2F5]">
-          <h2 className="text-[10px] font-extrabold text-[#040037] uppercase tracking-wide">
+          <h2 className="text-[15px] font-extrabold text-[#040037]">
             {successData
               ? "Réservation Réussie"
               : "Récapitulatif de réservation"}
@@ -89,7 +94,7 @@ export default function BookingSummaryModal({
               onClick={onClose}
               className="text-[#7C7A8A] hover:text-[#040037] focus:outline-none transition-colors"
             >
-              <span className="material-symbols-rounded text-[14px]">
+              <span className="material-symbols-rounded text-[18px]">
                 close
               </span>
             </button>
@@ -102,18 +107,18 @@ export default function BookingSummaryModal({
             <span className="material-symbols-rounded text-[36px] text-green-500 mb-2">
               check_circle
             </span>
-            <h3 className="text-[11px] font-bold text-[#040037] mb-[4px]">
+            <h3 className="text-[16px] font-bold text-[#040037] mb-[4px]">
               Votre réservation est validée !
             </h3>
-            <p className="text-[8px] text-[#7C7A8A] leading-relaxed mb-4">
+            <p className="text-[14px] text-[#7C7A8A] leading-relaxed mb-4">
               L'article a été bloqué pour vos dates de location.
             </p>
 
-            <div className="w-full bg-[#F2F2F9] rounded-[6px] p-[8px] text-left text-[8px] text-[#040037] flex flex-col gap-[4px] mb-4">
+            <div className="w-full bg-[#F2F2F9] rounded-[6px] p-[8px] text-left text-[14px] text-[#040037] flex flex-col gap-[4px] mb-4">
               <div>
                 <span className="font-bold">Numéro de réservation :</span>{" "}
                 <span className="font-extrabold">
-                  {successData.reservationNumber}
+                  {formatReservationNumber(successData.reservationNumber)}
                 </span>
               </div>
               <div>
@@ -137,7 +142,7 @@ export default function BookingSummaryModal({
             <button
               type="button"
               onClick={handleReturnToCatalog}
-              className="bg-[#040037] text-white w-full rounded-[6px] py-[8px] text-[9px] font-extrabold uppercase hover:bg-[#040037]/90 transition"
+              className="bg-[#040037] text-white w-full rounded-[6px] py-[10px] text-[15px] font-extrabold hover:bg-[#040037]/90 transition"
             >
               Retour au catalogue
             </button>
@@ -149,13 +154,13 @@ export default function BookingSummaryModal({
             className="p-[12px] flex flex-col"
           >
             {submitError && (
-              <div className="p-2 mb-2 bg-red-50 border border-red-100 text-[7px] font-bold text-red-600 rounded-[4px] text-center">
+              <div className="p-2 mb-2 bg-red-50 border border-red-100 text-[12px] font-bold text-red-600 rounded-[4px] text-center">
                 {submitError}
               </div>
             )}
 
             {/* Summary Details */}
-            <div className="bg-[#F2F2F9] rounded-[6px] p-[8px] text-[8px] text-[#040037] flex flex-col gap-[3px] mb-3">
+            <div className="bg-[#F2F2F9] rounded-[6px] p-[8px] text-[14px] text-[#040037] flex flex-col gap-[3px] mb-3">
               <div className="truncate">
                 <span className="font-bold">Article :</span> {productTitle}
               </div>
@@ -167,14 +172,14 @@ export default function BookingSummaryModal({
                 <span className="font-bold">Au :</span>{" "}
                 {formatDateString(endDate)}
               </div>
-              <div className="font-bold border-t border-[#E6E6E6] pt-[3px] mt-[3px] text-[9px] flex justify-between">
+              <div className="font-bold border-t border-[#E6E6E6] pt-[3px] mt-[3px] text-[15px] flex justify-between">
                 <span>Prix total :</span>
                 <span>{totalPrice}€</span>
               </div>
             </div>
 
             {/* Address Form Fields */}
-            <span className="text-[7px] font-bold text-[#7C7A8A] uppercase mb-[4px]">
+            <span className="text-[12px] font-bold text-[#7C7A8A] uppercase mb-[4px]">
               Adresse de livraison
             </span>
 
@@ -191,11 +196,11 @@ export default function BookingSummaryModal({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.deliveryStreet}
-                className="border border-[#E6E6E6] rounded-[6px] p-[6px] text-[8px] text-[#040037] focus:outline-none focus:border-[#040037] bg-white placeholder-[#7C7A8A]"
+                className="border border-[#E6E6E6] rounded-[6px] p-[8px] text-[14px] text-[#040037] focus:outline-none focus:border-[#040037] bg-white placeholder-[#7C7A8A]"
               />
               {formik.touched.deliveryStreet &&
                 formik.errors.deliveryStreet && (
-                  <span className="text-[6px] text-red-500 font-bold mt-[1px]">
+                  <span className="text-[12px] text-red-500 font-bold mt-[1px]">
                     {formik.errors.deliveryStreet}
                   </span>
                 )}
@@ -214,11 +219,11 @@ export default function BookingSummaryModal({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.deliveryZipCode}
-                className="border border-[#E6E6E6] rounded-[6px] p-[6px] text-[8px] text-[#040037] focus:outline-none focus:border-[#040037] bg-white placeholder-[#7C7A8A]"
+                className="border border-[#E6E6E6] rounded-[6px] p-[8px] text-[14px] text-[#040037] focus:outline-none focus:border-[#040037] bg-white placeholder-[#7C7A8A]"
               />
               {formik.touched.deliveryZipCode &&
                 formik.errors.deliveryZipCode && (
-                  <span className="text-[6px] text-red-500 font-bold mt-[1px]">
+                  <span className="text-[12px] text-red-500 font-bold mt-[1px]">
                     {formik.errors.deliveryZipCode}
                   </span>
                 )}
@@ -237,10 +242,10 @@ export default function BookingSummaryModal({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.deliveryCity}
-                className="border border-[#E6E6E6] rounded-[6px] p-[6px] text-[8px] text-[#040037] focus:outline-none focus:border-[#040037] bg-white placeholder-[#7C7A8A]"
+                className="border border-[#E6E6E6] rounded-[6px] p-[8px] text-[14px] text-[#040037] focus:outline-none focus:border-[#040037] bg-white placeholder-[#7C7A8A]"
               />
               {formik.touched.deliveryCity && formik.errors.deliveryCity && (
-                <span className="text-[6px] text-red-500 font-bold mt-[1px]">
+                <span className="text-[12px] text-red-500 font-bold mt-[1px]">
                   {formik.errors.deliveryCity}
                 </span>
               )}
@@ -255,7 +260,7 @@ export default function BookingSummaryModal({
                 !formik.values.deliveryZipCode ||
                 !formik.values.deliveryCity
               }
-              className="bg-[#040037] text-white w-full rounded-[6px] py-[8px] flex items-center justify-center gap-[6px] text-[9px] font-extrabold uppercase mt-[6px] hover:bg-[#040037]/90 disabled:opacity-40 disabled:cursor-not-allowed transition active:scale-[0.98]"
+              className="bg-[#040037] text-white w-full rounded-[6px] py-[10px] flex items-center justify-center gap-[6px] text-[15px] font-extrabold mt-[6px] hover:bg-[#040037]/90 disabled:opacity-40 disabled:cursor-not-allowed transition active:scale-[0.98]"
             >
               {formik.isSubmitting ? (
                 <span className="animate-pulse">Réservation...</span>

@@ -1,19 +1,30 @@
 import { useState } from "react";
+import { useAuth } from "../../common/security/AuthContext";
 import { useLeasingReviewsData } from "../hooks/useLeasing";
 import ReviewFormModal from "./ReviewFormModal";
 
 export default function LeasingReviewsSection({ leasingId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const auth = useAuth();
+  const isAuthenticated = !!auth?.isAuthenticated;
 
   const { reviews, averageRating, totalReviews, isLoading } =
     useLeasingReviewsData(leasingId);
+
+  const handleReviewClick = () => {
+    if (!isAuthenticated) {
+      globalThis.location.href = "/login";
+      return;
+    }
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="w-full flex flex-col font-['Figtree',sans-serif]">
       {/* Donner votre avis */}
       <div className="h-px w-full bg-[rgba(0,0,0,0.1)]" />
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={handleReviewClick}
         className="bg-white border border-[#040037] text-[#040037] w-full rounded-[8px] h-[40px] flex items-center justify-center gap-[12px] mt-[12px] hover:bg-gray-50 transition active:scale-[0.98]"
       >
         <span

@@ -2,6 +2,7 @@ package com.puericulture.troc.service;
 
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
+import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.troc.dto.ProductTrocDetailDto;
 import com.puericulture.troc.dto.ProductTrocDto;
@@ -63,6 +64,17 @@ public class ProductTrocService {
         troc.setCategory(ProductCategory.fromLabel(request.getCategory()));
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
+
+        List<String> imageUrls = request.getImages();
+        if (imageUrls != null) {
+            for (int i = 0; i < imageUrls.size(); i++) {
+                ProductImage image = new ProductImage();
+                image.setProduct(troc);
+                image.setImageUrl(imageUrls.get(i));
+                image.setPosition(i + 1);
+                troc.getImages().add(image);
+            }
+        }
 
         ProductTroc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);

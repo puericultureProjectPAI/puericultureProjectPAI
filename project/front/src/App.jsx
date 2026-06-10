@@ -56,12 +56,15 @@ export default function App() {
           path="/leasing/products/:id"
           element={<LeasingProductDetailView />}
         />
-        <Route path="/leasing/booking/:id" element={<LeasingBookingPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />
+            <Route
+              path="/leasing/booking/:id"
+              element={<LeasingBookingPage />}
+            />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
