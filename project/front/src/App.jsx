@@ -8,11 +8,9 @@ import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
-import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
-import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
+import ProductDetailPage from "./leasing/views/ProductDetailPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
-import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
@@ -47,20 +45,14 @@ export default function App() {
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
+        {/* Leasing - public */}
+        <Route path="/leasing/catalog" element={<CatalogPage />} />
+        <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
+
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          {/* Leasing pages avec leur propre layout full-screen */}
-          <Route path="/leasing/catalog" element={<CatalogPage />} />
-          <Route
-            path="/leasing/products/:id"
-            element={<LeasingProductDetailView />}
-          />
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />
-            <Route
-              path="/leasing/booking/:id"
-              element={<LeasingBookingPage />}
-            />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
@@ -82,7 +74,6 @@ export default function App() {
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
-              <Route path="/troc/catalog" element={<TrocCatalogPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/home" replace />} />
