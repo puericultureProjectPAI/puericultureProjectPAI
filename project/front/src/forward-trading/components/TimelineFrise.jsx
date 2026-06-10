@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
+import DropdownEnfant from "./DropDownEnfant";
 
 export default function TimelineFrise({ timelineId = 1 }) {
   const { periods, isLoading, error } = useTimelineData(timelineId);
@@ -39,6 +40,7 @@ export default function TimelineFrise({ timelineId = 1 }) {
           Anticipez les besoins de votre enfant
         </p>
       </div>
+      <DropdownEnfant />
 
       {/* FRISE */}
       <TimelineNavigator

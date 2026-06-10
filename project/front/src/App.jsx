@@ -19,7 +19,6 @@ import GlobalCatalogView from "./common/views/GlobalCatalogView";
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
 import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
-import TimeLinesView from "./forward-trading/views/TimeLinesView.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -48,15 +47,14 @@ export default function App() {
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
-        {/* Leasing - public */}
-        <Route path="/leasing/catalog" element={<CatalogPage />} />
-        <Route
-          path="/leasing/products/:id"
-          element={<LeasingProductDetailView />}
-        />
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Leasing pages avec leur propre layout full-screen */}
+          <Route path="/leasing/catalog" element={<CatalogPage />} />
+          <Route
+            path="/leasing/products/:id"
+            element={<LeasingProductDetailView />}
+          />
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />
             <Route
@@ -71,7 +69,6 @@ export default function App() {
                 path="/second-hand/compare/:ean"
                 element={<PriceComparisonView />}
               />
-              <Route path="/forward/timeline" element={<TimeLinesView />} />
               <Route
                 path="/forward/timeline/:id"
                 element={<ForwardTradingView />}
