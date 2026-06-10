@@ -47,7 +47,7 @@ export default function Connection() {
         error={error}
       />
 
-      <div className="mt-auto">
+      <div className="fixed bottom-0 left-0 w-full z-50">
         <InstallPWA />
       </div>
     </div>
