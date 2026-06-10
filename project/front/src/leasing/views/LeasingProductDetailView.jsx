@@ -174,7 +174,7 @@ export default function LeasingProductDetailView() {
         </section>
 
         {/* Content — vertical layout on mobile and desktop */}
-        <div className="w-full px-[14px] md:px-6 md:pt-4">
+        <div className="w-full px-[24px] md:pt-4">
           <section className="pb-[12px]">
             {/* Badge */}
             <div className="mb-[6px] flex justify-end">
@@ -235,7 +235,7 @@ export default function LeasingProductDetailView() {
         </div>
 
         {/* Reviews — full width below both columns */}
-        <section className="px-[14px] md:px-6 pb-[24px]">
+        <section className="px-[24px] pb-[24px]">
           <LeasingReviewsSection leasingId={id} />
         </section>
       </main>
