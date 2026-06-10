@@ -87,6 +87,8 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           city: values.city,
           category: values.category,
           condition: values.condition,
+          brand: values.brand,
+          dimensions: values.dimensions,
         };
 
         const isCreated = await onSubmit(values.mode, payload);

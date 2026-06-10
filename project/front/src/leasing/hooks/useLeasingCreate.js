@@ -2,12 +2,12 @@ import { useState } from "react";
 import { apiClient } from "../../common/utils/apiClient.jsx";
 
 export default function useLeasingCreate() {
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const publishLeasing = async (payload) => {
-    setError(null);
-    setSuccess(null);
+    setError("");
+    setSuccess("");
     try {
       await apiClient.post("/leasing/articles", {
         title: payload.title,
@@ -22,6 +22,7 @@ export default function useLeasingCreate() {
         images: payload.images || [],
       });
       setSuccess("Article de location publié avec succès !");
+      setTimeout(() => setSuccess(""), 3000);
       return true;
     } catch (err) {
       setError(err.response?.data?.message || "Erreur lors de la publication");
