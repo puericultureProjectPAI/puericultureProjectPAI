@@ -8,7 +8,6 @@ const DEFAULT_MAX = 5;
 export default function MyImageInput({
   label,
   maxImages = DEFAULT_MAX,
-  productId,
   onChange,
   ...props
 }) {
