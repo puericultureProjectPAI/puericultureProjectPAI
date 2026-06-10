@@ -47,15 +47,17 @@ export default function MessagesListView() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = conversations.filter((conv) => {
-    if (!search) return true;
-    const other = getOtherUser(conv);
-    const name = formatName(other).toLowerCase();
-    const t1 = (conv.proposerProduct?.postTitle || "").toLowerCase();
-    const t2 = (conv.receiverProduct?.postTitle || "").toLowerCase();
-    const q = search.toLowerCase();
-    return name.includes(q) || t1.includes(q) || t2.includes(q);
-  });
+  const filtered = conversations
+    .filter((conv) => {
+      if (!search) return true;
+      const other = getOtherUser(conv);
+      const name = formatName(other).toLowerCase();
+      const t1 = (conv.proposerProduct?.postTitle || "").toLowerCase();
+      const t2 = (conv.receiverProduct?.postTitle || "").toLowerCase();
+      const q = search.toLowerCase();
+      return name.includes(q) || t1.includes(q) || t2.includes(q);
+    })
+    .sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
 
   return (
     <div className="flex flex-col bg-white w-full min-h-full">
@@ -109,12 +111,17 @@ export default function MessagesListView() {
         {!loading &&
           filtered.map((conv) => {
             const other = getOtherUser(conv);
+            const unread = conv.unreadCount > 0;
             return (
               <button
                 key={conv.exchangeId}
                 type="button"
                 onClick={() => navigate(`/troc/chat/${conv.exchangeId}`)}
-                className="flex items-center justify-between w-full px-2.5 py-2.5 rounded-lg border border-[#757388] bg-white text-left"
+                className={`flex items-center justify-between w-full px-2.5 py-2.5 rounded-lg bg-white text-left ${
+                  unread
+                    ? "border-2 border-[#040037]"
+                    : "border border-[#757388]"
+                }`}
               >
                 {/* Avatar + nom + aperçu */}
                 <div className="flex items-center gap-5">
@@ -135,10 +142,18 @@ export default function MessagesListView() {
                   </div>
                 </div>
 
-                {/* Date */}
-                <span className="text-[14px] text-[#757388] flex-shrink-0 ml-2">
-                  {formatDate(conv.lastMessageTime)}
-                </span>
+                {/* Badge non-lu ou date */}
+                {unread ? (
+                  <div className="w-8 h-8 rounded-full bg-[#757388] flex items-center justify-center flex-shrink-0 ml-2">
+                    <span className="text-[14px] font-bold text-white">
+                      {conv.unreadCount}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-[14px] text-[#757388] flex-shrink-0 ml-2">
+                    {formatDate(conv.lastMessageTime)}
+                  </span>
+                )}
               </button>
             );
           })}

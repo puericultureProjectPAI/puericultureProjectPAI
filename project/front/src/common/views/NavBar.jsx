@@ -24,12 +24,12 @@ export default function Navbar() {
     fetchUnread();
     const interval = setInterval(fetchUnread, 10000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, location.pathname]);
 
   const buttons = [
     { path: "/", label: "Accueil", icon: homeIcon },
     { path: "/", label: "Rechercher", icon: searchIcon },
-    { path: "/", label: "Publier", icon: postIcon },
+    { path: "/product/create", label: "Publier", icon: postIcon },
     {
       path: "/troc/messages",
       label: "Messages",
