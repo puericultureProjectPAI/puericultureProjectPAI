@@ -230,7 +230,7 @@ export default function ChatView() {
             >
               <div className="flex flex-col items-end gap-1">
                 <div
-                  className="bg-[#E8F3FF] px-3 py-3 max-w-[220px]"
+                  className="bg-[#E8F3FF] px-3 py-3 max-w-[75%]"
                   style={{ borderRadius: "16px 16px 0px 16px" }}
                 >
                   <p className="text-[16px] text-[#33323D]">{msg.content}</p>
@@ -254,7 +254,7 @@ export default function ChatView() {
               </div>
               <div className="flex flex-col gap-1">
                 <div
-                  className="bg-[#F2F2F9] px-3 py-3 max-w-[220px]"
+                  className="bg-[#F2F2F9] px-3 py-3 max-w-[75%]"
                   style={{ borderRadius: "16px 16px 16px 0px" }}
                 >
                   <p className="text-[16px] text-[#33323D]">{msg.content}</p>
@@ -272,7 +272,7 @@ export default function ChatView() {
       {/* Card proposition (PENDING + receiver) — fixée en bas */}
       {status === "PENDING" && isReceiver && (
         <div className="flex flex-col gap-2 p-3 mx-6 mb-2 rounded-lg border border-[#757388]">
-          <p className="text-[16px] font-bold text-[#33323D] text-center">
+          <p className="text-[16px] text-[#33323D] text-center">
             Voulez-vous accepter définitivement l&apos;échange ?
           </p>
           <div className="h-px bg-[#E3E3E3]" />
@@ -280,14 +280,14 @@ export default function ChatView() {
             <button
               type="button"
               onClick={handleRefuse}
-              className="flex-1 py-2 text-[16px] text-[#757388] flex items-center justify-center"
+              className="flex-1 h-[40px] border border-[#E91C2E] text-[#E91C2E] rounded-lg text-[16px] font-semibold flex items-center justify-center"
             >
               Refuser
             </button>
             <button
               type="button"
               onClick={handleAccept}
-              className="flex-1 h-[40px] bg-[#040037] text-white rounded-lg text-[16px] font-semibold flex items-center justify-center"
+              className="flex-1 h-[40px] bg-[#188638] text-white rounded-lg text-[16px] font-semibold flex items-center justify-center"
             >
               Accepter
             </button>
