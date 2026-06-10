@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { apiClient } from "../../common/utils/apiClient";
-
-const fallbackImage = (title) =>
-  `https://placehold.co/400x300?text=${encodeURIComponent(title || "Produit")}`;
+import ongletSec from "../../assets/catalog/onglet-sec.png";
+import ongletTroc from "../../assets/catalog/onglet-troc.png";
+import ongletLeas from "../../assets/catalog/onglet-leas.png";
+import ongletFt from "../../assets/catalog/onglet-ft.png";
+import arrowRightIcon from "../../assets/icons/arrow-right-icon-brand-l.svg";
+import ProductCard from "../components/ProductCard";
 
 export default function GlobalCatalogView() {
   const navigate = useNavigate();
@@ -19,87 +22,108 @@ export default function GlobalCatalogView() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full w-full bg-white font-['Figtree']">
-      {/* Header section (Title & count) */}
-      <div className="px-6 py-4 flex flex-col gap-1">
-        <div className="grid grid-cols-4 gap-3 mb-4">
-          {[
-            {
-              label: "Échange",
-              img: "https://placehold.co/80x160?text=Echange",
-              path: "/troc/catalog",
-            },
-            {
-              label: "Location",
-              img: "https://placehold.co/80x160?text=Location",
-              path: "/leasing/catalog",
-            },
-            {
-              label: "2nde Main",
-              img: "https://placehold.co/80x160?text=2nde\nMain",
-              path: "/second-hand/catalog",
-            },
-            {
-              label: "Forward",
-              img: "https://placehold.co/80x160?text=Forward",
-              path: "/forward/catalog",
-            },
-          ].map((cat, idx) => (
-            <div
-              key={idx}
-              onClick={() => navigate(cat.path)}
-              className="flex flex-col items-center gap-1 cursor-pointer transition-transform active:scale-95"
-            >
-              <img
-                src={cat.img}
-                alt={cat.label}
-                className="w-full aspect-[1/2] rounded-lg object-cover shadow-sm border border-gray-200"
-              />
-            </div>
-          ))}
+    <div className="flex flex-col h-full w-full bg-white font-['Figtree'] overflow-hidden">
+      <div className="flex-1 overflow-y-auto pb-6">
+        {/* Categories Horizontal List */}
+        <div className="w-full overflow-x-auto hide-scrollbar">
+          <div className="flex gap-3 px-6 py-4 w-max">
+            {[
+              {
+                label: "Seconde main",
+                img: ongletSec,
+                path: "/second-hand/catalog",
+                pb: "pb-5",
+              },
+              {
+                label: "Échange",
+                img: ongletTroc,
+                path: "/troc/catalog",
+                pb: "pb-8",
+              },
+              {
+                label: "Location",
+                img: ongletLeas,
+                path: "/leasing/catalog",
+                pb: "pb-8",
+              },
+              {
+                label: "Forward trading",
+                img: ongletFt,
+                path: "/forward/catalog",
+                pb: "pb-5",
+              },
+            ].map((cat, idx) => (
+              <div
+                key={idx}
+                onClick={() => navigate(cat.path)}
+                className={`w-20 h-48 min-w-20 min-h-48 px-2 ${cat.pb} rounded-lg inline-flex flex-col justify-end items-center gap-2.5 overflow-hidden cursor-pointer transition-transform active:scale-95 bg-cover bg-center border border-gray-200`}
+                style={{ backgroundImage: `url(${cat.img})` }}
+              >
+                <div className="w-full max-w-16 inline-flex justify-center items-center gap-2.5">
+                  <div className="flex-1 text-center text-[#080036] text-base font-normal font-['Figtree'] leading-tight">
+                    {cat.label}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Product Grid */}
-      <div className="px-6 pb-6 grid grid-cols-2 gap-4">
-        {loading ? (
-          <div className="col-span-2 text-center text-sm text-gray-500 py-4">
-            Chargement...
-          </div>
-        ) : products.length === 0 ? (
-          <div className="col-span-2 text-center text-sm text-gray-500 py-4">
-            Aucun article disponible.
-          </div>
-        ) : (
-          products.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white rounded-lg shadow-sm pb-4 flex flex-col gap-2 overflow-hidden border border-gray-100 cursor-pointer transition-transform active:scale-95"
-              onClick={() => navigate(`/leasing/products/${p.id}`)}
-            >
-              <div className="h-44 w-full bg-gray-100 overflow-hidden">
-                <img
-                  className="w-full h-full object-cover"
-                  src={p.firstImageUrl || fallbackImage(p.postTitle)}
-                  alt={p.postTitle}
-                />
-              </div>
-              <div className="px-3 flex flex-col gap-1">
-                <div className="flex justify-end">
-                  <span className="px-3 py-1 rounded-xl border border-[#080036] text-[#080036] text-[10px] font-medium">
-                    Location
-                  </span>
-                </div>
-                <div className="text-center text-black text-sm font-normal truncate">
-                  {p.postTitle}
-                </div>
-                <div className="text-center text-[#080036] text-sm font-bold">
-                  {p.pricePerMonth}€/mois
-                </div>
-              </div>
+        {/* Section 1: Nos recommandations */}
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="flex justify-between items-center px-6">
+            <h2 className="text-[#080036] text-xl font-bold">
+              Nos recommandations
+            </h2>
+            <div className="flex justify-end items-center overflow-hidden">
+              <img src={arrowRightIcon} alt="voir plus" className="w-4 h-8" />
             </div>
-          ))
-        )}
+          </div>
+
+          <div className="w-full overflow-x-auto hide-scrollbar">
+            <div className="flex gap-4 px-6 pb-2 pt-1 w-max snap-x">
+              {loading ? (
+                <p className="text-sm text-gray-500 py-4">Chargement...</p>
+              ) : products.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4">
+                  Aucun article disponible.
+                </p>
+              ) : (
+                products
+                  .slice(0, Math.ceil(products.length / 2))
+                  .map((p) => <ProductCard key={p.id} p={p} />)
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Articles 3-6 mois */}
+        <div className="flex flex-col gap-2 mt-6">
+          <div className="flex justify-between items-center px-6">
+            <h2 className="text-[#080036] text-xl font-bold">
+              Articles 3-6 mois
+            </h2>
+            <div className="flex justify-end items-center overflow-hidden">
+              <img src={arrowRightIcon} alt="voir plus" className="w-4 h-8" />
+            </div>
+          </div>
+
+          <div className="w-full overflow-x-auto hide-scrollbar">
+            <div className="flex gap-4 px-6 pb-2 pt-1 w-max snap-x">
+              {loading ? (
+                <p className="text-sm text-gray-500 py-4">Chargement...</p>
+              ) : products.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4">
+                  Aucun article disponible.
+                </p>
+              ) : (
+                products
+                  .slice(Math.ceil(products.length / 2))
+                  .map((p) => <ProductCard key={p.id} p={p} />)
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
