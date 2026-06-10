@@ -67,7 +67,7 @@ export default function MyProductsSelectionView() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-5 py-0 px-3">
+          <div className="grid grid-cols-2 gap-5">
             {myProducts.map((p) => {
               const selected = selectedId === p.id;
               return (
@@ -75,12 +75,12 @@ export default function MyProductsSelectionView() {
                   key={p.id}
                   type="button"
                   onClick={() => setSelectedId(p.id)}
-                  className={`flex flex-col w-[182px] pb-5 rounded-lg overflow-hidden bg-white shadow-[0_2px_2px_rgba(0,0,0,0.1)] transition-all ${
+                  className={`flex flex-col pb-5 rounded-lg overflow-hidden bg-white shadow-[0_2px_2px_rgba(0,0,0,0.1)] transition-all ${
                     selected ? "ring-2 ring-[#040037]" : ""
                   }`}
                 >
                   {/* Image */}
-                  <div className="w-full h-[182px] overflow-hidden rounded-sm">
+                  <div className="w-full aspect-square overflow-hidden rounded-sm">
                     <img
                       src={p.imageUrls?.[0] ?? fallbackImage(p.postTitle)}
                       alt={p.postTitle}
