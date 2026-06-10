@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import kiabiLogo from "../../assets/logo-Kiabi-complet-couleur-brand.png";
 
 const InstallPWA = () => {
   const [isStandalone] = useState(
@@ -7,7 +8,6 @@ const InstallPWA = () => {
       globalThis.navigator.standalone,
   );
 
-  // Initialize state from the global window object if the event already fired
   const [deferredPrompt, setDeferredPrompt] = useState(
     globalThis.deferredPrompt,
   );
@@ -15,7 +15,6 @@ const InstallPWA = () => {
   useEffect(() => {
     const syncPrompt = () => setDeferredPrompt(globalThis.deferredPrompt);
 
-    // Listen for the custom event in case it fires after this component mounts
     globalThis.addEventListener("pwa-prompt-available", syncPrompt);
     return () =>
       globalThis.removeEventListener("pwa-prompt-available", syncPrompt);
@@ -34,13 +33,31 @@ const InstallPWA = () => {
     }
   };
 
-  // Logic: Only show if not installed and prompt is available (or iOS)
+  // Masque le composant si l'app est déjà installée ou si le prompt n'est pas prêt
   if (isStandalone || !deferredPrompt) return null;
 
   return (
-    <div>
-      <button className="bg-red-600" onClick={handleInstallClick}>
-        Installer
+    <div className="flex w-full items-center gap-4 bg-[#F2F2F9] px-6 py-3 shadow-sm">
+      <img
+        className="h-14 w-14 object-contain"
+        src={kiabiLogo}
+        alt="Logo Application Kiabi"
+      />
+
+      <div className="flex flex-col">
+        <span className="font-['Figtree'] text-xl font-bold text-[#040037]">
+          Application Kiabi
+        </span>
+        <span className="font-['Figtree'] text-base font-normal text-[#757388]">
+          Meilleure expérience sur l'app !
+        </span>
+      </div>
+
+      <button
+        onClick={handleInstallClick}
+        className="ml-auto flex h-10 items-center justify-center rounded-lg bg-[#040037] px-6 font-['Figtree'] text-base font-semibold text-[#FFFFFF] transition-opacity hover:opacity-90 active:scale-95"
+      >
+        Télécharger
       </button>
     </div>
   );
