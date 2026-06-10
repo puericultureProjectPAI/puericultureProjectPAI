@@ -23,6 +23,7 @@ public interface LeasingProductRepository extends JpaRepository<LeasingArticle, 
                     pl.price_per_day    AS "pricePerDay",
                     pl.price_per_month  AS "pricePerMonth",
                     p.condition,
+                    'Location'          AS "badgeLabel",
                     pi_first.image_url  AS "firstImageUrl",
                     CASE
                         WHEN EXISTS (
@@ -50,7 +51,7 @@ public interface LeasingProductRepository extends JpaRepository<LeasingArticle, 
                     """
                 SELECT p.id, p.post_title AS "postTitle", p.category, p.city,
                     pl.price_per_day AS "pricePerDay", pl.price_per_month AS "pricePerMonth",
-                    p.condition, pi_first.image_url AS "firstImageUrl",
+                    p.condition, 'Location' AS "badgeLabel", pi_first.image_url AS "firstImageUrl",
                     CASE WHEN EXISTS (
                         SELECT 1 FROM public.client_products cp
                         JOIN public.leasing_orders lo ON lo.client_product_id = cp.id
@@ -74,7 +75,7 @@ public interface LeasingProductRepository extends JpaRepository<LeasingArticle, 
                     """
                 SELECT p.id, p.post_title AS "postTitle", p.category, p.city,
                     pl.price_per_day AS "pricePerDay", pl.price_per_month AS "pricePerMonth",
-                    p.condition, pi_first.image_url AS "firstImageUrl", true AS "available"
+                    p.condition, 'Location' AS "badgeLabel", pi_first.image_url AS "firstImageUrl", true AS "available"
                 FROM public.products p
                 INNER JOIN public.product_leasing pl ON pl.product_id = p.id
                 LEFT JOIN LATERAL (
@@ -98,7 +99,7 @@ public interface LeasingProductRepository extends JpaRepository<LeasingArticle, 
                     """
                 SELECT p.id, p.post_title AS "postTitle", p.category, p.city,
                     pl.price_per_day AS "pricePerDay", pl.price_per_month AS "pricePerMonth",
-                    p.condition, pi_first.image_url AS "firstImageUrl", true AS "available"
+                    p.condition, 'Location' AS "badgeLabel", pi_first.image_url AS "firstImageUrl", true AS "available"
                 FROM public.products p
                 INNER JOIN public.product_leasing pl ON pl.product_id = p.id
                 LEFT JOIN LATERAL (

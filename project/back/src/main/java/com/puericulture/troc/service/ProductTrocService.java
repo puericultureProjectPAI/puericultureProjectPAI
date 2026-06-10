@@ -2,13 +2,16 @@ package com.puericulture.troc.service;
 
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
+import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ProductTrocMapper;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,13 @@ public class ProductTrocService {
         this.trocRepository = trocRepository;
         this.trocMapper = trocMapper;
         this.personRepository = personRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductTrocDto> findAllAvailable() {
+        return trocRepository.findByStatus(ProductTrocStatus.AVAILABLE).stream()
+                .map(trocMapper::toDto)
+                .toList();
     }
 
     @Transactional
@@ -54,11 +64,18 @@ public class ProductTrocService {
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
 
+        List<String> imageUrls = request.getImages();
+        if (imageUrls != null) {
+            for (int i = 0; i < imageUrls.size(); i++) {
+                ProductImage image = new ProductImage();
+                image.setProduct(troc);
+                image.setImageUrl(imageUrls.get(i));
+                image.setPosition(i + 1);
+                troc.getImages().add(image);
+            }
+        }
+
         ProductTroc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);
-    }
-
-    private String defaultIfBlank(String value, String defaultValue) {
-        return value == null || value.isBlank() ? defaultValue : value;
     }
 }

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import Layout from "./common/views/Layout";
 import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
@@ -8,12 +8,15 @@ import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
-import ProductDetailPage from "./leasing/views/ProductDetailPage";
+import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
+import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
+import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 import { FamilyOnboardingView } from "./forward-trading/views/FamilyOnboardingView";
 
+import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
@@ -46,18 +49,24 @@ export default function App() {
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
-        {/* Leasing - public */}
-        <Route path="/leasing/catalog" element={<CatalogPage />} />
-        <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Leasing pages avec leur propre layout full-screen */}
+          <Route path="/leasing/catalog" element={<CatalogPage />} />
+          <Route
+            path="/leasing/products/:id"
+            element={<LeasingProductDetailView />}
+          />
           <Route
             path="/forward/onboarding"
             element={<FamilyOnboardingView />}
           />
           <Route element={<Layout />}>
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<GlobalCatalogView />} />
+            <Route
+              path="/leasing/booking/:id"
+              element={<LeasingBookingPage />}
+            />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
@@ -75,40 +84,17 @@ export default function App() {
                 element={<CreationEnfantView />}
               />
               <Route
-                path="/forward/onboarding"
-                element={<FamilyOnboardingView />}
-              />
-              <Route
                 path="/product/create"
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
+              <Route path="/troc/catalog" element={<TrocCatalogPage />} />
             </Route>
 
-            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
         </Route>
       </Routes>
     </AuthProvider>
-  );
-}
-
-function Home() {
-  const navigate = useNavigate();
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">Project PAI</h1>
-
-      <button className="w-full max-w-sm rounded-xl bg-blue-600 px-6 py-3 font-medium text-white shadow-md transition-transform hover:bg-blue-700 active:scale-95">
-        Main Action
-      </button>
-      <button
-        className="w-full max-w-sm bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition-transform"
-        onClick={() => navigate("/second-hand/scan")}
-      >
-        Scanner un produit
-      </button>
-    </div>
   );
 }

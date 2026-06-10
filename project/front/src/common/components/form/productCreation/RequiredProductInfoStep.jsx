@@ -6,10 +6,11 @@ import { useState } from "react";
 import { apiClient } from "../../../utils/apiClient.jsx";
 
 export default function RequiredProductInfoStep() {
-  const { values } = useFormikContext();
-  // ai second main
+  const { values, setFieldValue } = useFormikContext();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isAILoading, setIsAILoading] = useState(false);
+  const [confidenceScore, setConfidenceScore] = useState(null);
+
   const handleAIRequest = async () => {
     if (!selectedFile) return;
 
@@ -17,25 +18,37 @@ export default function RequiredProductInfoStep() {
     formData.append("images", selectedFile);
 
     setIsAILoading(true);
-    console.log("Envoi de l'image à l'IA Gemini...");
 
     try {
-      // Utilisation de apiClient qui ajoute automatiquement le token (Bearer)
-
-      // On utilise "v1/ai/analyze-products" car le contexte est déjà configuré
-      //const response = await apiClient.post("v1/ai/analyze-products", formData);
       const response = await apiClient.post(
         "second-hand/v1/ai/analyze-products",
         formData,
       );
 
-      console.log(" === RÉSULTAT IA GEMINI ===", response.data);
+      const { title, description, category, confidenceScore } = response.data;
+
+      if (title) setFieldValue("title", title);
+      if (description) setFieldValue("description", description);
+      if (category) setFieldValue("category", category);
+      if (confidenceScore !== undefined) setConfidenceScore(confidenceScore);
     } catch (error) {
-      console.error(" === ERREUR IA GEMINI ===", error);
+      console.error("Erreur IA Gemini", error);
     } finally {
       setIsAILoading(false);
     }
-  }; //
+  };
+
+  const getBadgeStyle = (score) => {
+    if (score >= 80) return "bg-green-100 text-green-700 border-green-300";
+    if (score >= 50) return "bg-orange-100 text-orange-700 border-orange-300";
+    return "bg-red-100 text-red-700 border-red-300";
+  };
+
+  const getBadgeEmoji = (score) => {
+    if (score >= 80) return "🟢";
+    if (score >= 50) return "🟠";
+    return "🔴";
+  };
 
   return (
     <div>
@@ -44,28 +57,38 @@ export default function RequiredProductInfoStep() {
         maxImages={5}
         onChange={(event) => {
           const file = event.target.files?.[0];
-
           if (file) {
             setSelectedFile(file);
           }
         }}
       />
 
+      {/* BOUTON IA uniquement pour la seconde main */}
+      {selectedFile && values.mode === "SECOND_HAND" && (
+        <button
+          type="button"
+          onClick={handleAIRequest}
+          disabled={isAILoading}
+          className="mt-4 mb-4 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
+        >
+          {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
+        </button>
+      )}
+
+      {/* BADGE CONFIANCE */}
+      {confidenceScore !== null && (
+        <div
+          className={`mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold ${getBadgeStyle(confidenceScore)}`}
+        >
+          <span>{getBadgeEmoji(confidenceScore)}</span>
+          <span>Fiabilité IA : {Math.round(confidenceScore)}%</span>
+        </div>
+      )}
+
       <label
         className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
         htmlFor="title"
       >
-        {/* BOUTON IA uniquement pour la seconde*/}
-        {selectedFile && values.mode === "SECOND_HAND" && (
-          <button
-            type="button"
-            onClick={handleAIRequest}
-            disabled={isAILoading}
-            className="mb-6 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
-          >
-            {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
-          </button>
-        )}
         Nom de l'article
       </label>
       <Field
@@ -87,7 +110,7 @@ export default function RequiredProductInfoStep() {
         className="mb-1 min-h-16 w-full rounded-md border border-[#b8b6c7] px-3 py-2 text-sm outline-none focus:border-[#080036]"
         id="description"
         name="description"
-        placeholder="Décrivez l’article..."
+        placeholder="Décrivez l'article..."
       />
       <FieldError name="description" />
 

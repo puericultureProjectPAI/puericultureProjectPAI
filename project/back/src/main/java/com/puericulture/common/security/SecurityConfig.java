@@ -39,7 +39,7 @@ public class SecurityConfig {
                                         // UI
                                         .requestMatchers(
                                                 "/health",
-                                                "/api/public/**",
+                                                "/public/**",
                                                 // Swagger / OpenAPI — must be accessible without a
                                                 // token
                                                 "/swagger-ui.html",
@@ -60,7 +60,7 @@ public class SecurityConfig {
 
                                         // Admin-only routes
 
-                                        .requestMatchers("/api/admin/**")
+                                        .requestMatchers("/admin/**")
                                         .hasRole("ADMIN")
 
                                         // All other requests require a valid Supabase JWT
@@ -82,6 +82,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(
                 Arrays.asList(
                         "http://localhost:*", // Vite dev server
+                        "http://127.0.0.1:*", // Vite dev server
                         "https://puericultureprojectpai.vercel.app"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
