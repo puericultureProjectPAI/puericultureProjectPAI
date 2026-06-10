@@ -18,7 +18,7 @@ spring:
   jpa:
     hibernate:
       # DANGEREUX EN PROD. Doit être écrasé par SPRING_JPA_HIBERNATE_DDL_AUTO=validate sur Render
-      ddl-auto: update 
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
