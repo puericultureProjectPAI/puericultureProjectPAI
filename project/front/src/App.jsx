@@ -14,6 +14,8 @@ import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx"
 import TrocView from "./troc/views/TrocView";
 import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import { FamilyOnboardingView } from "./forward-trading/views/FamilyOnboardingView";
+
 import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
@@ -54,6 +56,10 @@ export default function App() {
           <Route
             path="/leasing/products/:id"
             element={<LeasingProductDetailView />}
+          />
+          <Route
+            path="/forward/onboarding"
+            element={<FamilyOnboardingView />}
           />
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />

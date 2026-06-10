@@ -17,7 +17,7 @@ public class CreateChildren {
     private LocalDate dpa;
 
     @Schema(
-            examples = {"m", "f", "o"},
+            examples = {"m", "f", "s"},
             maxLength = 1,
             minLength = 1,
             allowableValues = {"m", "f", "s"})
