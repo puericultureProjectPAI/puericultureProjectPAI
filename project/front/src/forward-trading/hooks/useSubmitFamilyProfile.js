@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 const submitFamilyProfile = async (payload) => {
   const response = await axios.post("/forward-trading/family-profile", payload);
@@ -7,13 +7,27 @@ const submitFamilyProfile = async (payload) => {
 };
 
 export const useSubmitFamilyProfile = () => {
-  return useMutation({
-    mutationFn: submitFamilyProfile,
-    onSuccess: (data) => {
+  const [isPending, setIsPending] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const mutate = async (payload, { onSuccess, onError } = {}) => {
+    setIsPending(true);
+    setIsSuccess(false);
+    setIsError(false);
+    try {
+      const data = await submitFamilyProfile(payload);
+      setIsSuccess(true);
       console.log("Profil enregistré avec succès", data);
-    },
-    onError: (error) => {
+      if (onSuccess) onSuccess(data);
+    } catch (error) {
+      setIsError(true);
       console.error("Erreur lors de la sauvegarde du profil familial :", error);
-    },
-  });
+      if (onError) onError(error);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  return { mutate, isPending, isSuccess, isError };
 };
