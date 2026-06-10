@@ -31,7 +31,7 @@ export const PUBLISH_MODES = [
     title: "Location",
     description: "Je mets en location",
     icon: "⏱️",
-    disabled: true,
+    disabled: false,
   },
   {
     key: "TROC",

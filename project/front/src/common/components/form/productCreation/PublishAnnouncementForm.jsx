@@ -8,6 +8,7 @@ import PublicationMobileShell from "./PublicationMobileShell.jsx";
 import RequiredProductInfoStep from "./RequiredProductInfoStep.jsx";
 import TrocSpecificStep from "./TrocSpecificStep.jsx";
 import SecondHandSpecificStep from "../../../../second-hand/components/SecondHandSpecificStep.jsx";
+import LeasingSpecificStep from "../../../../leasing/components/LeasingSpecificStep.jsx";
 
 const initialValues = {
   mode: "TROC",
@@ -24,11 +25,13 @@ const initialValues = {
   wantedArticle: "",
   estimatedPrice: "",
   price: "",
+  pricePerDay: "",
+  pricePerMonth: "",
 };
 
 const validationSchemas = {
   1: Yup.object({
-    mode: Yup.string().oneOf(["TROC", "SECOND_HAND"]).required(),
+    mode: Yup.string().oneOf(["TROC", "SECOND_HAND", "LOCATION"]).required(),
   }),
   2: Yup.object({
     images: Yup.array().min(1, "Au moins une image est obligatoire"),
@@ -45,6 +48,22 @@ const validationSchemas = {
       .when("mode", {
         is: "TROC",
         then: (schema) => schema.required("Le prix estimé est obligatoire"),
+        otherwise: (schema) => schema.optional(),
+      }),
+    pricePerDay: Yup.number()
+      .typeError("Le prix/jour doit être un nombre")
+      .min(0, "Le prix/jour doit être positif")
+      .when("mode", {
+        is: "LOCATION",
+        then: (schema) => schema.required("Le prix par jour est obligatoire"),
+        otherwise: (schema) => schema.optional(),
+      }),
+    pricePerMonth: Yup.number()
+      .typeError("Le prix/mois doit être un nombre")
+      .min(0, "Le prix/mois doit être positif")
+      .when("mode", {
+        is: "LOCATION",
+        then: (schema) => schema.required("Le prix par mois est obligatoire"),
         otherwise: (schema) => schema.optional(),
       }),
   }),
@@ -91,6 +110,9 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
             {step === 4 && values.mode === "TROC" && <TrocSpecificStep />}
             {step === 4 && values.mode === "SECOND_HAND" && (
               <SecondHandSpecificStep />
+            )}
+            {step === 4 && values.mode === "LOCATION" && (
+              <LeasingSpecificStep />
             )}
             <PublicationFormActions
               isSubmitting={isSubmitting}
