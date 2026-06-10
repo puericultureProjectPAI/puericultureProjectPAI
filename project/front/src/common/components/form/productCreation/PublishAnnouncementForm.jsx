@@ -110,7 +110,11 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           minAgeMonths: parseInt(values.ageRange.split("-")[0]),
           maxAgeMonths: parseInt(values.ageRange.split("-")[1]),
           maxWeightKg: parseInt(values.maxWeightKg.split("-")[1]),
-          dimensions: values.lengthCm + "x" + values.widthCm + "cm",
+          dimensions:
+            (values.lengthCm ? values.lengthCm : "") +
+            (values.lengthCm && values.widthCm ? "x" : "") +
+            (values.widthCm ? values.widthCm : "") +
+            (values.lengthCm || values.widthCm ? "cm" : ""),
           rentalStartDate: values.rentalStartDate,
           rentalEndDate: values.rentalEndDate,
           dailyPrice: values.dailyPrice ? Number(values.dailyPrice) : 0,

@@ -49,7 +49,7 @@ export default function PublicationFormActions({
     setStep(step + 1);
   };
 
-  const isLastStep = step === 4;
+  const isLastStep = step === 3;
 
   if (isLastStep) {
     return (
@@ -79,7 +79,7 @@ export default function PublicationFormActions({
         onClick={goNext}
         type="button"
       >
-        Continuer
+        {step < 3 ? "Continuer" : "Publier"}
       </button>
 
       {step > 1 && (

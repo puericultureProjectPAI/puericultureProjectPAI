@@ -61,36 +61,22 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.change(screen.getByLabelText(/Catégorie/i), {
       target: { value: "Poussettes, porte-bébés et sièges auto" },
     });
+    fireEvent.change(screen.getByLabelText(/Ville/i), {
+      target: { value: "Lille" },
+    });
+
     fireEvent.change(screen.getByLabelText(/État/i), {
       target: { value: "Très bon état" },
     });
-    fireEvent.change(screen.getByLabelText(/Marque/i), {
-      target: { value: "MacLaren" },
-    });
 
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
-    await screen.findByText(/Location/i);
-    fireEvent.change(screen.getByLabelText(/Du/i), {
-      target: { value: "01/07/2026" },
-    });
-    fireEvent.change(screen.getByLabelText(/Au/i), {
-      target: { value: "05/07/2026" },
-    });
-    fireEvent.change(screen.getByLabelText(/Prix \/ jour/i), {
-      target: { value: "40" },
+    await screen.findByRole("button", { name: /publier/i });
+    fireEvent.change(screen.getByLabelText(/Prix estimé/i), {
+      target: { value: 40 },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
-
-    await screen.findByText(/Matchs IA détectés/i);
-    const publishButton = screen
-      .getAllByText(/^publier$/i)
-      .find((element) => element.closest("button"))
-      ?.closest("button");
-
-    expect(publishButton).toBeTruthy();
-    fireEvent.click(publishButton);
+    fireEvent.click(screen.getByRole("button", { name: /publier/i }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit).toHaveBeenCalledWith("TROC", {
@@ -98,18 +84,18 @@ describe("PublishAnnouncementForm", () => {
       description: "Poussette bébé en très bon état",
       estimatedPrice: 40,
       images: ["https://example.com/photo.jpg"],
-      city: "",
+      city: "Lille",
       category: "Poussettes, porte-bébés et sièges auto",
       condition: "Très bon état",
       price: 0,
-      brand: "MacLaren",
-      ageRange: "",
-      maxWeightKg: "",
-      lengthCm: "",
-      widthCm: "",
-      rentalStartDate: "01/07/2026",
-      rentalEndDate: "05/07/2026",
-      dailyPrice: 40,
+      brand: "",
+      dailyPrice: 0,
+      dimensions: "",
+      maxAgeMonths: NaN,
+      minAgeMonths: NaN,
+      maxWeightKg: NaN,
+      rentalEndDate: "",
+      rentalStartDate: "",
     });
   });
 });
