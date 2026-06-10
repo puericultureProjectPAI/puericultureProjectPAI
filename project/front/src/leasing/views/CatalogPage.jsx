@@ -34,7 +34,7 @@ export default function CatalogPage() {
       <Header />
 
       <main className="flex-1 overflow-y-auto">
-        <section className="px-4 md:px-6 pt-[12px]">
+        <section className="px-[24px] pt-[12px]">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-[18px] font-bold leading-tight">
@@ -61,10 +61,10 @@ export default function CatalogPage() {
           </div>
 
           {showFilters && (
-            <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
+            <section className="mt-[11px] rounded-[8px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
               <p className="text-[14px] font-medium">Ville de destination</p>
 
-              <div className="mt-[8px] flex h-[38px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
+              <div className="mt-[8px] flex h-[38px] items-center gap-[6px] rounded-[8px] border border-[#A6A3B8] px-[8px]">
                 <span className="material-symbols-rounded text-[18px] text-[#7C7A8A]">
                   location_on
                 </span>
@@ -125,14 +125,14 @@ export default function CatalogPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-[40px] w-full rounded-[4px] border border-[#040037] bg-white text-[15px] font-bold text-[#040037]"
+                  className="h-[40px] w-full rounded-[8px] border border-[#040037] bg-white text-[15px] font-bold text-[#040037]"
                 >
                   Réinitialiser
                 </button>
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="h-[40px] w-full rounded-[4px] bg-[#040037] text-[15px] font-bold text-white"
+                  className="h-[40px] w-full rounded-[8px] bg-[#040037] text-[15px] font-bold text-white"
                 >
                   Rechercher
                 </button>
@@ -141,7 +141,7 @@ export default function CatalogPage() {
           )}
         </section>
 
-        <section className="grid grid-cols-2 gap-4 px-4 pb-4 pt-[14px] md:grid-cols-3 md:px-6 lg:grid-cols-4">
+        <section className="grid grid-cols-2 gap-[20px] px-[24px] pb-4 pt-[14px] md:grid-cols-3 lg:grid-cols-4">
           {loading && (
             <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
@@ -176,7 +176,7 @@ export default function CatalogPage() {
                     }`,
                   );
                 }}
-                className={`min-h-[236px] rounded-[6px] bg-white p-[8px] pb-[16px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
+                className={`min-h-[236px] rounded-[8px] bg-white p-[8px] pb-[16px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
                   product.available
                     ? "cursor-pointer"
                     : "cursor-pointer opacity-50"
@@ -189,7 +189,7 @@ export default function CatalogPage() {
                 />
 
                 <div className="mt-[6px] flex justify-end">
-                  <span className="rounded-full border border-[#040037] px-[9px] text-[12px] leading-[18px]">
+                  <span className="rounded-[12px] border border-[#040037] px-[9px] text-[12px] leading-[18px]">
                     {product.badgeLabel || "Location"}
                   </span>
                 </div>
@@ -248,7 +248,7 @@ export default function CatalogPage() {
 function DateInput({ value, onChange, hasError, min }) {
   return (
     <div
-      className={`flex h-[38px] flex-1 items-center justify-between rounded-[4px] border px-[8px] ${
+      className={`flex h-[38px] flex-1 items-center justify-between rounded-[8px] border px-[8px] ${
         hasError ? "border-red-500" : "border-[#A6A3B8]"
       }`}
     >

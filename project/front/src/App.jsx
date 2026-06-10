@@ -47,15 +47,14 @@ export default function App() {
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
-        {/* Leasing - public */}
-        <Route path="/leasing/catalog" element={<CatalogPage />} />
-        <Route
-          path="/leasing/products/:id"
-          element={<LeasingProductDetailView />}
-        />
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Leasing pages avec leur propre layout full-screen */}
+          <Route path="/leasing/catalog" element={<CatalogPage />} />
+          <Route
+            path="/leasing/products/:id"
+            element={<LeasingProductDetailView />}
+          />
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />
             <Route

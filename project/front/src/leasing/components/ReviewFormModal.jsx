@@ -70,7 +70,7 @@ export default function ReviewFormModal({ leasingId, onClose }) {
   }, [eligibleOrderId]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-[#040037]/60 backdrop-blur-xs font-['Figtree',sans-serif]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 bg-[#040037]/60 backdrop-blur-xs font-['Figtree',sans-serif]">
       {/* Modal Container */}
       <div className="w-[280px] max-w-[calc(100%-32px)] bg-white rounded-[8px] border border-[#E6E6E6] shadow-2xl overflow-hidden flex flex-col animate-fadeIn">
         {/* Header */}
