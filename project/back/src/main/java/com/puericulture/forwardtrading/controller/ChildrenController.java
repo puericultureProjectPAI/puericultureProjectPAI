@@ -1,9 +1,12 @@
 package com.puericulture.forwardtrading.controller;
 
+import com.puericulture.common.dto.PersonProfileDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.service.ChildrenService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,5 +20,11 @@ public class ChildrenController extends ForwardTradingController {
     public void createChildren(
             @RequestBody CreateChildren children, @AuthenticationPrincipal String userId) {
         childrenService.createChildren(children, userId);
+    }
+
+    @GetMapping("children")
+    public List<PersonProfileDto.ChildPersonProfileDto> getChildrens(
+            @AuthenticationPrincipal String userId) {
+        return childrenService.getChildren(userId);
     }
 }
