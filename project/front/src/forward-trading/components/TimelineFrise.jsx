@@ -3,7 +3,7 @@ import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
 
-export default function TimelineFrise({ timelineId = 1 }) {
+export default function TimelineFrise({ timelineId }) {
   const { periods, isLoading, error } = useTimelineData(timelineId);
   const [activePeriodId, setActivePeriodId] = useState(null);
 

@@ -7,7 +7,6 @@ import "./index.css";
 
 // Virtual import from vite-plugin-pwa
 import { registerSW } from "virtual:pwa-register";
-
 // Initialize the Service Worker and listen for new deployments
 const updateSW = registerSW({
   onNeedRefresh() {
