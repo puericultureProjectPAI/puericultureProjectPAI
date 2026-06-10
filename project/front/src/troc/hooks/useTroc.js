@@ -3,6 +3,7 @@ import {
   createTroc,
   getProducts,
   getMyAvailableProducts,
+  getProductDetail,
 } from "../utils/trocApi";
 
 export default function useTroc() {
@@ -10,6 +11,7 @@ export default function useTroc() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [products, setProducts] = useState([]);
+  const [product, setProduct] = useState(null);
 
   const publishTroc = async (values) => {
     setError("");
@@ -74,13 +76,31 @@ export default function useTroc() {
     }
   }, []);
 
+  const fetchProductDetail = useCallback(async (id) => {
+    setLoading(true);
+    setError("");
+    setProduct(null);
+    try {
+      const data = await getProductDetail(id);
+      setProduct(data);
+      return true;
+    } catch {
+      setError("Impossible de charger le produit.");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     error,
     loading,
     publishTroc,
     getProductsTroc,
     fetchMyProducts,
+    fetchProductDetail,
     success,
     products,
+    product,
   };
 }

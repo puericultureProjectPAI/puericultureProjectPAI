@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { apiClient } from "../../common/utils/apiClient";
 import { useAuth } from "../../common/security/AuthContext";
+import useTroc from "../hooks/useTroc";
 import sendIcon from "../../assets/send-icon-inverse-m.svg";
 import shareIcon from "../../assets/share-icon-subtle.svg";
 
@@ -27,18 +27,12 @@ export default function ProductTrocDetailView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { fetchProductDetail, product, loading, error } = useTroc();
   const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
-    apiClient
-      .get(`/public/troc/products/${id}`)
-      .then((res) => setProduct(res.data))
-      .catch(() => setError("Impossible de charger le produit."))
-      .finally(() => setLoading(false));
-  }, [id]);
+    fetchProductDetail(id);
+  }, [id, fetchProductDetail]);
 
   if (loading) {
     return (

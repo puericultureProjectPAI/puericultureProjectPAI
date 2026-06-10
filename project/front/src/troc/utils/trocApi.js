@@ -11,6 +11,11 @@ export async function getProducts() {
 }
 
 export async function getMyAvailableProducts() {
-  const response = await apiClient.get("/products/my-available");
+  const response = await apiClient.get("/troc/products/my-available");
+  return response.data;
+}
+
+export async function getProductDetail(id) {
+  const response = await apiClient.get(`/troc/products/${id}`);
   return response.data;
 }
