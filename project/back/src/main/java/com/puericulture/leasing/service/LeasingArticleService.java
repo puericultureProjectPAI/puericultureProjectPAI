@@ -4,7 +4,6 @@ import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
-import com.puericulture.common.repository.ProductImageRepository;
 import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.leasing.dto.LeasingArticleDetailDto;
 import com.puericulture.leasing.dto.LeasingArticleRequest;
@@ -25,7 +24,6 @@ public class LeasingArticleService {
     private final LeasingArticleRepository leasingArticleRepository;
     private final LeasingArticleMapper leasingArticleMapper;
     private final PersonRepository personRepository;
-    private final ProductImageRepository productImageRepository;
 
     @Transactional(readOnly = true)
     public LeasingArticleDetailDto getArticleDetail(Long id) {
@@ -61,22 +59,18 @@ public class LeasingArticleService {
         article.setAuthor(author);
         article.setPostDate(LocalDateTime.now());
 
-        LeasingArticle saved = leasingArticleRepository.save(article);
-
         List<String> imageUrls = request.getImages();
         if (imageUrls != null) {
             for (int i = 0; i < imageUrls.size(); i++) {
                 ProductImage image = new ProductImage();
-                image.setProduct(saved);
+                image.setProduct(article);
                 image.setImageUrl(imageUrls.get(i));
                 image.setPosition(i + 1);
-                productImageRepository.save(image);
+                article.getImages().add(image);
             }
         }
 
-        return leasingArticleRepository
-                .findByIdWithImages(saved.getId())
-                .map(leasingArticleMapper::toDetailDto)
-                .orElseThrow();
+        LeasingArticle saved = leasingArticleRepository.save(article);
+        return leasingArticleMapper.toDetailDto(saved);
     }
 }

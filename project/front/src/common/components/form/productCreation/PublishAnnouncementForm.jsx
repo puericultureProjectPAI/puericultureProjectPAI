@@ -21,6 +21,8 @@ const initialValues = {
   brand: "",
   model: "",
   dimensions: "",
+  minAgeMonths: "",
+  maxAgeMonths: "",
   radius: "",
   wantedArticle: "",
   estimatedPrice: "",
@@ -89,6 +91,10 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           condition: values.condition,
           brand: values.brand,
           dimensions: values.dimensions,
+          minAgeMonths: values.minAgeMonths,
+          maxAgeMonths: values.maxAgeMonths,
+          pricePerDay: values.pricePerDay,
+          pricePerMonth: values.pricePerMonth,
         };
 
         const isCreated = await onSubmit(values.mode, payload);

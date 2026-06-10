@@ -17,6 +17,12 @@ export default function useLeasingCreate() {
         condition: payload.condition || null,
         brand: payload.brand || null,
         dimensions: payload.dimensions || null,
+        minAgeMonths: payload.minAgeMonths
+          ? Number(payload.minAgeMonths)
+          : null,
+        maxAgeMonths: payload.maxAgeMonths
+          ? Number(payload.maxAgeMonths)
+          : null,
         pricePerDay: Number(payload.pricePerDay),
         pricePerMonth: Number(payload.pricePerMonth),
         images: payload.images || [],
