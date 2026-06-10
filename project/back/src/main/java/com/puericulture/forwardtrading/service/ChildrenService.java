@@ -1,7 +1,7 @@
 package com.puericulture.forwardtrading.service;
 
-import com.puericulture.common.dto.PersonProfileDto;
 import com.puericulture.common.repository.PersonRepository;
+import com.puericulture.forwardtrading.dto.children.ChildDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import com.puericulture.forwardtrading.mapper.ChildrenMapper;
@@ -26,9 +26,9 @@ public class ChildrenService {
         childrenRepository.save(childrenEntity);
     }
 
-    public List<PersonProfileDto.ChildPersonProfileDto> getChildren(String userId) {
+    public List<ChildDto> getChildren(String userId) {
         UUID personId = UUID.fromString(userId);
         List<ChildrenEntity> childrenEntities = childrenRepository.findByPersonId(personId);
-        return childrenMapper.toChildrenPersonProfileDto(childrenEntities);
+        return childrenMapper.toChildDtoList(childrenEntities);
     }
 }

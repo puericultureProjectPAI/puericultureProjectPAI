@@ -1,6 +1,6 @@
 package com.puericulture.forwardtrading.controller;
 
-import com.puericulture.common.dto.PersonProfileDto;
+import com.puericulture.forwardtrading.dto.children.ChildDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.service.ChildrenService;
 import java.util.List;
@@ -23,8 +23,7 @@ public class ChildrenController extends ForwardTradingController {
     }
 
     @GetMapping("children")
-    public List<PersonProfileDto.ChildPersonProfileDto> getChildrens(
-            @AuthenticationPrincipal String userId) {
+    public List<ChildDto> getChildrens(@AuthenticationPrincipal String userId) {
         return childrenService.getChildren(userId);
     }
 }

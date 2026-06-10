@@ -1,6 +1,7 @@
 package com.puericulture.forwardtrading.mapper;
 
 import com.puericulture.common.dto.PersonProfileDto;
+import com.puericulture.forwardtrading.dto.children.ChildDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import com.puericulture.forwardtrading.entity.Timelines;
@@ -33,6 +34,15 @@ public abstract class ChildrenMapper {
     @Mapping(target = "birthDate", source = "birthDate")
     @Mapping(target = "timelineId", source = "timelines", qualifiedByName = "getTimelineId")
     abstract PersonProfileDto.ChildPersonProfileDto toChildPersonProfileDto(ChildrenEntity child);
+
+    public List<ChildDto> toChildDtoList(List<ChildrenEntity> childrenEntities) {
+        if (childrenEntities == null) return Collections.emptyList();
+        return childrenEntities.stream().map(this::toChildDtoDropDown).toList();
+    }
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "firstName", source = "name")
+    public abstract ChildDto toChildDtoDropDown(ChildrenEntity child);
 
     @Named("getTimelineId")
     public Long getTimelineId(List<Timelines> timelines) {
