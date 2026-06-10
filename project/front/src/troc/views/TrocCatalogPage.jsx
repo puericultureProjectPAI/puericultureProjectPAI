@@ -20,11 +20,11 @@ export default function CatalogPage() {
         <section className="px-4 md:px-6 pt-[12px]">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-[13px] font-bold leading-none">
+              <h2 className="text-[18px] font-bold leading-tight">
                 Articles disponibles à l'échange
               </h2>
 
-              <p className="mt-[5px] text-[9px] leading-none text-[#7C7A8A]">
+              <p className="mt-[5px] text-[13px] leading-none text-[#7C7A8A]">
                 {loading ? "…" : `${products.length} articles`}
               </p>
             </div>
@@ -33,19 +33,19 @@ export default function CatalogPage() {
 
         <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
           {loading && (
-            <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+            <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
             </p>
           )}
 
           {error && (
-            <p className="col-span-2 text-center text-[9px] text-red-500">
+            <p className="col-span-2 text-center text-[13px] text-red-500">
               {error}
             </p>
           )}
 
           {!loading && !error && products.length === 0 && (
-            <p className="col-span-2 text-center text-[9px] text-[#7C7A8A]">
+            <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Aucun article disponible.
             </p>
           )}
@@ -58,7 +58,7 @@ export default function CatalogPage() {
                 onClick={() => {
                   navigate(`/troc/products/${product.id}`);
                 }}
-                className={`h-[170px] rounded-[6px] bg-white p-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer`}
+                className={`h-[220px] rounded-[6px] bg-white p-[8px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer`}
               >
                 <img
                   src={
@@ -67,28 +67,24 @@ export default function CatalogPage() {
                       : fallbackImage(product.category)
                   }
                   alt={product.postTitle}
-                  className="h-[95px] w-full rounded-[5px] object-cover"
+                  className="h-[120px] w-full rounded-[5px] object-cover"
                 />
 
-                <div className="mt-[4px] flex justify-center gap-[4px]">
-                  <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
-                    Location
-                  </span>
-
-                  <span className="rounded-full border border-[#040037] px-[7px] text-[7px] leading-[10px]">
+                <div className="mt-[6px] flex justify-center">
+                  <span className="rounded-full border border-[#040037] px-[9px] text-[12px] leading-[18px]">
                     Troc
                   </span>
                 </div>
 
-                <h3 className="mt-[5px] truncate text-[8px] leading-none">
+                <h3 className="mt-[7px] truncate text-[14px] leading-tight">
                   {product.postTitle}
                 </h3>
 
-                <p className="mt-[2px] truncate text-[7px] leading-none text-[#7C7A8A]">
+                <p className="mt-[3px] truncate text-[12px] leading-tight text-[#7C7A8A]">
                   {product.category} · {product.condition}
                 </p>
 
-                <p className="mt-[3px] text-[9px] font-bold leading-none">
+                <p className="mt-[4px] text-[14px] font-bold leading-tight">
                   {product.estimatedPrice}
                 </p>
               </article>
@@ -98,11 +94,11 @@ export default function CatalogPage() {
         <section className="px-4 md:px-6 pt-[12px]">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-[13px] font-bold leading-none">
+              <h2 className="text-[18px] font-bold leading-tight">
                 Nos recommandations
               </h2>
 
-              <p className="mt-[5px] text-[9px] leading-none text-[#7C7A8A]">
+              <p className="mt-[5px] text-[13px] leading-none text-[#7C7A8A]">
                 {loading ? "…" : `${products.length} articles`}
               </p>
             </div>

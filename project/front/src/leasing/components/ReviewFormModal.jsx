@@ -72,10 +72,10 @@ export default function ReviewFormModal({ leasingId, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-[#040037]/60 backdrop-blur-xs font-['Figtree',sans-serif]">
       {/* Modal Container */}
-      <div className="w-[240px] bg-white rounded-[8px] border border-[#E6E6E6] shadow-2xl overflow-hidden flex flex-col animate-fadeIn">
+      <div className="w-[280px] max-w-[calc(100%-32px)] bg-white rounded-[8px] border border-[#E6E6E6] shadow-2xl overflow-hidden flex flex-col animate-fadeIn">
         {/* Header */}
         <div className="flex items-center justify-between px-[12px] py-[10px] border-b border-[#F2F2F5]">
-          <h2 className="text-[10px] font-extrabold text-[#040037] uppercase tracking-wide">
+          <h2 className="text-[16px] font-extrabold text-[#040037]">
             Donner votre avis
           </h2>
           <button
@@ -83,14 +83,14 @@ export default function ReviewFormModal({ leasingId, onClose }) {
             onClick={onClose}
             className="text-[#7C7A8A] hover:text-[#040037] focus:outline-none transition-colors"
           >
-            <span className="material-symbols-rounded text-[14px]">close</span>
+            <span className="material-symbols-rounded text-[18px]">close</span>
           </button>
         </div>
 
         {/* Form Body */}
         <form onSubmit={formik.handleSubmit} className="p-[12px] flex flex-col">
           {submitError && (
-            <div className="p-2 mb-2 bg-red-50 border border-red-100 text-[7px] font-bold text-red-600 rounded-[4px] text-center">
+            <div className="p-2 mb-2 bg-red-50 border border-red-100 text-[12px] font-bold text-red-600 rounded-[4px] text-center">
               {submitError}
             </div>
           )}
@@ -105,7 +105,7 @@ export default function ReviewFormModal({ leasingId, onClose }) {
                 className="focus:outline-none cursor-pointer transition-transform active:scale-90"
               >
                 <span
-                  className={`material-symbols-rounded text-[22px] ${
+                  className={`material-symbols-rounded text-[28px] ${
                     star <= formik.values.rating
                       ? "text-[#040037] fill-current"
                       : "text-gray-200"
@@ -130,16 +130,16 @@ export default function ReviewFormModal({ leasingId, onClose }) {
               onBlur={formik.handleBlur}
               value={formik.values.comment}
               rows="4"
-              className="w-full border border-[#E6E6E6] rounded-[6px] p-[8px] text-[8px] leading-tight text-[#040037] focus:outline-none focus:border-[#040037] resize-none bg-white placeholder-[#7C7A8A]"
+              className="w-full border border-[#E6E6E6] rounded-[6px] p-[8px] text-[14px] leading-snug text-[#040037] focus:outline-none focus:border-[#040037] resize-none bg-white placeholder-[#7C7A8A]"
             />
             {formik.touched.comment && formik.errors.comment ? (
-              <span className="text-[7px] text-red-500 font-bold mt-[2px]">
+              <span className="text-[12px] text-red-500 font-bold mt-[2px]">
                 {formik.errors.comment}
               </span>
             ) : null}
 
             {/* Max characters helper label inside bottom right */}
-            <span className="self-end text-[7px] text-[#7C7A8A] font-medium mt-[4px]">
+            <span className="self-end text-[12px] text-[#7C7A8A] font-medium mt-[4px]">
               caractères max 280.
             </span>
           </div>
@@ -148,7 +148,7 @@ export default function ReviewFormModal({ leasingId, onClose }) {
           <button
             type="submit"
             disabled={formik.isSubmitting}
-            className="bg-[#040037] text-white w-full rounded-[6px] py-[8px] flex items-center justify-center gap-[6px] text-[9px] font-extrabold uppercase mt-[10px] hover:bg-[#040037]/90 disabled:opacity-50 transition active:scale-[0.98]"
+            className="bg-[#040037] text-white w-full rounded-[6px] py-[10px] flex items-center justify-center gap-[6px] text-[15px] font-extrabold mt-[10px] hover:bg-[#040037]/90 disabled:opacity-50 transition active:scale-[0.98]"
           >
             {formik.isSubmitting ? (
               <span className="animate-pulse">Envoi...</span>

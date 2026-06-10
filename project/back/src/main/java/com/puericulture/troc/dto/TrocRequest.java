@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,4 +42,9 @@ public class TrocRequest {
                     "Product category identifier. It is not the business type; Troc is represented by the product_troc specialization.",
             example = "3")
     private String category;
+
+    @Schema(
+            description = "Cloudinary URLs of images to associate with the product.",
+            example = "[\"https://res.cloudinary.com/demo/image/upload/sample.jpg\"]")
+    private List<String> images;
 }
