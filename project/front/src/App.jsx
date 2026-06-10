@@ -14,6 +14,8 @@ import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx"
 import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import ProductTrocDetailView from "./troc/views/ProductTrocDetailView";
 import MyProductsSelectionView from "./troc/views/MyProductsSelectionView";
+import MessagesListView from "./troc/views/MessagesListView";
+import ChatView from "./troc/views/ChatView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
@@ -89,6 +91,8 @@ export default function App() {
                 path="/troc/select-my-product/:receiverId"
                 element={<MyProductsSelectionView />}
               />
+              <Route path="/troc/messages" element={<MessagesListView />} />
+              <Route path="/troc/chat/:exchangeId" element={<ChatView />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/home" replace />} />

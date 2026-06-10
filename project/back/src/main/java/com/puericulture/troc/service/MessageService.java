@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,17 +36,19 @@ public class MessageService {
         List<Exchange> asReceiver = exchangeRepository.findByReceiverProductAuthorId(userId);
 
         return Stream.concat(
-                        asProposer.stream().map(e -> toConversationDto(e, true)),
-                        asReceiver.stream().map(e -> toConversationDto(e, false)))
+                        asProposer.stream().map(e -> toConversationDto(e, true, userId)),
+                        asReceiver.stream().map(e -> toConversationDto(e, false, userId)))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<MessageDto> getMessages(Long exchangeId, UUID userId) {
         Exchange exchange =
                 exchangeRepository
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Échange introuvable"));
         assertUserInExchange(exchange, userId);
+        messageRepository.markAllAsReadForUser(exchangeId, userId);
 
         return messageRepository.findByExchangeIdOrderByMessageTimeAsc(exchangeId).stream()
                 .map(this::toMessageDto)
@@ -75,9 +78,12 @@ public class MessageService {
         }
     }
 
-    private ConversationDto toConversationDto(Exchange exchange, boolean isProposer) {
+    private ConversationDto toConversationDto(
+            Exchange exchange, boolean isProposer, UUID currentUserId) {
         Optional<Message> last =
                 messageRepository.findTopByExchangeIdOrderByMessageTimeDesc(exchange.getId());
+        int unread =
+                messageRepository.countUnreadByExchangeIdForUser(exchange.getId(), currentUserId);
         return ConversationDto.builder()
                 .exchangeId(exchange.getId())
                 .status(exchange.getStatus())
@@ -86,6 +92,7 @@ public class MessageService {
                 .lastMessageContent(last.map(Message::getContent).orElse(null))
                 .lastMessageTime(last.map(Message::getMessageTime).orElse(null))
                 .proposer(isProposer)
+                .unreadCount(unread)
                 .build();
     }
 

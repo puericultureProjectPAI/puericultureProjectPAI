@@ -17,4 +17,5 @@ public class ConversationDto {
     private String lastMessageContent;
     private OffsetDateTime lastMessageTime;
     private boolean proposer;
+    private int unreadCount;
 }

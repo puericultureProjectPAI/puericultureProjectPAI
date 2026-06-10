@@ -21,8 +21,8 @@ export default function MyProductsSelectionView() {
     if (!selectedId) return setLocalError("Sélectionnez un produit.");
     try {
       await createExchange({
-        proposerProductId: selectedId,
-        receiverProductId: parseInt(receiverId, 10),
+        proposerProduct: { id: selectedId },
+        receiverProduct: { id: parseInt(receiverId, 10) },
       });
       navigate("/troc", { replace: true });
     } catch (err) {
