@@ -7,6 +7,7 @@ import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
+import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ProductTrocMapper;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.time.LocalDateTime;
@@ -31,6 +32,13 @@ public class ProductTrocService {
         this.trocRepository = trocRepository;
         this.trocMapper = trocMapper;
         this.personRepository = personRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductTrocDto> findAllAvailable() {
+        return trocRepository.findByStatus(ProductTrocStatus.AVAILABLE).stream()
+                .map(trocMapper::toDto)
+                .toList();
     }
 
     @Transactional
