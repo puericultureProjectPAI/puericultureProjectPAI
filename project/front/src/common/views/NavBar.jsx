@@ -12,7 +12,7 @@ export default function Navbar() {
   const buttons = [
     { path: "/", label: "Accueil", icon: homeIcon },
     { path: "/", label: "Rechercher", icon: searchIcon },
-    { path: "/", label: "Publier", icon: postIcon },
+    { path: "/product/create", label: "Publier", icon: postIcon },
     { path: "/", label: "Messages", icon: messageIcon },
     { path: "/me", label: "Profil", icon: profileIcon },
   ];
