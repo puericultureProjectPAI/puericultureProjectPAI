@@ -9,7 +9,7 @@ export default function ModeSelectionStep() {
   };
 
   return (
-    <div>
+    <div className="font-figtree">
       <h2 className="mb-[33px] text-center text-[20px] font-extrabold leading-tight tracking-[-0.03em] text-[#080036]">
         Comment proposer cet article ?
       </h2>

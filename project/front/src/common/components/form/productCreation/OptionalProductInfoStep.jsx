@@ -29,7 +29,7 @@ function PriceInput({ id, name, placeholder = "0,00" }) {
 
 function LocationCard() {
   return (
-    <div className="rounded-xl bg-[#f4f3fb] px-[14px] py-[22px]">
+    <div className="rounded-xl bg-[#f4f3fb] px-[14px] py-[22px] font-figtree">
       <h2 className="mb-[22px] text-center text-[24px] font-extrabold leading-tight text-[#080036]">
         Location
       </h2>
@@ -79,7 +79,7 @@ function LocationCard() {
 
 function TrocCard() {
   return (
-    <div className="rounded-xl bg-[#f4f3fb] px-[14px] py-[22px]">
+    <div className="rounded-xl bg-[#f4f3fb] px-[14px] py-[22px] font-figtree">
       <h2 className="mb-[26px] text-center text-[24px] font-extrabold leading-tight text-[#080036]">
         Troc
       </h2>
@@ -99,7 +99,7 @@ function TrocCard() {
 
 function SecondHandCard() {
   return (
-    <div className="rounded-xl bg-[#f4f3fb] px-[14px] py-[22px]">
+    <div className="rounded-xl bg-[#f4f3fb] px-[14px] py-[22px] font-figtree">
       <h2 className="mb-[26px] text-center text-[24px] font-extrabold leading-tight text-[#080036]">
         Seconde main
       </h2>

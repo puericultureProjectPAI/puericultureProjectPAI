@@ -63,7 +63,12 @@ export default function RequiredProductInfoStep() {
   };
 
   return (
-    <div>
+    <div className="font-figtree">
+      <div className="mb-[7px] self-stretch">
+        <p className="text-center font-normal text-[15px] text-[#3A51C9]">
+          Max 5 photos JPG ou PNG
+        </p>
+      </div>
       <MyImageInput
         name="images"
         maxImages={5}
