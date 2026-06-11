@@ -23,6 +23,7 @@ export default {
         "info-low": "#E8F3FF80",
         "bg-base": "#FFFFFF",
         "bg-brand": "#000028",
+        "icon-subtle": "#757388",
         "feedback-text-subtle": "#757388",
         "feedback-text-brand": "#E91C2E",
         "feedback-border-neutral": "#D1D1D6",
