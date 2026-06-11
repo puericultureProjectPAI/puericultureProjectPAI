@@ -4,7 +4,7 @@ import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
 import DropdownEnfant from "./DropDownEnfant";
 
-export default function TimelineFrise({ timelineId = 1 }) {
+export default function TimelineFrise({ timelineId }) {
   const { periods, isLoading, error } = useTimelineData(timelineId);
   const [activePeriodId, setActivePeriodId] = useState(null);
 
@@ -32,13 +32,18 @@ export default function TimelineFrise({ timelineId = 1 }) {
   }
 
   return (
-    <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10">
+    <div
+      className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10"
+      style={{ overflowX: "clip" }}
+    >
       {/* HEADER */}
-      <div className="bg-white p-6 rounded-b-3xl shadow-sm mb-8">
-        <h2 className="text-xl font-bold text-gray-800">Ma Timeline</h2>
-        <p className="text-sm text-gray-500">
-          Anticipez les besoins de votre enfant
-        </p>
+      <div className="bg-white shadow-sm mb-8">
+        <div className="p-6 rounded-b-3xl">
+          <h2 className="text-xl font-bold text-gray-800">Ma Timeline</h2>
+          <p className="text-sm text-gray-500">
+            Anticipez les besoins de votre enfant
+          </p>
+        </div>
       </div>
       <DropdownEnfant />
 

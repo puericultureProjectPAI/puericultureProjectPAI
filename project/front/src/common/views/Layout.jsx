@@ -11,6 +11,7 @@ const Layout = () => {
         {/* routes contents will be integrated here*/}
         <Outlet />
       </main>
+
       <Navbar />
     </div>
   );

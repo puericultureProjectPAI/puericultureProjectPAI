@@ -1,6 +1,7 @@
 package com.puericulture.forwardtrading.mapper;
 
 import com.puericulture.common.dto.PersonProfileDto;
+import com.puericulture.forwardtrading.dto.OnBoardingDto.OnBoardingChildDto;
 import com.puericulture.forwardtrading.dto.children.ChildDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
@@ -21,6 +22,13 @@ public abstract class ChildrenMapper {
     @Mapping(target = "birthDate", source = "dpa")
     @Mapping(target = "gender", source = "gender")
     public abstract ChildrenEntity toChildrenEntity(CreateChildren children);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "person", ignore = true)
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "birthDate", source = "birthDate")
+    @Mapping(target = "gender", ignore = true)
+    public abstract ChildrenEntity toChildrenEntity(OnBoardingChildDto children);
 
     @Named("toChildrenPersonProfileDto")
     public List<PersonProfileDto.ChildPersonProfileDto> toChildrenPersonProfileDto(
