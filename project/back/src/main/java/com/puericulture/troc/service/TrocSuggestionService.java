@@ -1,108 +1,43 @@
 package com.puericulture.troc.service;
 
-import com.puericulture.config.errormanager.exception.BadRequestException;
-import com.puericulture.config.errormanager.exception.NotFoundException;
-import com.puericulture.troc.dto.CreateExchangeRequest;
-import com.puericulture.troc.dto.ExchangeResponse;
 import com.puericulture.troc.dto.ProductTrocDto;
-import com.puericulture.troc.dto.TrocSuggestionResponse;
+import com.puericulture.troc.dto.ProductTrocSuggestionDto;
 import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.entity.ProductTrocStatus;
-import com.puericulture.troc.entity.TrocSuggestion;
-import com.puericulture.troc.entity.TrocSuggestionStatus;
 import com.puericulture.troc.mapper.ProductTrocMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
-import com.puericulture.troc.repository.TrocSuggestionRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TrocSuggestionService {
 
-    private static final int MAX_SUGGESTIONS = 10;
-    private static final int MINIMUM_COMPATIBILITY_SCORE = 40;
+    private static final int MAX_SUGGESTIONS = 8;
+    private static final int MINIMUM_PERTINENCE_SCORE = 40;
 
     private final ProductTrocRepository productTrocRepository;
-    private final TrocSuggestionRepository trocSuggestionRepository;
     private final ExchangeRepository exchangeRepository;
     private final ProductTrocMapper productTrocMapper;
-    private final ExchangeService exchangeService;
 
     public TrocSuggestionService(
             ProductTrocRepository productTrocRepository,
-            TrocSuggestionRepository trocSuggestionRepository,
             ExchangeRepository exchangeRepository,
-            ProductTrocMapper productTrocMapper,
-            ExchangeService exchangeService) {
+            ProductTrocMapper productTrocMapper) {
         this.productTrocRepository = productTrocRepository;
-        this.trocSuggestionRepository = trocSuggestionRepository;
         this.exchangeRepository = exchangeRepository;
         this.productTrocMapper = productTrocMapper;
-        this.exchangeService = exchangeService;
-    }
-
-    @Transactional
-    public List<TrocSuggestionResponse> getSuggestionsForConnectedUser(UUID connectedUserId) {
-        List<TrocSuggestion> activeSuggestions =
-                new ArrayList<>(
-                        trocSuggestionRepository.findActiveSuggestionsForUser(
-                                connectedUserId, TrocSuggestionStatus.ACTIVE));
-
-        if (activeSuggestions.size() >= MAX_SUGGESTIONS) {
-            return activeSuggestions.stream().limit(MAX_SUGGESTIONS).map(this::toResponse).toList();
-        }
-
-        List<TrocSuggestion> generatedSuggestions = generateNewSuggestions(connectedUserId);
-        if (!generatedSuggestions.isEmpty()) {
-            activeSuggestions.addAll(trocSuggestionRepository.saveAll(generatedSuggestions));
-        }
-
-        return activeSuggestions.stream()
-                .sorted(Comparator.comparing(TrocSuggestion::getCompatibilityScore).reversed())
-                .limit(MAX_SUGGESTIONS)
-                .map(this::toResponse)
-                .toList();
     }
 
     @Transactional(readOnly = true)
-    public TrocSuggestionResponse getSuggestionDetails(Long suggestionId, UUID connectedUserId) {
-        TrocSuggestion suggestion = findSuggestionForUser(suggestionId, connectedUserId);
-        return toResponse(suggestion);
-    }
-
-    @Transactional
-    public void ignoreSuggestion(Long suggestionId, UUID connectedUserId) {
-        TrocSuggestion suggestion = findSuggestionForUser(suggestionId, connectedUserId);
-        suggestion.setStatus(TrocSuggestionStatus.IGNORED);
-        trocSuggestionRepository.save(suggestion);
-    }
-
-    @Transactional
-    public ExchangeResponse acceptSuggestion(Long suggestionId, UUID connectedUserId) {
-        TrocSuggestion suggestion = findSuggestionForUser(suggestionId, connectedUserId);
-
-        if (suggestion.getStatus() != TrocSuggestionStatus.ACTIVE) {
-            throw new BadRequestException("Only active suggestions can be accepted");
-        }
-
-        CreateExchangeRequest request = new CreateExchangeRequest();
-        request.setProposerProduct(suggestion.getRequesterProduct());
-        request.setReceiverProduct(suggestion.getSuggestedProduct());
-
-        ExchangeResponse exchangeResponse =
-                exchangeService.createExchange(request, connectedUserId);
-        suggestion.setStatus(TrocSuggestionStatus.ACCEPTED);
-        trocSuggestionRepository.save(suggestion);
-        return exchangeResponse;
-    }
-
-    private List<TrocSuggestion> generateNewSuggestions(UUID connectedUserId) {
+    public List<ProductTrocSuggestionDto> getSuggestionsForConnectedUser(UUID connectedUserId) {
         List<ProductTroc> requesterProducts =
                 productTrocRepository.findAvailableProductsByAuthor(
                         connectedUserId, ProductTrocStatus.AVAILABLE);
@@ -110,40 +45,50 @@ public class TrocSuggestionService {
                 productTrocRepository.findAvailableProductsNotOwnedByAuthor(
                         connectedUserId, ProductTrocStatus.AVAILABLE);
 
-        List<TrocSuggestion> suggestions = new ArrayList<>();
-
-        for (ProductTroc requesterProduct : requesterProducts) {
-            for (ProductTroc suggestedProduct : availableProducts) {
-                if (!canSuggestProductPair(connectedUserId, requesterProduct, suggestedProduct)) {
-                    continue;
-                }
-
-                CompatibilityResult compatibility =
-                        calculateCompatibility(requesterProduct, suggestedProduct);
-                if (compatibility.score() < MINIMUM_COMPATIBILITY_SCORE) {
-                    continue;
-                }
-
-                TrocSuggestion suggestion = new TrocSuggestion();
-                suggestion.setConnectedUser(requesterProduct.getAuthor());
-                suggestion.setRequesterProduct(requesterProduct);
-                suggestion.setSuggestedProduct(suggestedProduct);
-                suggestion.setCompatibilityScore(compatibility.score());
-                suggestion.setCompatibilityReason(compatibility.reason());
-                suggestion.setDistanceKm(calculateDistanceKm(requesterProduct, suggestedProduct));
-                suggestion.setStatus(TrocSuggestionStatus.ACTIVE);
-                suggestions.add(suggestion);
-            }
+        if (requesterProducts.isEmpty() || availableProducts.isEmpty()) {
+            return List.of();
         }
 
-        return suggestions.stream()
-                .sorted(Comparator.comparing(TrocSuggestion::getCompatibilityScore).reversed())
+        return availableProducts.stream()
+                .map(candidate -> buildBestSuggestionForCandidate(requesterProducts, candidate))
+                .flatMap(Optional::stream)
+                .filter(suggestion -> suggestion.getIndicePertinence() >= MINIMUM_PERTINENCE_SCORE)
+                .sorted(
+                        Comparator.comparing(ProductTrocSuggestionDto::getIndicePertinence)
+                                .reversed())
                 .limit(MAX_SUGGESTIONS)
                 .toList();
     }
 
+    private Optional<ProductTrocSuggestionDto> buildBestSuggestionForCandidate(
+            List<ProductTroc> requesterProducts, ProductTroc candidateProduct) {
+        SuggestionMatch bestMatch = null;
+
+        for (ProductTroc requesterProduct : requesterProducts) {
+            if (!canSuggestProductPair(requesterProduct, candidateProduct)) {
+                continue;
+            }
+
+            PertinenceResult pertinence = calculatePertinence(requesterProduct, candidateProduct);
+            if (bestMatch == null || pertinence.score() > bestMatch.pertinence().score()) {
+                bestMatch = new SuggestionMatch(candidateProduct, pertinence);
+            }
+        }
+
+        if (bestMatch == null) {
+            return Optional.empty();
+        }
+
+        ProductTrocDto productDto = productTrocMapper.toDto(bestMatch.product());
+        ProductTrocSuggestionDto suggestionDto = new ProductTrocSuggestionDto();
+        BeanUtils.copyProperties(productDto, suggestionDto);
+        suggestionDto.setIndicePertinence(bestMatch.pertinence().score());
+        suggestionDto.setPertinenceReason(bestMatch.pertinence().reason());
+        return Optional.of(suggestionDto);
+    }
+
     private boolean canSuggestProductPair(
-            UUID connectedUserId, ProductTroc requesterProduct, ProductTroc suggestedProduct) {
+            ProductTroc requesterProduct, ProductTroc suggestedProduct) {
         if (requesterProduct.getId() == null || suggestedProduct.getId() == null) {
             return false;
         }
@@ -153,20 +98,18 @@ public class TrocSuggestionService {
         }
 
         if (suggestedProduct.getAuthor() == null
-                || Objects.equals(suggestedProduct.getAuthor().getId(), connectedUserId)) {
+                || requesterProduct.getAuthor() == null
+                || Objects.equals(
+                        suggestedProduct.getAuthor().getId(),
+                        requesterProduct.getAuthor().getId())) {
             return false;
         }
 
-        if (exchangeRepository.existsBetweenProducts(
-                requesterProduct.getId(), suggestedProduct.getId())) {
-            return false;
-        }
-
-        return !trocSuggestionRepository.existsSuggestionForProductPair(
-                connectedUserId, requesterProduct.getId(), suggestedProduct.getId());
+        return !exchangeRepository.existsBetweenProducts(
+                requesterProduct.getId(), suggestedProduct.getId());
     }
 
-    private CompatibilityResult calculateCompatibility(
+    private PertinenceResult calculatePertinence(
             ProductTroc requesterProduct, ProductTroc suggestedProduct) {
         int score = 0;
         List<String> reasons = new ArrayList<>();
@@ -194,7 +137,7 @@ public class TrocSuggestionService {
 
         if (hasCompatibleAgeRange(requesterProduct, suggestedProduct)) {
             score += 10;
-            reasons.add("âge compatible");
+            reasons.add("tranche d'âge compatible");
         }
 
         if (isSameNonBlank(requesterProduct.getBrand(), suggestedProduct.getBrand())) {
@@ -210,10 +153,10 @@ public class TrocSuggestionService {
         int boundedScore = Math.min(score, 100);
         String reason =
                 reasons.isEmpty()
-                        ? "Suggestion générique basée sur les annonces disponibles"
-                        : "Compatibilité : " + String.join(", ", reasons);
+                        ? "Suggestion basée sur les annonces de troc disponibles"
+                        : "Pertinence : " + String.join(", ", reasons);
 
-        return new CompatibilityResult(boundedScore, reason);
+        return new PertinenceResult(boundedScore, reason);
     }
 
     private int calculatePriceScore(ProductTroc requesterProduct, ProductTroc suggestedProduct) {
@@ -258,14 +201,6 @@ public class TrocSuggestionService {
         return requesterMinAge <= suggestedMaxAge && suggestedMinAge <= requesterMaxAge;
     }
 
-    private Double calculateDistanceKm(ProductTroc requesterProduct, ProductTroc suggestedProduct) {
-        if (isSameCity(requesterProduct, suggestedProduct)) {
-            return 0.0;
-        }
-
-        return null;
-    }
-
     private boolean isSameCity(ProductTroc requesterProduct, ProductTroc suggestedProduct) {
         return isSameNonBlank(requesterProduct.getCity(), suggestedProduct.getCity());
     }
@@ -278,28 +213,7 @@ public class TrocSuggestionService {
                 && firstValue.trim().equalsIgnoreCase(secondValue.trim());
     }
 
-    private TrocSuggestion findSuggestionForUser(Long suggestionId, UUID connectedUserId) {
-        return trocSuggestionRepository
-                .findSuggestionForUser(suggestionId, connectedUserId)
-                .orElseThrow(() -> new NotFoundException("Troc suggestion not found"));
-    }
+    private record PertinenceResult(int score, String reason) {}
 
-    private TrocSuggestionResponse toResponse(TrocSuggestion suggestion) {
-        ProductTrocDto requesterProduct = productTrocMapper.toDto(suggestion.getRequesterProduct());
-        ProductTrocDto suggestedProduct = productTrocMapper.toDto(suggestion.getSuggestedProduct());
-
-        return TrocSuggestionResponse.builder()
-                .id(suggestion.getId())
-                .requesterProduct(requesterProduct)
-                .suggestedProduct(suggestedProduct)
-                .otherUser(suggestedProduct.getAuthor())
-                .compatibilityScore(suggestion.getCompatibilityScore())
-                .compatibilityReason(suggestion.getCompatibilityReason())
-                .distanceKm(suggestion.getDistanceKm())
-                .status(suggestion.getStatus())
-                .createdAt(suggestion.getCreatedAt())
-                .build();
-    }
-
-    private record CompatibilityResult(int score, String reason) {}
+    private record SuggestionMatch(ProductTroc product, PertinenceResult pertinence) {}
 }

@@ -1,13 +1,11 @@
 package com.puericulture.troc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.puericulture.troc.controller.TrocSuggestionController;
-import com.puericulture.troc.dto.ExchangeResponse;
-import com.puericulture.troc.dto.TrocSuggestionResponse;
+import com.puericulture.troc.dto.ProductTrocSuggestionDto;
 import com.puericulture.troc.service.TrocSuggestionService;
 import java.util.List;
 import java.util.UUID;
@@ -34,47 +32,18 @@ class TrocSuggestionControllerTest {
 
     @Test
     void shouldReturnSuggestionsForConnectedUser() {
-        List<TrocSuggestionResponse> expectedSuggestions = List.of(new TrocSuggestionResponse());
+        ProductTrocSuggestionDto suggestion = new ProductTrocSuggestionDto();
+        suggestion.setId(12L);
+        suggestion.setIndicePertinence(85);
+        List<ProductTrocSuggestionDto> expectedSuggestions = List.of(suggestion);
+
         when(trocSuggestionService.getSuggestionsForConnectedUser(MOCK_USER_ID))
                 .thenReturn(expectedSuggestions);
 
-        List<TrocSuggestionResponse> result =
+        List<ProductTrocSuggestionDto> result =
                 trocSuggestionController.getSuggestions(MOCK_USER_ID.toString());
 
         assertEquals(expectedSuggestions, result);
         verify(trocSuggestionService).getSuggestionsForConnectedUser(MOCK_USER_ID);
-    }
-
-    @Test
-    void shouldReturnSuggestionDetails() {
-        TrocSuggestionResponse expectedSuggestion = new TrocSuggestionResponse();
-        when(trocSuggestionService.getSuggestionDetails(12L, MOCK_USER_ID))
-                .thenReturn(expectedSuggestion);
-
-        TrocSuggestionResponse result =
-                trocSuggestionController.getSuggestionDetails(MOCK_USER_ID.toString(), 12L);
-
-        assertSame(expectedSuggestion, result);
-        verify(trocSuggestionService).getSuggestionDetails(12L, MOCK_USER_ID);
-    }
-
-    @Test
-    void shouldCallServiceWhenIgnoringSuggestion() {
-        trocSuggestionController.ignoreSuggestion(MOCK_USER_ID.toString(), 12L);
-
-        verify(trocSuggestionService).ignoreSuggestion(12L, MOCK_USER_ID);
-    }
-
-    @Test
-    void shouldAcceptSuggestionAndReturnExchange() {
-        ExchangeResponse expectedExchange = new ExchangeResponse();
-        when(trocSuggestionService.acceptSuggestion(12L, MOCK_USER_ID))
-                .thenReturn(expectedExchange);
-
-        ExchangeResponse result =
-                trocSuggestionController.acceptSuggestion(MOCK_USER_ID.toString(), 12L);
-
-        assertSame(expectedExchange, result);
-        verify(trocSuggestionService).acceptSuggestion(12L, MOCK_USER_ID);
     }
 }

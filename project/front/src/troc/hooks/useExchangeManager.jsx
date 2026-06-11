@@ -223,57 +223,6 @@ export const useExchangeManager = () => {
   }, []);
 
   /**
-   * Ignore a suggestion and refresh the suggestion list.
-   * @param {number} suggestionId - The suggestion ID to ignore
-   */
-  const ignoreTrocSuggestion = useCallback(
-    async (suggestionId) => {
-      setLoading(true);
-      setError(null);
-      setSuccessMessage(null);
-      try {
-        await exchangeApi.ignoreTrocSuggestion(suggestionId);
-        setSuccessMessage("Suggestion ignored successfully.");
-        await fetchTrocSuggestions();
-        return true;
-      } catch (err) {
-        setError("Failed to ignore suggestion: " + err.message);
-        console.error("Error ignoring suggestion:", err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [fetchTrocSuggestions],
-  );
-
-  /**
-   * Accept a suggestion, which creates an exchange proposal.
-   * @param {number} suggestionId - The suggestion ID to accept
-   */
-  const acceptTrocSuggestion = useCallback(
-    async (suggestionId) => {
-      setLoading(true);
-      setError(null);
-      setSuccessMessage(null);
-      try {
-        const response = await exchangeApi.acceptTrocSuggestion(suggestionId);
-        setSuccessMessage("Exchange proposal created from suggestion.");
-        await fetchTrocSuggestions();
-        await fetchMyExchanges();
-        return response.data;
-      } catch (err) {
-        setError("Failed to accept suggestion: " + err.message);
-        console.error("Error accepting suggestion:", err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [fetchMyExchanges, fetchTrocSuggestions],
-  );
-
-  /**
    * Clear success message
    */
   const clearSuccessMessage = useCallback(() => {
@@ -307,8 +256,6 @@ export const useExchangeManager = () => {
     confirmExchangeProposal,
     refuseExchangeProposal,
     deleteExchangeProposal,
-    ignoreTrocSuggestion,
-    acceptTrocSuggestion,
     clearSuccessMessage,
     clearError,
   };

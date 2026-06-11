@@ -433,8 +433,6 @@ const TrocView = () => {
           <TrocSuggestionList
             suggestions={exchangeManager.trocSuggestions}
             loading={exchangeManager.loading}
-            onAccept={exchangeManager.acceptTrocSuggestion}
-            onIgnore={exchangeManager.ignoreTrocSuggestion}
             onRefresh={fetchTrocSuggestions}
           />
         )}

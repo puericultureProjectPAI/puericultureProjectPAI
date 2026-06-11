@@ -93,30 +93,3 @@ export const getExchangeStatusForProduct = (productId) => {
 export const getTrocSuggestions = () => {
   return apiClient.get("/troc/suggestions");
 };
-
-/**
- * Retrieve the details of a specific troc suggestion.
- * @param {number} suggestionId - ID of the suggestion
- * @returns {Promise} Suggestion details
- */
-export const getTrocSuggestionDetails = (suggestionId) => {
-  return apiClient.get(`/troc/suggestions/${suggestionId}`);
-};
-
-/**
- * Ignore a troc suggestion so it is not shown again.
- * @param {number} suggestionId - ID of the suggestion
- * @returns {Promise} Response from the server
- */
-export const ignoreTrocSuggestion = (suggestionId) => {
-  return apiClient.post(`/troc/suggestions/${suggestionId}/ignore`);
-};
-
-/**
- * Accept a troc suggestion and create an exchange proposal.
- * @param {number} suggestionId - ID of the suggestion
- * @returns {Promise} Created exchange proposal
- */
-export const acceptTrocSuggestion = (suggestionId) => {
-  return apiClient.post(`/troc/suggestions/${suggestionId}/accept`);
-};
