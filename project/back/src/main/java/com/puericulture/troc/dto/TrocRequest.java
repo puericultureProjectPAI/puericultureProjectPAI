@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -56,4 +57,9 @@ public class TrocRequest {
 
     @Schema(description = "Condition of the product.", example = "Neuf")
     private String condition;
+
+    @Schema(
+            description = "Cloudinary URLs of images to associate with the product.",
+            example = "[\"https://res.cloudinary.com/demo/image/upload/sample.jpg\"]")
+    private List<String> images;
 }

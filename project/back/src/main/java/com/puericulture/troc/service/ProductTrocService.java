@@ -2,6 +2,7 @@ package com.puericulture.troc.service;
 
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
+import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
@@ -69,11 +70,18 @@ public class ProductTrocService {
         troc.setMaxAgeMonths(request.getMaxAgeMonths());
         troc.setCondition(request.getCondition());
 
+        List<String> imageUrls = request.getImages();
+        if (imageUrls != null) {
+            for (int i = 0; i < imageUrls.size(); i++) {
+                ProductImage image = new ProductImage();
+                image.setProduct(troc);
+                image.setImageUrl(imageUrls.get(i));
+                image.setPosition(i + 1);
+                troc.getImages().add(image);
+            }
+        }
+
         ProductTroc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);
-    }
-
-    private String defaultIfBlank(String value, String defaultValue) {
-        return value == null || value.isBlank() ? defaultValue : value;
     }
 }
