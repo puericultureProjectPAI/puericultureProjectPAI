@@ -1,8 +1,8 @@
-import searchIcon from "../../assets/icons/button/navbar/menu-search-icon-subtle.svg";
-import postIcon from "../../assets/icons/button/navbar/menu-post-icon-subtle.svg";
-import profileIcon from "../../assets/icons/button/navbar/menu-profile-icon-subtle.svg";
-import messageIcon from "../../assets/icons/button/navbar/menu-message-icon-subtle.svg";
-import homeIcon from "../../assets/icons/button/navbar/menu-home-icon-subtle.svg";
+import MenuSearchIcon from "../../assets/icons/button/navbar/menu-search-icon-subtle.jsx";
+import MenuPostIcon from "../../assets/icons/button/navbar/menu-post-icon-subtle.jsx";
+import MenuProfileIcon from "../../assets/icons/button/navbar/menu-profile-icon-subtle.jsx";
+import MenuMessageIcon from "../../assets/icons/button/navbar/menu-message-icon-subtle.jsx";
+import MenuHomeIcon from "../../assets/icons/button/navbar/menu-home-icon-subtle.jsx";
 import { useLocation, useNavigate } from "react-router";
 
 export default function Navbar() {
@@ -10,11 +10,11 @@ export default function Navbar() {
   const location = useLocation();
 
   const buttons = [
-    { path: "/", label: "Accueil", icon: homeIcon },
-    { path: "/", label: "Rechercher", icon: searchIcon },
-    { path: "/product/create", label: "Publier", icon: postIcon },
-    { path: "/", label: "Messages", icon: messageIcon },
-    { path: "/me", label: "Profil", icon: profileIcon },
+    { path: "/", label: "Accueil", Icon: MenuHomeIcon },
+    { path: "/", label: "Rechercher", Icon: MenuSearchIcon },
+    { path: "/product/create", label: "Publier", Icon: MenuPostIcon },
+    { path: "/", label: "Messages", Icon: MenuMessageIcon },
+    { path: "/me", label: "Profil", Icon: MenuProfileIcon },
   ];
 
   return (
@@ -24,7 +24,7 @@ export default function Navbar() {
           key={b.label}
           active={location.pathname === b.path}
           onClick={() => navigate(b.path)}
-          icon={b.icon}
+          Icon={b.Icon}
           label={b.label}
         />
       ))}
@@ -32,15 +32,15 @@ export default function Navbar() {
   );
 }
 
-function IconButton({ active, onClick, icon, label }) {
+function IconButton({ active, onClick, Icon, label }) {
+  console.log(label, active);
   return (
     <div
       onClick={onClick}
       className="flex flex-col items-center cursor-pointer"
     >
-      <img
-        src={icon}
-        className={active ? "text-text-brand" : "text-text-subtle"}
+      <Icon
+        className={active ? "text-icon-brand" : "text-feedback-icon-subtle"}
       />
 
       <div

@@ -14,6 +14,7 @@ export default {
 
         "feedback-icon-brand": "#FF9D00",
         "feedback-icon-neutral": "#757388",
+        "icon-brand": "#040037",
 
         //bg-alternate
         "bg-alternate": "#F2F2F9",
@@ -22,7 +23,6 @@ export default {
         "info-low": "#E8F3FF80",
         "bg-base": "#FFFFFF",
         "bg-brand": "#000028",
-        "icon-subtle": "#757388",
         "feedback-text-subtle": "#757388",
         "feedback-text-brand": "#E91C2E",
         "feedback-border-neutral": "#D1D1D6",
