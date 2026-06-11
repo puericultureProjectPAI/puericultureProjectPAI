@@ -30,7 +30,7 @@ export default function useConditionAnalysis() {
       }
     } catch {
       setError(
-        "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement.",
+        "L'analyse automatique a échoué. Veuillez renseigner l'état manuellement.",
       );
     } finally {
       setIsAnalyzing(false);

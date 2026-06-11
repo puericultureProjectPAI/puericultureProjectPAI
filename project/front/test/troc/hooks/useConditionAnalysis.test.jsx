@@ -109,7 +109,7 @@ describe("useConditionAnalysis", () => {
     await waitFor(() => expect(result.current.isAnalyzing).toBe(false));
 
     expect(result.current.error).toBe(
-      "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement.",
+      "L'analyse automatique a échoué. Veuillez renseigner l'état manuellement.",
     );
     expect(result.current.suggestion).toBeNull();
   });

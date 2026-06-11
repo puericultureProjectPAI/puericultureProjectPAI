@@ -10,6 +10,7 @@ import com.puericulture.common.dto.PersonDto;
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
+import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
@@ -98,7 +99,7 @@ class ProductTrocServiceTest {
         given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> productTrocService.createTroc(request, AUTHOR_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("Authenticated person not found");
     }
 

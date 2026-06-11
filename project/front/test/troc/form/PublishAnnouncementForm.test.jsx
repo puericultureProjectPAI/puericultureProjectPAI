@@ -39,8 +39,10 @@ describe("PublishAnnouncementForm", () => {
       <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />,
     );
 
+    // Step 1: mode selection → navigate to step 2
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
+    // Step 2: all required TROC fields (TROC submits directly from step 2)
     await screen.findByLabelText(/Nom de l'article/i);
     const fileInput = container.querySelector('input[type="file"]');
     const file = new File(["image content"], "poussette.png", {
@@ -60,21 +62,13 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.change(screen.getByLabelText(/Catégorie/i), {
       target: { value: "Poussettes, porte-bébés et sièges auto" },
     });
-    fireEvent.change(screen.getByLabelText(/Ville/i), {
-      target: { value: "Lille" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
-
-    await screen.findByText(/informations complémentaires/i);
     fireEvent.change(screen.getByLabelText(/État/i), {
       target: { value: "Très bon état" },
     });
-
-    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
-
-    await screen.findByRole("button", { name: /publier/i });
-    fireEvent.change(screen.getByLabelText(/Prix estimé/i), {
+    fireEvent.change(screen.getByLabelText(/Ville/i), {
+      target: { value: "Lille" },
+    });
+    fireEvent.change(screen.getByLabelText(/Prix/i), {
       target: { value: "40" },
     });
 
@@ -90,6 +84,9 @@ describe("PublishAnnouncementForm", () => {
       category: "Poussettes, porte-bébés et sièges auto",
       condition: "Très bon état",
       price: 0,
+      brand: "",
+      ageRange: "",
+      maxWeight: "",
     });
   });
 });
