@@ -1,139 +1,55 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { apiClient } from "../../common/utils/apiClient";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import Header from "../../common/views/Header";
 import Navbar from "../../common/views/NavBar";
+import useCatalogFilters from "../hooks/useCatalogFilters";
 import ArrivalPackBanner from "../components/ArrivalPackBanner";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
-const getDateInFrance = (daysFromToday = 0) => {
-  const date = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
-  );
-  date.setDate(date.getDate() + daysFromToday);
-  return date.toISOString().split("T")[0];
-};
-
-const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
-
 export default function CatalogPage() {
   const navigate = useNavigate();
-
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const [cities, setCities] = useState([]);
-  const [city, setCity] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [dateError, setDateError] = useState("");
-  const [showNoResultModal, setShowNoResultModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  const [appliedFilters, setAppliedFilters] = useState(null);
-  const minRentalStartDate = getMinimumRentalStartDateFrance();
+  const {
+    products,
+    loading,
+    error,
+    cities,
+    city,
+    setCity,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    dateError,
+    showNoResultModal,
+    setShowNoResultModal,
+    minRentalStartDate,
+    handleSearch,
+    handleResetFilters,
+  } = useCatalogFilters();
 
-  const loadProducts = () => {
-    setLoading(true);
-    setError("");
-    apiClient
-      .get("/public/leasing/products")
-      .then((res) => setProducts(res.data))
-      .catch(() => setError("Impossible de charger les articles."))
-      .finally(() => setLoading(false));
-  };
+  const [searchParams] = useSearchParams();
+  const appliedCity = searchParams.get("city") || "";
+  const appliedStartDate = searchParams.get("startDate") || "";
+  const appliedEndDate = searchParams.get("endDate") || "";
 
-  useEffect(() => {
-    apiClient
-      .get("/public/leasing/products")
-      .then((res) => setProducts(res.data))
-      .catch(() => setError("Impossible de charger les articles."))
-      .finally(() => setLoading(false));
-
-    apiClient
-      .get("/public/leasing/products/cities")
-      .then((res) => setCities(res.data))
-      .catch(() => setCities([]));
-  }, []);
-
-  const handleSearch = () => {
-    const hasCity = !!city;
-    const hasStartDate = !!startDate;
-    const hasEndDate = !!endDate;
-
-    if (!hasCity && !hasStartDate && !hasEndDate) {
-      setDateError("");
-      setAppliedFilters(null);
-      loadProducts();
-      return;
-    }
-
-    if (hasStartDate !== hasEndDate) {
-      setDateError("Renseignez une date de début et une date de fin.");
-      return;
-    }
-
-    if (
-      (startDate && startDate < minRentalStartDate) ||
-      (endDate && endDate < minRentalStartDate)
-    ) {
-      setDateError(
-        "La date de début doit être au moins 3 jours après aujourd'hui.",
-      );
-      return;
-    }
-
-    if (startDate && endDate && endDate < startDate) {
-      setDateError("La date de fin doit être après la date de début.");
-      return;
-    }
-
-    setDateError("");
-    setLoading(true);
-    setError("");
-    setShowNoResultModal(false);
-
-    const body = {};
-    if (city) body.city = city;
-    if (startDate) body.startDate = startDate;
-    if (endDate) body.endDate = endDate;
-
-    apiClient
-      .post("/public/leasing/products/filter", body)
-      .then((res) => {
-        setProducts(res.data);
-        if (res.data.length === 0) {
-          setAppliedFilters(null);
-          setShowNoResultModal(true);
-          return;
+  const appliedFilters =
+    appliedCity && appliedStartDate && appliedEndDate && products.length > 0
+      ? {
+          city: appliedCity,
+          startDate: appliedStartDate,
+          endDate: appliedEndDate,
         }
-
-        setAppliedFilters(
-          city && startDate && endDate ? { city, startDate, endDate } : null,
-        );
-      })
-      .catch(() => setError("Erreur lors du filtrage."))
-      .finally(() => setLoading(false));
-  };
-
-  const handleResetFilters = () => {
-    setCity("");
-    setStartDate("");
-    setEndDate("");
-    setDateError("");
-    setAppliedFilters(null);
-    setShowNoResultModal(false);
-    loadProducts();
-  };
+      : null;
 
   return (
     <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037]">
       <Header />
 
       <main className="flex-1 overflow-y-auto">
-        <section className="px-4 md:px-6 pt-[12px]">
+        <section className="px-[24px] pt-[12px]">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-[18px] font-bold leading-tight">
@@ -160,10 +76,10 @@ export default function CatalogPage() {
           </div>
 
           {showFilters && (
-            <section className="mt-[11px] rounded-[4px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
+            <section className="mt-[11px] rounded-[8px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
               <p className="text-[14px] font-medium">Ville de destination</p>
 
-              <div className="mt-[8px] flex h-[38px] items-center gap-[6px] rounded-[5px] border border-[#A6A3B8] px-[8px]">
+              <div className="mt-[8px] flex h-[38px] items-center gap-[6px] rounded-[8px] border border-[#A6A3B8] px-[8px]">
                 <span className="material-symbols-rounded text-[18px] text-[#7C7A8A]">
                   location_on
                 </span>
@@ -224,14 +140,14 @@ export default function CatalogPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-[40px] w-full rounded-[4px] border border-[#040037] bg-white text-[15px] font-bold text-[#040037]"
+                  className="h-[40px] w-full rounded-[8px] border border-[#040037] bg-white text-[15px] font-bold text-[#040037]"
                 >
                   Réinitialiser
                 </button>
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="h-[40px] w-full rounded-[4px] bg-[#040037] text-[15px] font-bold text-white"
+                  className="h-[40px] w-full rounded-[8px] bg-[#040037] text-[15px] font-bold text-white"
                 >
                   Rechercher
                 </button>
@@ -248,7 +164,7 @@ export default function CatalogPage() {
           />
         )}
 
-        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
+        <section className="grid grid-cols-2 gap-[20px] px-[24px] pb-4 pt-[14px] md:grid-cols-3 lg:grid-cols-4">
           {loading && (
             <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
@@ -283,7 +199,7 @@ export default function CatalogPage() {
                     }`,
                   );
                 }}
-                className={`h-[220px] rounded-[6px] bg-white p-[8px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
+                className={`min-h-[236px] rounded-[8px] bg-white p-[8px] pb-[16px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] ${
                   product.available
                     ? "cursor-pointer"
                     : "cursor-pointer opacity-50"
@@ -295,8 +211,8 @@ export default function CatalogPage() {
                   className="h-[120px] w-full rounded-[5px] object-cover"
                 />
 
-                <div className="mt-[6px] flex justify-center">
-                  <span className="rounded-full border border-[#040037] px-[9px] text-[12px] leading-[18px]">
+                <div className="mt-[6px] flex justify-end">
+                  <span className="rounded-[12px] border border-[#040037] px-[9px] text-[12px] leading-[18px]">
                     {product.badgeLabel || "Location"}
                   </span>
                 </div>
@@ -355,7 +271,7 @@ export default function CatalogPage() {
 function DateInput({ value, onChange, hasError, min }) {
   return (
     <div
-      className={`flex h-[38px] flex-1 items-center justify-between rounded-[4px] border px-[8px] ${
+      className={`flex h-[38px] flex-1 items-center justify-between rounded-[8px] border px-[8px] ${
         hasError ? "border-red-500" : "border-[#A6A3B8]"
       }`}
     >
