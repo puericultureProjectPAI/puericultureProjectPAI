@@ -10,7 +10,14 @@ const fallbackImage = (category) =>
 
 export default function CatalogPage() {
   const navigate = useNavigate();
-  const [showFilters, setShowFilters] = useState(true);
+  const [searchParams] = useSearchParams();
+  const appliedCity = searchParams.get("city") || "";
+  const appliedStartDate = searchParams.get("startDate") || "";
+  const appliedEndDate = searchParams.get("endDate") || "";
+
+  const hasParams = !!(appliedCity && appliedStartDate && appliedEndDate);
+  const [showFilters, setShowFilters] = useState(!hasParams);
+
   const {
     products,
     loading,
@@ -30,13 +37,8 @@ export default function CatalogPage() {
     handleResetFilters,
   } = useCatalogFilters();
 
-  const [searchParams] = useSearchParams();
-  const appliedCity = searchParams.get("city") || "";
-  const appliedStartDate = searchParams.get("startDate") || "";
-  const appliedEndDate = searchParams.get("endDate") || "";
-
   const appliedFilters =
-    appliedCity && appliedStartDate && appliedEndDate && products.length > 0
+    appliedCity && appliedStartDate && appliedEndDate
       ? {
           city: appliedCity,
           startDate: appliedStartDate,
@@ -146,7 +148,10 @@ export default function CatalogPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSearch}
+                  onClick={() => {
+                    const ok = handleSearch();
+                    if (ok) setShowFilters(false);
+                  }}
                   className="h-[40px] w-full rounded-[8px] bg-[#040037] text-[15px] font-bold text-white"
                 >
                   Rechercher

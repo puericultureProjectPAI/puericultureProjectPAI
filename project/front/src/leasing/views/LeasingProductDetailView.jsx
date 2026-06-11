@@ -19,7 +19,7 @@ const getDateInFrance = (daysFromToday = 0) => {
   return date.toISOString().split("T")[0];
 };
 
-const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
+const getMinimumRentalStartDateFrance = () => getDateInFrance(0);
 
 const getDateInOneMonthFrance = (startDate) => {
   const date = new Date(
