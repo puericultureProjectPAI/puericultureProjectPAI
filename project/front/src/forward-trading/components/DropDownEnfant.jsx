@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import pour la redirection
 import { useChildren } from "../hooks/useChildren";
 
-const DropdownEnfant = () => {
+const DropdownEnfant = ({ timelineId }) => {
   const { children, loading, error } = useChildren();
   const navigate = useNavigate(); // Initialisation du hook de navigation
 
@@ -10,13 +10,16 @@ const DropdownEnfant = () => {
   const [manuallySelectedChild, setManuallySelectedChild] = useState(null);
 
   const activeChild =
-    manuallySelectedChild || (children?.length > 0 ? children[0] : null);
-
+    manuallySelectedChild ||
+    (children?.length > 0
+      ? children.filter((child) => child.timelineId == timelineId)[0]
+      : null);
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelect = (child) => {
     setManuallySelectedChild(child);
     setIsOpen(false);
+    navigate(`../${child.timelineId}`, { relative: "path" });
   };
 
   // Redirection vers la page d'ajout
@@ -44,7 +47,7 @@ const DropdownEnfant = () => {
     children?.filter((child) => child.id !== activeChild?.id) || [];
 
   return (
-    <div className="relative w-[330px] font-figtree mx-auto">
+    <div className="relative w-[330px] font-figtree mx-auto z-50">
       {/* BOUTON DÉCLENCHEUR */}
       <button
         type="button"

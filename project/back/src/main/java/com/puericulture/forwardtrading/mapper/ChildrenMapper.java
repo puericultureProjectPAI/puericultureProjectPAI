@@ -50,6 +50,7 @@ public abstract class ChildrenMapper {
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "firstName", source = "name")
+    @Mapping(target = "timelineId", source = "timelines", qualifiedByName = "getTimelineId")
     public abstract ChildDto toChildDtoDropDown(ChildrenEntity child);
 
     @Named("getTimelineId")

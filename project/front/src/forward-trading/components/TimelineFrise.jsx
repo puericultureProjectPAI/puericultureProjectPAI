@@ -45,7 +45,7 @@ export default function TimelineFrise({ timelineId }) {
           </p>
         </div>
       </div>
-      <DropdownEnfant />
+      <DropdownEnfant timelineId={timelineId} />
 
       {/* FRISE */}
       <TimelineNavigator
