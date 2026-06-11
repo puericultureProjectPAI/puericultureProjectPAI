@@ -3,6 +3,7 @@ package com.puericulture.troc.service;
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
+import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
@@ -49,10 +50,7 @@ public class ProductTrocService {
         Person author =
                 personRepository
                         .findById(authorId)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Authenticated person not found"));
+                        .orElseThrow(() -> new NotFoundException("Authenticated person not found"));
 
         ProductTroc troc = new ProductTroc();
         troc.setPostTitle(request.getTitle());

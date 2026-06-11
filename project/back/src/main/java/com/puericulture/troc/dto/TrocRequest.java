@@ -36,10 +36,11 @@ public class TrocRequest {
     @Schema(description = "City where the product is located.", example = "Lille")
     private String city;
 
+    @NotBlank
     @Schema(
             description =
                     "Product category identifier. It is not the business type; Troc is represented by the product_troc specialization.",
-            example = "3")
+            example = "Jeux et jouets")
     private String category;
 
     @Schema(

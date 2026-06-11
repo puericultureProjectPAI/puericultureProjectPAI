@@ -20,6 +20,10 @@ const initialValues = {
   brand: "",
   model: "",
   dimensions: "",
+  dimensionsLong: "",
+  dimensionsLarg: "",
+  ageRange: "",
+  maxWeight: "",
   radius: "",
   wantedArticle: "",
   estimatedPrice: "",
@@ -32,10 +36,19 @@ const validationSchemas = {
   }),
   2: Yup.object({
     images: Yup.array().min(1, "Au moins une image est obligatoire"),
-    title: Yup.string().required("Le nom de l'article est obligatoire"),
-    description: Yup.string().required("La description est obligatoire"),
+    title: Yup.string().trim().required("Le nom de l'article est obligatoire"),
+    description: Yup.string().trim().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
     city: Yup.string().required("La ville est obligatoire"),
+    estimatedPrice: Yup.number().when("mode", {
+      is: "TROC",
+      then: (schema) =>
+        schema
+          .typeError("Le prix doit être un nombre")
+          .min(0, "Le prix doit être positif")
+          .required("Le prix est obligatoire"),
+      otherwise: (schema) => schema.optional(),
+    }),
   }),
   3: Yup.object({}),
   4: Yup.object({
@@ -68,6 +81,9 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           city: values.city,
           category: values.category,
           condition: values.condition,
+          brand: values.brand,
+          ageRange: values.ageRange,
+          maxWeight: values.maxWeight,
         };
 
         const isCreated = await onSubmit(values.mode, payload);

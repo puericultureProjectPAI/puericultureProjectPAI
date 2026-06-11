@@ -31,7 +31,9 @@ export default function PublicationFormActions({
   };
 
   const isLastStep =
-    step === 5 || (step === 4 && values?.mode !== "SECOND_HAND");
+    (step === 2 && values?.mode === "TROC") ||
+    step === 5 ||
+    (step === 4 && values?.mode !== "SECOND_HAND");
 
   return (
     <div className="mt-6 flex items-center justify-center gap-4">
