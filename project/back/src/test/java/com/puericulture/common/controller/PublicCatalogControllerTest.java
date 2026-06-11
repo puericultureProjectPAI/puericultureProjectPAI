@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.puericulture.common.dto.ProductCardDto;
+import com.puericulture.common.security.JwtAuthenticationFilter;
 import com.puericulture.common.service.PublicCatalogService;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,8 @@ public class PublicCatalogControllerTest {
     @Autowired private MockMvc mockMvc;
 
     @MockBean private PublicCatalogService publicCatalogService;
+
+    @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
     void shouldReturnProductsByAgeRange() throws Exception {
