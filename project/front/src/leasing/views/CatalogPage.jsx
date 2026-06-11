@@ -280,7 +280,7 @@ function DateInput({ value, onChange, hasError, min }) {
         value={value}
         min={min}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent text-[13px] outline-none"
+        className="h-full w-full bg-transparent text-[13px] outline-none"
       />
     </div>
   );
