@@ -23,12 +23,10 @@ export default function PublishAnnouncementView() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f6f6fb] px-4 py-6">
-      <PublishAnnouncementForm
-        error={trocError || secondHandError || leasingError}
-        onSubmit={handleSubmit}
-        success={trocSuccess || secondHandSuccess || leasingSuccess}
-      />
-    </main>
+    <PublishAnnouncementForm
+      error={trocError || secondHandError || leasingError}
+      onSubmit={handleSubmit}
+      success={trocSuccess || secondHandSuccess || leasingSuccess}
+    />
   );
 }

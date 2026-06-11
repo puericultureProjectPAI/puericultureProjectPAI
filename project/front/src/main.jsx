@@ -4,10 +4,11 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.jsx";
 import "./index.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // Virtual import from vite-plugin-pwa
 import { registerSW } from "virtual:pwa-register";
-
 // Initialize the Service Worker and listen for new deployments
 const updateSW = registerSW({
   onNeedRefresh() {
