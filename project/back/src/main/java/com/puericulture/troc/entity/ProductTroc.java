@@ -17,6 +17,7 @@ public class ProductTroc extends Product {
     @Column(name = "estimated_price")
     private Long estimatedPrice;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ProductTrocStatus status;
 
