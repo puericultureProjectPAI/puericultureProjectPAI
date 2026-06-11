@@ -14,4 +14,7 @@ public class ProductTrocSuggestionDto extends ProductTrocDto {
 
     @Schema(description = "Short explanation of the relevance score.")
     private String pertinenceReason;
+
+    @Schema(description = "Distance in kilometers when geolocation is available.", example = "3.5")
+    private Double distanceKm;
 }

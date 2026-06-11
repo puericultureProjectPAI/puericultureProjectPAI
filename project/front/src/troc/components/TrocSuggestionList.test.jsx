@@ -20,17 +20,22 @@ describe("TrocSuggestionList", () => {
   it("renders product suggestions with their relevance score", () => {
     render(
       <TrocSuggestionList
-        suggestions={[suggestion]}
         loading={false}
         onRefresh={vi.fn()}
+        suggestions={[suggestion]}
       />,
     );
 
-    expect(screen.getByText("Suggestions de troc")).toBeInTheDocument();
+    expect(screen.getByText("Nos recommandations")).toBeInTheDocument();
     expect(screen.getByText("Siège auto")).toBeInTheDocument();
     expect(screen.getByText("85%")).toBeInTheDocument();
     expect(
       screen.getByText("Pertinence : même catégorie, même ville"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Voir détail")).toBeInTheDocument();
+    expect(screen.getByText("Ignorer")).toBeInTheDocument();
+    expect(
+      screen.getByText("Accepter et proposer un troc"),
     ).toBeInTheDocument();
   });
 
@@ -39,9 +44,9 @@ describe("TrocSuggestionList", () => {
 
     render(
       <TrocSuggestionList
-        suggestions={[]}
         loading={false}
         onRefresh={onRefresh}
+        suggestions={[]}
       />,
     );
 
@@ -52,5 +57,32 @@ describe("TrocSuggestionList", () => {
     fireEvent.click(screen.getByText("Actualiser"));
 
     expect(onRefresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides a suggestion when it is ignored", () => {
+    render(<TrocSuggestionList loading={false} suggestions={[suggestion]} />);
+
+    fireEvent.click(screen.getByText("Ignorer"));
+
+    expect(screen.queryByText("Siège auto")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Aucune suggestion disponible pour le moment."),
+    ).toBeInTheDocument();
+  });
+
+  it("calls accept callback when accepting a suggestion", () => {
+    const onAccept = vi.fn();
+
+    render(
+      <TrocSuggestionList
+        loading={false}
+        onAccept={onAccept}
+        suggestions={[suggestion]}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Accepter et proposer un troc"));
+
+    expect(onAccept).toHaveBeenCalledWith(suggestion);
   });
 });

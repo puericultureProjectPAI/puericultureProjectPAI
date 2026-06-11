@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import TrocSuggestionList from "../components/TrocSuggestionList.jsx";
+import { useExchangeManager } from "../hooks/useExchangeManager.jsx";
 import useTroc from "../hooks/useTroc";
 
 const fallbackImage = (category) =>
@@ -9,15 +11,38 @@ export default function CatalogPage() {
   const navigate = useNavigate();
 
   const { error, loading, getProductsTroc, products } = useTroc();
+  const {
+    fetchTrocSuggestions,
+    loading: suggestionsLoading,
+    trocSuggestions,
+  } = useExchangeManager();
 
   useEffect(() => {
-    getProductsTroc();
+    const timeoutId = globalThis.setTimeout(() => {
+      void getProductsTroc();
+    }, 0);
+
+    return () => globalThis.clearTimeout(timeoutId);
   }, []);
+
+  useEffect(() => {
+    const timeoutId = globalThis.setTimeout(() => {
+      void fetchTrocSuggestions();
+    }, 0);
+
+    return () => globalThis.clearTimeout(timeoutId);
+  }, [fetchTrocSuggestions]);
+
+  const goToProductDetail = (product) => {
+    if (product?.id) {
+      navigate(`/troc/products/${product.id}`);
+    }
+  };
 
   return (
     <div className="relative flex flex-col overflow-hidden bg-white text-[#040037]">
       <main className="flex-1">
-        <section className="px-4 md:px-6 pt-[12px]">
+        <section className="px-4 pt-[12px] md:px-6">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-[18px] font-bold leading-tight">
@@ -31,7 +56,7 @@ export default function CatalogPage() {
           </div>
         </section>
 
-        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 md:px-6 pt-[14px] pb-4">
+        <section className="grid grid-cols-2 gap-4 px-4 pb-4 pt-[14px] md:grid-cols-3 md:px-6 lg:grid-cols-4">
           {loading && (
             <p className="col-span-2 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
@@ -56,9 +81,9 @@ export default function CatalogPage() {
               <article
                 key={product.id}
                 onClick={() => {
-                  navigate(`/troc/products/${product.id}`);
+                  goToProductDetail(product);
                 }}
-                className={`h-[220px] rounded-[6px] bg-white p-[8px] shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer`}
+                className="h-[220px] cursor-pointer rounded-[6px] bg-white p-[8px] shadow-[0_1px_4px_rgba(0,0,0,0.10)]"
               >
                 <img
                   src={
@@ -91,18 +116,14 @@ export default function CatalogPage() {
             ))}
         </section>
 
-        <section className="px-4 md:px-6 pt-[12px]">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-[18px] font-bold leading-tight">
-                Nos recommandations
-              </h2>
-
-              <p className="mt-[5px] text-[13px] leading-none text-[#7C7A8A]">
-                {loading ? "…" : `${products.length} articles`}
-              </p>
-            </div>
-          </div>
+        <section className="px-4 pb-8 pt-[12px] md:px-6">
+          <TrocSuggestionList
+            loading={suggestionsLoading}
+            onAccept={goToProductDetail}
+            onRefresh={fetchTrocSuggestions}
+            onViewDetails={goToProductDetail}
+            suggestions={trocSuggestions}
+          />
         </section>
       </main>
     </div>
