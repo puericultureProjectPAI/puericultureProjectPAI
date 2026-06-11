@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ProductTrocRepository extends JpaRepository<ProductTroc, Long> {
+    List<ProductTroc> findByStatus(ProductTrocStatus status);
 
     @Query(
             """

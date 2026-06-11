@@ -2,6 +2,7 @@ package com.puericulture.secondhand.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,5 +23,5 @@ public class ExternalProductDTO {
     private String brand;
     private String category;
     private String imageUrl;
-    private Double price;
+    private BigDecimal price;
 }

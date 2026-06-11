@@ -12,16 +12,16 @@ export default function Navbar() {
   const buttons = [
     { path: "/", label: "Accueil", icon: homeIcon },
     { path: "/", label: "Rechercher", icon: searchIcon },
-    { path: "/", label: "Publier", icon: postIcon },
+    { path: "/product/create", label: "Publier", icon: postIcon },
     { path: "/", label: "Messages", icon: messageIcon },
     { path: "/me", label: "Profil", icon: profileIcon },
   ];
 
   return (
-    <div className="flex justify-between px-6 py-3">
+    <div className="shrink-0 z-50 bg-white border-t border-gray-200 flex justify-between px-6 py-3">
       {buttons.map((b) => (
         <IconButton
-          key={b.path}
+          key={b.label}
           active={location.pathname === b.path}
           onClick={() => navigate(b.path)}
           icon={b.icon}
