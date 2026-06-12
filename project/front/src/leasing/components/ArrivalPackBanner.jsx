@@ -31,21 +31,38 @@ export default function ArrivalPackBanner({ city, startDate, endDate }) {
   };
 
   return (
-    <div className="mx-4 mb-4 mt-2 flex items-center justify-between rounded-[12px] border border-[#3A51C9] bg-[#e8f3ff] px-[12px] py-[8px]">
-      <button
-        type="button"
-        onClick={handleCompose}
-        className="flex-1 text-left font-['Figtree',sans-serif] text-[16px] font-normal text-[#3A51C9] outline-none"
-      >
-        Composez votre pack !
-      </button>
+    <div className="mx-4 mb-4 mt-2 flex h-[70px] items-center justify-between gap-[16px] rounded-[8px] bg-gradient-to-r from-[#B6CFFF] to-white px-[12px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.15)]">
+      {/* Close button */}
       <button
         type="button"
         onClick={closeBanner}
-        className="ml-2 flex items-center justify-center text-[#3A51C9] hover:opacity-80"
+        className="flex items-center justify-center text-[#3A51C9] hover:opacity-80 shrink-0"
         aria-label="Fermer le pack d'arrivée"
       >
         <span className="material-symbols-rounded text-[20px]">close</span>
+      </button>
+
+      {/* Banner content and action button */}
+      <button
+        type="button"
+        onClick={handleCompose}
+        className="flex flex-1 items-center justify-between gap-[12px] text-left outline-none"
+      >
+        <div className="flex flex-col gap-[4px] items-start justify-center">
+          <span className="font-['Figtree',sans-serif] text-[20px] font-bold text-[#040037] leading-none">
+            Composez votre pack !
+          </span>
+          <span className="font-['Figtree',sans-serif] text-[16px] font-normal text-[#33323d] leading-none">
+            Sélection intelligente par IA
+          </span>
+        </div>
+
+        {/* Circular button with chevron */}
+        <div className="flex size-[56px] items-center justify-center rounded-full bg-white/70 text-[#3A51C9] shadow-xs transition hover:bg-white shrink-0">
+          <span className="material-symbols-rounded text-[28px]">
+            chevron_right
+          </span>
+        </div>
       </button>
     </div>
   );
