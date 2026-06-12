@@ -63,15 +63,15 @@ public class GeminiVisionService {
             // If the AI is not confident that the image represents a puériculture item,
             // return a business error so the frontend can inform the user and allow manual input.
             if (result.getConfidenceScore() == null || result.getConfidenceScore() < 30.0) {
-                throw new com.puericulture.config.errormanager.exception
-                        .InvalidChildcareProductException();
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "L'image ne semble pas être un article de puériculture. Veuillez remplir les champs manuellement.");
             }
 
             return result;
 
-        } catch (
-                com.puericulture.config.errormanager.exception.InvalidChildcareProductException e) {
-            // Business error: let the global handler return 400 + INVALID_CHILDCARE_PRODUCT
+        } catch (ResponseStatusException e) {
+            // Business or API error already wrapped — propagate as-is
             throw e;
         } catch (Exception e) {
             log.error("Error during AI analysis: {}", e.getMessage());

@@ -4,13 +4,13 @@ import MyImageInput from "../MyImageInput.jsx";
 import FieldError from "../FieldError.jsx";
 import { useState } from "react";
 import { apiClient } from "../../../utils/apiClient.jsx";
-import { showNotification } from "../../../utils/notification";
 
 export default function RequiredProductInfoStep() {
   const { values, setFieldValue } = useFormikContext();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isAILoading, setIsAILoading] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState(null);
+  const [aiError, setAiError] = useState(null);
 
   const handleAIRequest = async () => {
     if (!selectedFile) return;
@@ -19,6 +19,7 @@ export default function RequiredProductInfoStep() {
     formData.append("images", selectedFile);
 
     setIsAILoading(true);
+    setAiError(null);
 
     try {
       const response = await apiClient.post(
@@ -34,36 +35,9 @@ export default function RequiredProductInfoStep() {
       if (confidenceScore !== undefined) setConfidenceScore(confidenceScore);
     } catch (error) {
       console.error("Erreur IA Gemini", error);
-
-      if (error.response) {
-        // The server responded with an error status
-        const { status, data } = error.response;
-
-        if (status === 400 && data?.code === "INVALID_CHILDCARE_PRODUCT") {
-          // Business error: image is not a childcare product
-          showNotification(
-            "L'image ne semble pas être un article de puériculture. Veuillez remplir les champs manuellement.",
-          );
-        } else {
-          // Other server errors (5xx, 4xx unexpected)
-          showNotification(
-            "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
-          );
-        }
-      } else if (
-        error.code === "ECONNABORTED" ||
-        error.message?.includes("timeout")
-      ) {
-        // Timeout
-        showNotification(
-          "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
-        );
-      } else {
-        // Network error or other unexpected failure
-        showNotification(
-          "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
-        );
-      }
+      setAiError(
+        "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
+      );
     } finally {
       setIsAILoading(false);
     }
@@ -104,6 +78,13 @@ export default function RequiredProductInfoStep() {
         >
           {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
         </button>
+      )}
+
+      {/* MESSAGE D'ERREUR IA */}
+      {aiError && (
+        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {aiError}
+        </div>
       )}
 
       {/* BADGE CONFIANCE */}

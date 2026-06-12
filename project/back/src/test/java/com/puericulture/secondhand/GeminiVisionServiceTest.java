@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.puericulture.config.errormanager.exception.InvalidChildcareProductException;
 import com.puericulture.secondhand.dto.ProductAnalysisResponse;
 import com.puericulture.secondhand.service.GeminiVisionService;
 import java.util.List;
@@ -92,7 +91,7 @@ class GeminiVisionServiceTest {
     }
 
     @Test
-    void analyzeImages_shouldThrowBusinessError_whenConfidenceScoreOutOfRange() {
+    void analyzeImages_shouldThrowBadRequest_whenConfidenceScoreOutOfRange() {
         // Score 150 gets reset to 0.0 by parseAndValidateResponse, which is < 30 threshold
         String geminiResponse =
                 """
@@ -114,11 +113,15 @@ class GeminiVisionServiceTest {
                 new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
 
         assertThatThrownBy(() -> geminiVisionService.analyzeImages(List.of(image)))
-                .isInstanceOf(InvalidChildcareProductException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(
+                        ex ->
+                                assertThat(((ResponseStatusException) ex).getStatusCode())
+                                        .isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test
-    void analyzeImages_shouldThrowBusinessError_whenConfidenceScoreBelowThreshold() {
+    void analyzeImages_shouldThrowBadRequest_whenConfidenceScoreBelowThreshold() {
         String geminiResponse =
                 """
                 {
@@ -139,7 +142,11 @@ class GeminiVisionServiceTest {
                 new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
 
         assertThatThrownBy(() -> geminiVisionService.analyzeImages(List.of(image)))
-                .isInstanceOf(InvalidChildcareProductException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(
+                        ex ->
+                                assertThat(((ResponseStatusException) ex).getStatusCode())
+                                        .isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test
