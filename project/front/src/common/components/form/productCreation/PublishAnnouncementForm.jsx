@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import ModeSelectionStep from "./ModeSelectionStep.jsx";
-import OptionalProductInfoStep from "./OptionalProductInfoStep.jsx";
 import PublicationFormActions from "./PublicationFormActions.jsx";
 import PublicationMobileShell from "./PublicationMobileShell.jsx";
 import RequiredProductInfoStep from "./RequiredProductInfoStep.jsx";
@@ -49,8 +48,7 @@ const validationSchemas = {
     description: Yup.string().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
     condition: Yup.string().required("L’état est obligatoire"),
-  }),
-  3: Yup.object({
+
     rentalStartDate: Yup.string().when("mode", {
       is: "LOCATION",
       then: (schema) => schema.required("La date de début est obligatoire"),
@@ -147,7 +145,6 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           <Form>
             {step === 1 && <ModeSelectionStep />}
             {step === 2 && <RequiredProductInfoStep />}
-            {step === 3 && <OptionalProductInfoStep />}
             <PublicationFormActions
               isSubmitting={isSubmitting}
               setStep={setStep}

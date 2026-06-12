@@ -7,15 +7,15 @@ const getStepFields = (step, values) => {
     return ["images", "title", "description", "category", "condition"];
   }
 
-  if (step === 3 && values.mode === "TROC") {
+  if (step === 2 && values.mode === "TROC") {
     return ["estimatedPrice"];
   }
 
-  if (step === 3 && values.mode === "LOCATION") {
+  if (step === 2 && values.mode === "LOCATION") {
     return ["rentalStartDate", "rentalEndDate", "dailyPrice"];
   }
 
-  if (step === 3 && values.mode === "SECOND_HAND") {
+  if (step === 2 && values.mode === "SECOND_HAND") {
     return ["price"];
   }
 
@@ -49,7 +49,7 @@ export default function PublicationFormActions({
     setStep(step + 1);
   };
 
-  const isLastStep = step === 3;
+  const isLastStep = step === 2;
 
   if (isLastStep) {
     return (
@@ -79,7 +79,7 @@ export default function PublicationFormActions({
         onClick={goNext}
         type="button"
       >
-        {step < 3 ? "Continuer" : "Publier"}
+        {step < 2 ? "Continuer" : "Publier"}
       </button>
 
       {step > 1 && (
