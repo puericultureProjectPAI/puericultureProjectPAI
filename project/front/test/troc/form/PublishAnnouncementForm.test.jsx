@@ -12,9 +12,28 @@ import { MemoryRouter } from "react-router-dom"; // L'injection du contexte de n
 import { describe, expect, it, vi } from "vitest";
 import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
 
-const { uploadMock } = vi.hoisted(() => ({
+const { uploadMock, navigateMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
+  navigateMock: vi.fn(),
 }));
+
+// 1. On bloque la façade
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => navigateMock,
+  };
+});
+
+// 2. On bloque le noyau dur (La faille est ici)
+vi.mock("react-router", async () => {
+  const actual = await vi.importActual("react-router");
+  return {
+    ...actual,
+    useNavigate: () => navigateMock,
+  };
+});
 
 vi.mock("../../../src/common/hooks/useImageManager", () => ({
   useImageManager: () => ({
