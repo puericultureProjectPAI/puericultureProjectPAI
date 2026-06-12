@@ -83,7 +83,6 @@ export default function RequiredProductInfoStep() {
         }}
       />
 
-      {/* BOUTON IA uniquement pour la seconde main */}
       {selectedFile && values.mode === "SECOND_HAND" && (
         <button
           type="button"
@@ -95,7 +94,6 @@ export default function RequiredProductInfoStep() {
         </button>
       )}
 
-      {/* BADGE CONFIANCE */}
       {confidenceScore !== null && (
         <div
           className={`mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold ${getBadgeStyle(confidenceScore)}`}
@@ -106,7 +104,7 @@ export default function RequiredProductInfoStep() {
       )}
 
       <label className={`${labelClassName} mt-[15px]`} htmlFor="title">
-        Nom de l'article
+        Nom de l'article <span className="text-red-500 ml-1">*</span>
       </label>
       <Field
         className={fieldClassName}
@@ -117,7 +115,7 @@ export default function RequiredProductInfoStep() {
       <FieldError name="title" />
 
       <label className={`${labelClassName} mt-[14px]`} htmlFor="description">
-        Description
+        Description <span className="text-red-500 ml-1">*</span>
       </label>
       <Field
         as="textarea"
@@ -131,7 +129,7 @@ export default function RequiredProductInfoStep() {
       <div className="mt-[18px] grid grid-cols-2 gap-[16px]">
         <div>
           <label className={labelClassName} htmlFor="category">
-            Catégorie
+            Catégorie <span className="text-red-500 ml-1">*</span>
           </label>
           <Field
             as="select"
@@ -151,7 +149,7 @@ export default function RequiredProductInfoStep() {
 
         <div>
           <label className={labelClassName} htmlFor="condition">
-            État
+            État <span className="text-red-500 ml-1">*</span>
           </label>
           <Field
             as="select"
@@ -262,6 +260,7 @@ export default function RequiredProductInfoStep() {
           </option>
         ))}
       </Field>
+
       <div>
         <div>
           {values.mode === "TROC" ? (
@@ -282,7 +281,6 @@ function PriceInput({ id, name, placeholder = "0,00" }) {
     <div className="flex flex-col gap-1 w-full">
       <div className={`flex items-center w-full ${fieldClassName}`}>
         <Field
-          // flex-1 fonctionne enfin car le parent est "flex"
           className="flex-1 min-w-0 bg-transparent outline-none"
           id={id}
           min="0"
@@ -291,12 +289,10 @@ function PriceInput({ id, name, placeholder = "0,00" }) {
           step="0.01"
           type="number"
         />
-
         <span className="select-none text-[22px] font-semibold text-[#2f2d3c] ml-2">
           €
         </span>
       </div>
-
       <FieldError name={name} />
     </div>
   );
@@ -308,7 +304,7 @@ function LocationCard() {
       <div className="grid grid-cols-2 gap-[20px] pt-2">
         <div>
           <label className={labelClassName} htmlFor="rentalStartDate">
-            Du
+            Du <span className="text-red-500 ml-1">*</span>
           </label>
           <Field
             className={inputClassName}
@@ -321,7 +317,7 @@ function LocationCard() {
         </div>
         <div>
           <label className={labelClassName} htmlFor="rentalEndDate">
-            Au
+            Au <span className="text-red-500 ml-1">*</span>
           </label>
           <Field
             className={inputClassName}
@@ -334,8 +330,8 @@ function LocationCard() {
         </div>
       </div>
 
-      <label className={`${labelClassName}  pt-2`} htmlFor="dailyPrice">
-        Prix / jour
+      <label className={`${labelClassName} pt-2`} htmlFor="dailyPrice">
+        Prix / jour <span className="text-red-500 ml-1">*</span>
       </label>
       <PriceInput id="dailyPrice" name="dailyPrice" />
     </>
@@ -345,8 +341,8 @@ function LocationCard() {
 function TrocCard() {
   return (
     <div className="pt-2">
-      <label className={`${labelClassName}  pt-2`} htmlFor="estimatedPrice">
-        Prix estimé
+      <label className={`${labelClassName} pt-2`} htmlFor="estimatedPrice">
+        Prix estimé <span className="text-red-500 ml-1">*</span>
       </label>
       <PriceInput id="estimatedPrice" name="estimatedPrice" />
     </div>
@@ -356,8 +352,8 @@ function TrocCard() {
 function SecondHandCard() {
   return (
     <div className="pt-2">
-      <label className={`${labelClassName}  pt-2`} htmlFor="price">
-        Prix
+      <label className={`${labelClassName} pt-2`} htmlFor="price">
+        Prix <span className="text-red-500 ml-1">*</span>
       </label>
       <PriceInput id="price" name="price" />
     </div>
