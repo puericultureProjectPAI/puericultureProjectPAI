@@ -15,21 +15,14 @@ const { uploadMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
 }));
 
-vi.mock("../../../src/common/hooks/useProductImage", () => ({
-  useProductImage: () => ({
+vi.mock("../../../src/common/hooks/useImageManager", () => ({
+  useImageManager: () => ({
     uploadImage: uploadMock,
     deleteImage: vi.fn().mockResolvedValue(true),
     isUploading: false,
     isDeleting: false,
     error: null,
   }),
-}));
-
-vi.mock("../../../src/common/utils/apiClient.jsx", () => ({
-  apiClient: {
-    post: vi.fn(),
-    get: vi.fn(),
-  },
 }));
 
 describe("PublishAnnouncementForm", () => {
@@ -39,6 +32,7 @@ describe("PublishAnnouncementForm", () => {
       <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: /troc/i }));
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
     await screen.findByLabelText(/Nom de l'article/i);
@@ -64,9 +58,6 @@ describe("PublishAnnouncementForm", () => {
       target: { value: "Lille" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
-
-    await screen.findByText(/informations complémentaires/i);
     fireEvent.change(screen.getByLabelText(/État/i), {
       target: { value: "Très bon état" },
     });
@@ -75,7 +66,7 @@ describe("PublishAnnouncementForm", () => {
 
     await screen.findByRole("button", { name: /publier/i });
     fireEvent.change(screen.getByLabelText(/Prix estimé/i), {
-      target: { value: "40" },
+      target: { value: 40 },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /publier/i }));
@@ -90,6 +81,14 @@ describe("PublishAnnouncementForm", () => {
       category: "Poussettes, porte-bébés et sièges auto",
       condition: "Très bon état",
       price: 0,
+      brand: "",
+      dailyPrice: 0,
+      dimensions: "",
+      maxAgeMonths: NaN,
+      minAgeMonths: NaN,
+      maxWeightKg: NaN,
+      rentalEndDate: "",
+      rentalStartDate: "",
     });
   });
 });

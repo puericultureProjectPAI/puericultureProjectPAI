@@ -15,4 +15,6 @@ public interface PersonRepository extends JpaRepository<Person, UUID> {
      * @return An Optional containing the Person if found.
      */
     Optional<Person> findByEmail(String email);
+
+    Optional<Person> findById(UUID id);
 }

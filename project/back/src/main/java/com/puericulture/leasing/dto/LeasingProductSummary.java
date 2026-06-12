@@ -15,6 +15,8 @@ public interface LeasingProductSummary {
 
     String getCondition();
 
+    String getBadgeLabel();
+
     String getFirstImageUrl();
 
     Boolean getAvailable();

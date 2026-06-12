@@ -44,6 +44,9 @@ public class LeasingProductSummaryDto {
     @Schema(description = "Physical condition of the product.", example = "Très bon état")
     private String condition;
 
+    @Schema(description = "Listing badge label for the leasing vertical.", example = "Location")
+    private String badgeLabel;
+
     @Schema(
             description = "URL of the first product image. Null if no image has been uploaded.",
             example = "https://example.com/images/poussette.jpg")
