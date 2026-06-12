@@ -52,6 +52,13 @@ public class OnBoardingService {
         if (onBoardingDto.getDueDate() != null) {
             OnBoardingDto.OnBoardingChildDto childDto = new OnBoardingDto.OnBoardingChildDto();
             childDto.setBirthDate(onBoardingDto.getDueDate());
+            childDto.setName(
+                    "Enfant sans nom %d"
+                            .formatted(
+                                    childrenRepository
+                                                    .findAllByPersonIdAndNameNull(person.getId())
+                                                    .size()
+                                            + 1));
             onBoardingDto.getChildren().add(childDto);
         }
         List<ChildrenEntity> children =

@@ -26,7 +26,7 @@ public class OnBoardingDto {
     private String familyStatus;
 
     @JsonProperty("dueDate")
-    @NotNull @Schema(description = "Child's birth date", example = "2022-05-12")
+    @Schema(description = "Child's birth date", example = "2022-05-12")
     private Date dueDate;
 
     @JsonProperty("children")

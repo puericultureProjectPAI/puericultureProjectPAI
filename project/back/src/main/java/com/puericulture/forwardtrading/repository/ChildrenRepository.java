@@ -6,5 +6,7 @@ import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ChildrenRepository extends CrudRepository<ChildrenEntity, Integer> {
+    List<ChildrenEntity> findAllByPersonIdAndNameNull(UUID personId);
+
     List<ChildrenEntity> findByPersonId(UUID personId);
 }
