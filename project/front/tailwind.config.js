@@ -14,6 +14,7 @@ export default {
 
         "feedback-icon-brand": "#FF9D00",
         "feedback-icon-neutral": "#757388",
+        "icon-brand": "#040037",
 
         //bg-alternate
         "bg-alternate": "#F2F2F9",
