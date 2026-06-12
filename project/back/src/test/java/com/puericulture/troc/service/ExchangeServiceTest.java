@@ -31,6 +31,8 @@ class ExchangeServiceTest {
 
     @Mock private ProductTrocRepository productTrocRepository;
 
+    @Mock private MessageRepository messageRepository;
+
     @Mock private ExchangeMapper exchangeMapper;
 
     @Mock private MessageRepository messageRepository;
