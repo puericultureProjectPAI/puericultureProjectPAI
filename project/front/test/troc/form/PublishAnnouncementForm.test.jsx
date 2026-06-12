@@ -10,15 +10,24 @@ import {
 } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
-import { MemoryRouter } from "react-router-dom";
 
 const { uploadMock, navigateMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
   navigateMock: vi.fn(),
 }));
 
+// 1. On bloque la façade
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => navigateMock,
+  };
+});
+
+// 2. On bloque le noyau dur (La faille est ici)
+vi.mock("react-router", async () => {
+  const actual = await vi.importActual("react-router");
   return {
     ...actual,
     useNavigate: () => navigateMock,
@@ -39,9 +48,7 @@ describe("PublishAnnouncementForm", () => {
   it("submits the expected payload after the full Troc publication flow", async () => {
     const onSubmit = vi.fn().mockResolvedValue(true);
     const { container } = render(
-      <MemoryRouter>
-        <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />
-      </MemoryRouter>,
+      <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /troc/i }));
