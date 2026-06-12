@@ -113,9 +113,20 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
           category: values.category,
           condition: values.condition,
           brand: values.brand,
-          minAgeMonths: parseInt(values.ageRange.split("-")[0]),
-          maxAgeMonths: parseInt(values.ageRange.split("-")[1]),
-          maxWeightKg: parseInt(values.maxWeightKg.split("-")[1]),
+          minAgeMonths: values.ageRange
+            ? parseInt(values.ageRange.split("-")[0])
+            : null,
+          maxAgeMonths:
+            values.ageRange && values.ageRange.includes("-")
+              ? parseInt(values.ageRange.split("-")[1])
+              : null,
+          maxWeightKg: values.maxWeightKg
+            ? parseInt(
+                values.maxWeightKg.includes("-")
+                  ? values.maxWeightKg.split("-")[1]
+                  : values.maxWeightKg,
+              )
+            : null,
           dimensions:
             (values.lengthCm ? values.lengthCm : "") +
             (values.lengthCm && values.widthCm ? "x" : "") +
