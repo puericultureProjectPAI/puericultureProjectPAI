@@ -279,19 +279,24 @@ export default function RequiredProductInfoStep() {
 
 function PriceInput({ id, name, placeholder = "0,00" }) {
   return (
-    <div className="relative">
-      <Field
-        className={`${inputClassName} pr-[42px]`}
-        id={id}
-        min="0"
-        name={name}
-        placeholder={placeholder}
-        step="0.01"
-        type="number"
-      />
-      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[22px] font-semibold text-[#2f2d3c]">
-        €
-      </span>
+    <div className="flex flex-col gap-1 w-full">
+      <div className={`flex items-center w-full ${fieldClassName}`}>
+        <Field
+          // flex-1 fonctionne enfin car le parent est "flex"
+          className="flex-1 min-w-0 bg-transparent outline-none"
+          id={id}
+          min="0"
+          name={name}
+          placeholder={placeholder}
+          step="0.01"
+          type="number"
+        />
+
+        <span className="select-none text-[22px] font-semibold text-[#2f2d3c] ml-2">
+          €
+        </span>
+      </div>
+
       <FieldError name={name} />
     </div>
   );
@@ -300,7 +305,7 @@ function PriceInput({ id, name, placeholder = "0,00" }) {
 function LocationCard() {
   return (
     <>
-      <div className="grid grid-cols-2 gap-[20px]">
+      <div className="grid grid-cols-2 gap-[20px] pt-2">
         <div>
           <label className={labelClassName} htmlFor="rentalStartDate">
             Du
@@ -329,47 +334,32 @@ function LocationCard() {
         </div>
       </div>
 
-      <div className="mt-[26px] grid grid-cols-[190px_minmax(0,1fr)] items-center gap-[18px]">
-        <label
-          className="text-[24px] font-extrabold leading-tight text-[#080036]"
-          htmlFor="dailyPrice"
-        >
-          Prix / jour
-        </label>
-        <PriceInput id="dailyPrice" name="dailyPrice" />
-      </div>
+      <label className={`${labelClassName}  pt-2`} htmlFor="dailyPrice">
+        Prix / jour
+      </label>
+      <PriceInput id="dailyPrice" name="dailyPrice" />
     </>
   );
 }
 
 function TrocCard() {
   return (
-    <>
-      <div className="grid grid-cols-[190px_minmax(0,1fr)] items-center gap-[18px]">
-        <label
-          className="text-[24px] font-extrabold leading-tight text-[#080036]"
-          htmlFor="estimatedPrice"
-        >
-          Prix estimé
-        </label>
-        <PriceInput id="estimatedPrice" name="estimatedPrice" />
-      </div>
-    </>
+    <div className="pt-2">
+      <label className={`${labelClassName}  pt-2`} htmlFor="estimatedPrice">
+        Prix estimé
+      </label>
+      <PriceInput id="estimatedPrice" name="estimatedPrice" />
+    </div>
   );
 }
 
 function SecondHandCard() {
   return (
-    <>
-      <div className="grid grid-cols-[190px_minmax(0,1fr)] items-center gap-[18px]">
-        <label
-          className="text-[24px] font-extrabold leading-tight text-[#080036]"
-          htmlFor="price"
-        >
-          Prix
-        </label>
-        <PriceInput id="price" name="price" />
-      </div>
-    </>
+    <div className="pt-2">
+      <label className={`${labelClassName}  pt-2`} htmlFor="price">
+        Prix
+      </label>
+      <PriceInput id="price" name="price" />
+    </div>
   );
 }
