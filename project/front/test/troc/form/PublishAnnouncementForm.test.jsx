@@ -10,6 +10,7 @@ import {
 } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
+import { MemoryRouter } from "react-router-dom";
 
 const { uploadMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
@@ -29,7 +30,9 @@ describe("PublishAnnouncementForm", () => {
   it("submits the expected payload after the full Troc publication flow", async () => {
     const onSubmit = vi.fn().mockResolvedValue(true);
     const { container } = render(
-      <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />,
+      <MemoryRouter>
+        <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /troc/i }));
