@@ -7,7 +7,6 @@ import com.puericulture.common.repository.PersonPreferencesRepository;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.config.errormanager.exception.ForbiddenException;
 import com.puericulture.forwardtrading.dto.OnBoardingDto;
-import com.puericulture.forwardtrading.dto.OnBoardingDto.ChildDto;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import com.puericulture.forwardtrading.entity.Timelines;
 import com.puericulture.forwardtrading.mapper.ChildrenMapper;
@@ -51,7 +50,7 @@ public class OnBoardingService {
         personPreferences.setPerson(person);
         personPreferencesRepository.save(personPreferences);
         if (onBoardingDto.getDueDate() != null) {
-            ChildDto childDto = new ChildDto();
+            OnBoardingDto.OnBoardingChildDto childDto = new OnBoardingDto.OnBoardingChildDto();
             childDto.setBirthDate(onBoardingDto.getDueDate());
             childDto.setName(
                     "Enfant sans nom %d"

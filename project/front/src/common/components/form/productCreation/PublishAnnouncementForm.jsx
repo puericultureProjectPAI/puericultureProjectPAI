@@ -1,5 +1,6 @@
 import { Form, Formik } from "formik";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import ModeSelectionStep from "./ModeSelectionStep.jsx";
 import OptionalProductInfoStep from "./OptionalProductInfoStep.jsx";
@@ -78,8 +79,15 @@ const validationSchemas = {
   }),
 };
 
+const REDIRECTION_ROUTES = {
+  SECOND_HAND: "/second-hand/catalog",
+  TROC: "/troc/catalog",
+  LOCATION: "/leasing/catalog",
+};
+
 export default function PublishAnnouncementForm({ error, onSubmit, success }) {
   const [step, setStep] = useState(1);
+  const navigate = useNavigate();
 
   const goBack = () => {
     if (step > 1) {
@@ -123,7 +131,8 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         const isCreated = await onSubmit(values.mode, payload);
         if (isCreated) {
           helpers.resetForm();
-          setStep(1);
+          const targetRoute = REDIRECTION_ROUTES[values.mode] || "/";
+          navigate(targetRoute, { replace: true });
         }
         helpers.setSubmitting(false);
       }}
