@@ -55,7 +55,7 @@ public class GeminiVisionService {
 
             if (response.getStatusCode() != HttpStatus.OK) {
                 throw new ResponseStatusException(
-                        HttpStatus.SERVICE_UNAVAILABLE, "Gemini API Error");
+                        HttpStatus.SERVICE_UNAVAILABLE, "Gemini API unavailable");
             }
 
             ProductAnalysisResponse result = parseAndValidateResponse(response.getBody());
