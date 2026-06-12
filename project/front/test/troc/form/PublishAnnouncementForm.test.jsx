@@ -12,11 +12,10 @@ import { describe, expect, it, vi } from "vitest";
 import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
 import { MemoryRouter } from "react-router-dom";
 
-const { uploadMock } = vi.hoisted(() => ({
+const { uploadMock, navigateMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
+  navigateMock: vi.fn(),
 }));
-
-const navigateMock = vi.fn();
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
