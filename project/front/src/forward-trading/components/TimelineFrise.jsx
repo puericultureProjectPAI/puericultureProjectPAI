@@ -3,6 +3,8 @@ import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
 import Dropdown from "./dropdown/Dropdown";
+import DropdownEnfant from "./DropDownEnfant";
+
 export default function TimelineFrise({ timelineId }) {
   const { periods, isLoading, error } = useTimelineData(timelineId);
   const [activePeriodId, setActivePeriodId] = useState(null);
@@ -44,6 +46,8 @@ export default function TimelineFrise({ timelineId }) {
           </p>
         </div>
       </div>
+      <DropdownEnfant timelineId={timelineId} />
+
       {/* FRISE */}
       <TimelineNavigator
         periods={periods}

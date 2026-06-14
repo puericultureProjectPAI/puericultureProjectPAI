@@ -1,7 +1,8 @@
 package com.puericulture.forwardtrading.mapper;
 
 import com.puericulture.common.dto.PersonProfileDto;
-import com.puericulture.forwardtrading.dto.OnBoardingDto.ChildDto;
+import com.puericulture.forwardtrading.dto.OnBoardingDto.OnBoardingChildDto;
+import com.puericulture.forwardtrading.dto.children.ChildDto;
 import com.puericulture.forwardtrading.dto.children.CreateChildren;
 import com.puericulture.forwardtrading.entity.ChildrenEntity;
 import com.puericulture.forwardtrading.entity.Timelines;
@@ -27,7 +28,7 @@ public abstract class ChildrenMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "birthDate", source = "birthDate")
     @Mapping(target = "gender", ignore = true)
-    public abstract ChildrenEntity toChildrenEntity(ChildDto children);
+    public abstract ChildrenEntity toChildrenEntity(OnBoardingChildDto children);
 
     @Named("toChildrenPersonProfileDto")
     public List<PersonProfileDto.ChildPersonProfileDto> toChildrenPersonProfileDto(
@@ -41,6 +42,16 @@ public abstract class ChildrenMapper {
     @Mapping(target = "birthDate", source = "birthDate")
     @Mapping(target = "timelineId", source = "timelines", qualifiedByName = "getTimelineId")
     abstract PersonProfileDto.ChildPersonProfileDto toChildPersonProfileDto(ChildrenEntity child);
+
+    public List<ChildDto> toChildDtoList(List<ChildrenEntity> childrenEntities) {
+        if (childrenEntities == null) return Collections.emptyList();
+        return childrenEntities.stream().map(this::toChildDtoDropDown).toList();
+    }
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "firstName", source = "name")
+    @Mapping(target = "timelineId", source = "timelines", qualifiedByName = "getTimelineId")
+    public abstract ChildDto toChildDtoDropDown(ChildrenEntity child);
 
     @Named("getTimelineId")
     public Long getTimelineId(List<Timelines> timelines) {
