@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
-
+import Dropdown from "./dropdown/Dropdown";
 export default function TimelineFrise({ timelineId }) {
   const { periods, isLoading, error } = useTimelineData(timelineId);
   const [activePeriodId, setActivePeriodId] = useState(null);
@@ -44,14 +44,22 @@ export default function TimelineFrise({ timelineId }) {
           </p>
         </div>
       </div>
-
       {/* FRISE */}
       <TimelineNavigator
         periods={periods}
         activePeriodId={activePeriodId}
         onSelectPeriod={handleSelectPeriod}
       />
-
+      <Dropdown
+        title="Articles de seconde main"
+        articles={[
+          { name: "Body manches longues x5", price: "14,99€", age: "3 mois" },
+          { name: "Body manches longues x5", price: "14,99€", age: "3 mois" },
+        ]}
+        defaultOpen={true}
+      />{" "}
+      <Dropdown title="Articles en location" defaultOpen={true} />
+      <Dropdown title="Articles KIABI" defaultOpen={true} />
       {/* CONTENU */}
       {activePeriod && <TimelinePeriod period={activePeriod} />}
     </div>
