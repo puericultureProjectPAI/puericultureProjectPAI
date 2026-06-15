@@ -67,7 +67,7 @@ function IconButton({ active, onClick, Icon, label, badge }) {
       onClick={onClick}
       className="flex flex-col items-center cursor-pointer"
     >
-      <div className="h-7 flex items-center justify-center">
+      <div className="relative h-7 flex items-center justify-center">
         <Icon
           className={active ? "text-icon-brand" : "text-feedback-icon-subtle"}
         />

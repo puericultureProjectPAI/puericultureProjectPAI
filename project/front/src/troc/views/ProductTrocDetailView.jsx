@@ -26,7 +26,7 @@ function formatAgeRange(minMonths, maxMonths) {
 export default function ProductTrocDetailView() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { fetchProductDetail, product, loading, error } = useTroc();
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -56,6 +56,14 @@ export default function ProductTrocDetailView() {
     product.imageUrls?.length > 0
       ? product.imageUrls
       : [fallbackImage(product.postTitle)];
+
+  const isOwner = user && product.author?.id === user.id;
+  const isAvailable = product.status === "AVAILABLE";
+
+  const statusLabel = {
+    PENDING: "Échange en cours",
+    CLOSED: "Produit non disponible",
+  };
 
   const handlePropose = () => {
     if (!isAuthenticated) navigate("/connection");
@@ -222,16 +230,28 @@ export default function ProductTrocDetailView() {
       {/* Divider bas */}
       <hr className="border-[#E3E3E3] self-stretch" />
 
-      {/* Bouton Proposer un échange */}
+      {/* CTA bas */}
       <div className="flex justify-center self-stretch pb-4">
-        <button
-          type="button"
-          onClick={handlePropose}
-          className="w-full h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center gap-3"
-        >
-          <img src={sendIcon} alt="" width={24} height={21} />
-          <span className="text-[16px] font-semibold">Proposer un échange</span>
-        </button>
+        {isOwner ? (
+          <p className="text-[16px] text-[#757388] text-center py-2">
+            C&apos;est votre produit
+          </p>
+        ) : !isAvailable ? (
+          <p className="text-[16px] text-[#757388] text-center py-2">
+            {statusLabel[product.status] ?? "Produit non disponible"}
+          </p>
+        ) : (
+          <button
+            type="button"
+            onClick={handlePropose}
+            className="w-full h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center gap-3"
+          >
+            <img src={sendIcon} alt="" width={24} height={21} />
+            <span className="text-[16px] font-semibold">
+              Proposer un échange
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );

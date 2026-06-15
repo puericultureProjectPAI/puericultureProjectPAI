@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useAuth } from "../../common/security/AuthContext";
-import {
-  getConversations,
-  getMessages,
-  sendMessage,
-} from "../utils/messagesApi";
-import { acceptExchange, refuseExchange } from "../utils/exchangeApi";
+import useChat from "../hooks/useChat";
 import sendIcon from "../../assets/send-icon-inverse-m.svg";
 import exchangeIcon from "../../assets/exchange-icon-info-m.svg";
 
@@ -42,72 +37,18 @@ export default function ChatView() {
   const { exchangeId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [conversation, setConversation] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const { conversation, messages, handleSend, handleAccept, handleRefuse } =
+    useChat(exchangeId);
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);
 
-  // Charge les infos de l'échange une seule fois
-  useEffect(() => {
-    getConversations()
-      .then((res) => {
-        const conv = res.data.find(
-          (c) => c.exchangeId === parseInt(exchangeId),
-        );
-        setConversation(conv ?? null);
-      })
-      .catch(console.error);
-  }, [exchangeId]);
-
-  // Polling messages toutes les 3s
-  useEffect(() => {
-    const fetch = () =>
-      getMessages(exchangeId)
-        .then((res) => setMessages(res.data))
-        .catch(console.error);
-    fetch();
-    const interval = setInterval(fetch, 3000);
-    return () => clearInterval(interval);
-  }, [exchangeId]);
-
-  // Auto-scroll vers le bas à chaque nouveau message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const refreshConversation = () =>
-    getConversations()
-      .then((res) => {
-        const conv = res.data.find(
-          (c) => c.exchangeId === parseInt(exchangeId),
-        );
-        setConversation(conv ?? null);
-      })
-      .catch(console.error);
-
-  const handleAccept = async () => {
+  const handleSendInput = async () => {
     try {
-      await acceptExchange(exchangeId);
-      await refreshConversation();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleRefuse = async () => {
-    try {
-      await refuseExchange(exchangeId);
-      await refreshConversation();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text) return;
-    try {
-      await sendMessage(exchangeId, text);
+      await handleSend(input);
       setInput("");
     } catch (err) {
       console.error(err);
@@ -117,7 +58,7 @@ export default function ChatView() {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSendInput();
     }
   };
 
@@ -330,7 +271,7 @@ export default function ChatView() {
         />
         <button
           type="button"
-          onClick={handleSend}
+          onClick={handleSendInput}
           className="w-10 h-10 rounded-full bg-[#040037] flex items-center justify-center flex-shrink-0"
           aria-label="Envoyer"
         >

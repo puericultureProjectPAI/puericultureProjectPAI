@@ -5,6 +5,7 @@ import {
   getMyAvailableProducts,
   getProductDetail,
 } from "../utils/trocApi";
+import { createExchange as createExchangeApi } from "../utils/exchangeApi";
 
 export default function useTroc() {
   const [error, setError] = useState("");
@@ -92,6 +93,21 @@ export default function useTroc() {
     }
   }, []);
 
+  const proposeExchange = async (proposerProductId, receiverProductId) => {
+    setError("");
+    try {
+      const response = await createExchangeApi({
+        proposerProduct: { id: proposerProductId },
+        receiverProduct: { id: receiverProductId },
+      });
+      return response.data;
+    } catch (requestError) {
+      setError("Impossible de proposer l'échange.");
+      console.error("Erreur proposition échange", requestError);
+      return null;
+    }
+  };
+
   return {
     error,
     loading,
@@ -99,6 +115,7 @@ export default function useTroc() {
     getProductsTroc,
     fetchMyProducts,
     fetchProductDetail,
+    proposeExchange,
     success,
     products,
     product,

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { createExchange } from "../utils/exchangeApi";
 import useTroc from "../hooks/useTroc";
 
 const fallbackImage = (title) =>
@@ -9,7 +8,13 @@ const fallbackImage = (title) =>
 export default function MyProductsSelectionView() {
   const { receiverId } = useParams();
   const navigate = useNavigate();
-  const { products: myProducts, loading, error, fetchMyProducts } = useTroc();
+  const {
+    products: myProducts,
+    loading,
+    error,
+    fetchMyProducts,
+    proposeExchange,
+  } = useTroc();
   const [localError, setLocalError] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
 
@@ -18,16 +23,17 @@ export default function MyProductsSelectionView() {
   }, [fetchMyProducts]);
 
   const handleContinue = async () => {
-    if (!selectedId) return setLocalError("Sélectionnez un produit.");
-    try {
-      await createExchange({
-        proposerProduct: { id: selectedId },
-        receiverProduct: { id: parseInt(receiverId, 10) },
-      });
-      navigate("/troc", { replace: true });
-    } catch (err) {
-      console.error(err);
-      setLocalError("Impossible de proposer l'échange.");
+    if (!selectedId) {
+      setLocalError("Sélectionnez un produit pour continuer.");
+      return;
+    }
+    setLocalError(null);
+    const exchange = await proposeExchange(
+      selectedId,
+      parseInt(receiverId, 10),
+    );
+    if (exchange) {
+      navigate(`/troc/chat/${exchange.id}`, { replace: true });
     }
   };
 
@@ -39,11 +45,10 @@ export default function MyProductsSelectionView() {
     );
   }
 
-  const displayError = error || localError;
-  if (displayError) {
+  if (error) {
     return (
       <div className="flex items-center justify-center py-16">
-        <p className="text-[16px] text-red-500">{displayError}</p>
+        <p className="text-[16px] text-red-500">{error}</p>
       </div>
     );
   }
@@ -63,7 +68,7 @@ export default function MyProductsSelectionView() {
         {myProducts.length === 0 ? (
           <div className="flex items-center justify-center py-8">
             <p className="text-[16px] text-[#757388]">
-              Vous n'avez pas de produit disponible.
+              Vous n&apos;avez pas de produit disponible.
             </p>
           </div>
         ) : (
@@ -74,7 +79,10 @@ export default function MyProductsSelectionView() {
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => setSelectedId(p.id)}
+                  onClick={() => {
+                    setSelectedId(p.id);
+                    setLocalError(null);
+                  }}
                   className={`flex flex-col pb-5 rounded-lg overflow-hidden bg-white shadow-[0_2px_2px_rgba(0,0,0,0.1)] transition-all ${
                     selected ? "ring-2 ring-[#040037]" : ""
                   }`}
@@ -82,7 +90,9 @@ export default function MyProductsSelectionView() {
                   {/* Image */}
                   <div className="w-full aspect-square overflow-hidden rounded-sm">
                     <img
-                      src={p.imageUrls?.[0] ?? fallbackImage(p.postTitle)}
+                      src={
+                        p.images?.[0]?.imageUrl ?? fallbackImage(p.postTitle)
+                      }
                       alt={p.postTitle}
                       className="w-full h-full object-cover rounded-lg"
                       onError={(e) => {
@@ -113,10 +123,18 @@ export default function MyProductsSelectionView() {
 
         {/* Boutons d'action */}
         <div className="flex flex-col self-stretch gap-2.5 pb-4">
+          {localError && (
+            <p className="text-[14px] text-red-500 text-center">{localError}</p>
+          )}
           <button
             type="button"
             onClick={handleContinue}
-            className="w-full h-[40px] bg-[#040037] text-white rounded-lg flex items-center justify-center"
+            disabled={!selectedId}
+            className={`w-full h-[40px] rounded-lg flex items-center justify-center transition-colors ${
+              selectedId
+                ? "bg-[#040037] text-white"
+                : "bg-[#040037]/40 text-white/70 cursor-not-allowed"
+            }`}
           >
             <span className="text-[16px] font-semibold">Continuer</span>
           </button>
