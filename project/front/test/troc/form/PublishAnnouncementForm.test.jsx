@@ -109,13 +109,12 @@ describe("PublishAnnouncementForm", () => {
       condition: "Très bon état",
       price: 0,
       brand: "",
-      dailyPrice: 0,
+      pricePerDay: 0,
+      pricePerMonth: 0,
       dimensions: "",
       maxAgeMonths: null,
       minAgeMonths: null,
       maxWeightKg: null,
-      rentalEndDate: "",
-      rentalStartDate: "",
     });
   });
 });

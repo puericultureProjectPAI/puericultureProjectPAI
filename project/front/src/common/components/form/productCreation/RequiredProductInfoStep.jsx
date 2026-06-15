@@ -9,16 +9,13 @@ import {
 import FieldError from "../FieldError.jsx";
 import MyImageInput from "../MyImageInput.jsx";
 import { apiClient } from "../../../utils/apiClient.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const fieldClassName =
   "w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
 
 const labelClassName =
   "mb-[7px] block text-[16px] font-extrabold leading-tight text-[#080036]";
-
-const inputClassName =
-  "w-full rounded-lg border border-[#858199] bg-white px-[14px] py-[14px] text-[18px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
 
 export default function RequiredProductInfoStep() {
   const { values, setFieldValue } = useFormikContext();
@@ -251,6 +248,9 @@ export default function RequiredProductInfoStep() {
 
       <label className={`${labelClassName} mt-[18px]`} htmlFor="city">
         Ville
+        {values.mode === "LOCATION" && (
+          <span className="text-red-500 ml-1">*</span>
+        )}
       </label>
       <Field as="select" className={fieldClassName} id="city" name="city">
         <option value="">Select</option>
@@ -260,6 +260,7 @@ export default function RequiredProductInfoStep() {
           </option>
         ))}
       </Field>
+      {values.mode === "LOCATION" && <FieldError name="city" />}
 
       <div>
         <div>
@@ -299,42 +300,49 @@ function PriceInput({ id, name, placeholder = "0,00" }) {
 }
 
 function LocationCard() {
+  const { values, setFieldValue } = useFormikContext();
+
+  useEffect(() => {
+    const perDay = Number(values.pricePerDay);
+    if (!isNaN(perDay) && perDay >= 0) {
+      setFieldValue("pricePerMonth", Math.round(perDay * 30));
+    }
+  }, [values.pricePerDay, setFieldValue]);
+
   return (
-    <>
-      <div className="grid grid-cols-2 gap-[20px] pt-2">
+    <div className="pt-2">
+      <div className="grid grid-cols-2 gap-[20px]">
         <div>
-          <label className={labelClassName} htmlFor="rentalStartDate">
-            Du <span className="text-red-500 ml-1">*</span>
+          <label className={labelClassName} htmlFor="pricePerDay">
+            Prix / jour <span className="text-red-500 ml-1">*</span>
           </label>
-          <Field
-            className={inputClassName}
-            id="rentalStartDate"
-            name="rentalStartDate"
-            placeholder="jj/mm/aaaa"
-            type="text"
-          />
-          <FieldError name="rentalStartDate" />
+          <PriceInput id="pricePerDay" name="pricePerDay" placeholder="0" />
         </div>
+
         <div>
-          <label className={labelClassName} htmlFor="rentalEndDate">
-            Au <span className="text-red-500 ml-1">*</span>
+          <label className={labelClassName} htmlFor="pricePerMonth">
+            Prix / mois
           </label>
-          <Field
-            className={inputClassName}
-            id="rentalEndDate"
-            name="rentalEndDate"
-            placeholder="jj/mm/aaaa"
-            type="text"
-          />
-          <FieldError name="rentalEndDate" />
+          <div className="flex flex-col gap-1 w-full">
+            <div className={`flex items-center w-full ${fieldClassName}`}>
+              <Field
+                className="flex-1 min-w-0 bg-transparent outline-none cursor-not-allowed"
+                disabled
+                id="pricePerMonth"
+                name="pricePerMonth"
+                type="number"
+              />
+              <span className="select-none text-[22px] font-semibold text-[#2f2d3c] ml-2">
+                €
+              </span>
+            </div>
+            <p className="text-[12px] text-[#6b6b8a]">
+              Calculé automatiquement (× 30)
+            </p>
+          </div>
         </div>
       </div>
-
-      <label className={`${labelClassName} pt-2`} htmlFor="dailyPrice">
-        Prix / jour <span className="text-red-500 ml-1">*</span>
-      </label>
-      <PriceInput id="dailyPrice" name="dailyPrice" />
-    </>
+    </div>
   );
 }
 

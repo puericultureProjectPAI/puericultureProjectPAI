@@ -24,11 +24,10 @@ const initialValues = {
   widthCm: "",
   radius: "",
   wantedArticle: "",
-  rentalStartDate: "",
-  rentalEndDate: "",
-  dailyPrice: "",
   estimatedPrice: "",
   price: "",
+  pricePerDay: "",
+  pricePerMonth: "",
 };
 
 const priceSchema = Yup.number()
@@ -49,17 +48,12 @@ const validationSchemas = {
     category: Yup.string().required("La catégorie est obligatoire"),
     condition: Yup.string().required("L’état est obligatoire"),
 
-    rentalStartDate: Yup.string().when("mode", {
+    city: Yup.string().when("mode", {
       is: "LOCATION",
-      then: (schema) => schema.required("La date de début est obligatoire"),
+      then: (schema) => schema.required("La ville est obligatoire"),
       otherwise: (schema) => schema.notRequired(),
     }),
-    rentalEndDate: Yup.string().when("mode", {
-      is: "LOCATION",
-      then: (schema) => schema.required("La date de fin est obligatoire"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-    dailyPrice: priceSchema.when("mode", {
+    pricePerDay: priceSchema.when("mode", {
       is: "LOCATION",
       then: (schema) => schema.required("Le prix par jour est obligatoire"),
       otherwise: (schema) => schema.notRequired(),
@@ -104,9 +98,7 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         const payload = {
           title: values.title,
           description: values.description,
-          estimatedPrice: Number(
-            values.dailyPrice || values.estimatedPrice || 0,
-          ),
+          estimatedPrice: Number(values.estimatedPrice || 0),
           images: values.images,
           price: values.price ? Number(values.price) : 0,
           city: values.city,
@@ -132,9 +124,10 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
             (values.lengthCm && values.widthCm ? "x" : "") +
             (values.widthCm ? values.widthCm : "") +
             (values.lengthCm || values.widthCm ? "cm" : ""),
-          rentalStartDate: values.rentalStartDate,
-          rentalEndDate: values.rentalEndDate,
-          dailyPrice: values.dailyPrice ? Number(values.dailyPrice) : 0,
+          pricePerDay: values.pricePerDay ? Number(values.pricePerDay) : 0,
+          pricePerMonth: values.pricePerMonth
+            ? Number(values.pricePerMonth)
+            : 0,
         };
 
         const isCreated = await onSubmit(values.mode, payload);
