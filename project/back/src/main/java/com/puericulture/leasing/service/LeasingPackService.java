@@ -1,6 +1,7 @@
 package com.puericulture.leasing.service;
 
 import com.puericulture.common.entity.Person;
+import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.config.errormanager.exception.UnauthorizedException;
@@ -12,7 +13,9 @@ import com.puericulture.leasing.repository.LeasingProductRepository;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,26 +44,28 @@ public class LeasingPackService {
         // 3. Determine required products
         long durationDays = leasingPriceService.calculateDurationDays(startDate, endDate);
 
-        List<String> categories = new ArrayList<>();
+        // LinkedHashSet déduplique TRANSPORT_BEBE quand poussette + siège auto sont tous les deux
+        // demandés
+        Set<String> categories = new LinkedHashSet<>();
 
         if (ageInMonths < 6) {
-            categories.add("Couchage");
+            categories.add(ProductCategory.SOMMEIL_LITERIE.name());
             if (carNeeded) {
-                categories.add("Siège auto");
+                categories.add(ProductCategory.TRANSPORT_BEBE.name());
             }
         } else if (ageInMonths <= 14) {
-            categories.add("Poussette");
-            categories.add("Couchage");
+            categories.add(ProductCategory.TRANSPORT_BEBE.name());
+            categories.add(ProductCategory.SOMMEIL_LITERIE.name());
             if (carNeeded) {
-                categories.add("Siège auto");
+                categories.add(ProductCategory.TRANSPORT_BEBE.name()); // dédupliqué par le Set
             }
         } else {
-            categories.add("Poussette");
+            categories.add(ProductCategory.TRANSPORT_BEBE.name());
             if (durationDays > 2) {
-                categories.add("Couchage");
+                categories.add(ProductCategory.SOMMEIL_LITERIE.name());
             }
             if (carNeeded) {
-                categories.add("Siège auto");
+                categories.add(ProductCategory.TRANSPORT_BEBE.name()); // dédupliqué par le Set
             }
         }
 

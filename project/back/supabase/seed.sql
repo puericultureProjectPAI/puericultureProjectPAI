@@ -125,12 +125,13 @@ WHERE NOT EXISTS (
 
 -- 2. Produits (6 articles leasing, IDs générés par PostgreSQL)
 INSERT INTO public.products (author_id, post_title, description, category, city, condition, brand, dimensions, min_age_months, max_age_months, max_weight_kg) VALUES
-    ('00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',       'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'Poussette',  'Paris',     'Très bon état',  'Babyzen',      '52x44x18 cm',  0,  48, 22),
-    ('00000000-0000-0000-0000-000000000001', 'Siège auto groupe 0+',         'Siège auto homologué ECE R44/04, coque rigide, harnais 5 points.',                    'Siège auto', 'Lyon',      'Etat correct',   'Maxi-Cosi',    '64x43x60 cm',  0,  12, 13),
-    ('00000000-0000-0000-0000-000000000001', 'Berceau co-dodo',              'Berceau fixable au lit parental, matelas inclus, structure bois.',                     'Couchage',   'Bordeaux',  'Très bon état',  'Chicco',       '93x43x78 cm',  0,   6, NULL),
-    ('00000000-0000-0000-0000-000000000001', 'Transat vibrant Fisher-Price', 'Transat à vibrations douces, arche de jeux amovible, 3 positions.',                   'Transat',    'Paris',     'Etat correct',   'Fisher-Price', '75x53x58 cm',  0,   6, 11),
-    ('00000000-0000-0000-0000-000000000001', 'Trotteur évolutif',            'Trotteur réglable en hauteur, plateau d''activités, roues antidérapantes.',            'Éveil',      'Marseille', 'Usé',            'Chicco',       '68x46x52 cm',  6,  15, 11),
-    ('00000000-0000-0000-0000-000000000001', 'Baignoire bébé ergonomique',   'Baignoire avec support antidérapant et thermomètre intégré, 0-24 mois.',              'Bain',       'Nantes',    'Très bon état',  'Thermobaby',   '82x46x23 cm',  0,  24, NULL);
+    ('00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',       'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'TRANSPORT_BEBE',  'Paris',     'Très bon état',  'Babyzen',      '52x44x18 cm',  0,  48, 22),
+    ('00000000-0000-0000-0000-000000000001', 'Lit parapluie compact',        'Lit parapluie pliable avec matelas inclus, idéal pour les déplacements.',               'SOMMEIL_LITERIE', 'Paris',     'Très bon état',  'Chicco',       '97x65x78 cm',  0,  36, NULL),
+    ('00000000-0000-0000-0000-000000000001', 'Siège auto groupe 0+',         'Siège auto homologué ECE R44/04, coque rigide, harnais 5 points.',                    'TRANSPORT_BEBE',  'Lyon',      'Etat correct',   'Maxi-Cosi',    '64x43x60 cm',  0,  12, 13),
+    ('00000000-0000-0000-0000-000000000001', 'Berceau co-dodo',              'Berceau fixable au lit parental, matelas inclus, structure bois.',                     'SOMMEIL_LITERIE', 'Bordeaux',  'Très bon état',  'Chicco',       '93x43x78 cm',  0,   6, NULL),
+    ('00000000-0000-0000-0000-000000000001', 'Transat vibrant Fisher-Price', 'Transat à vibrations douces, arche de jeux amovible, 3 positions.',                   'AUTRES',          'Paris',     'Etat correct',   'Fisher-Price', '75x53x58 cm',  0,   6, 11),
+    ('00000000-0000-0000-0000-000000000001', 'Trotteur évolutif',            'Trotteur réglable en hauteur, plateau d''activités, roues antidérapantes.',            'JEUX_JOUETS',     'Marseille', 'Usé',            'Chicco',       '68x46x52 cm',  6,  15, 11),
+    ('00000000-0000-0000-0000-000000000001', 'Baignoire bébé ergonomique',   'Baignoire avec support antidérapant et thermomètre intégré, 0-24 mois.',              'BAIN_CHANGE',     'Nantes',    'Très bon état',  'Thermobaby',   '82x46x23 cm',  0,  24, NULL);
 
 -- 3. Entrées leasing (prix en euros entiers, liées par post_title)
 INSERT INTO public.product_leasing (product_id, price_per_day, price_per_month)
@@ -138,6 +139,7 @@ SELECT p.id, pl.price_per_day, pl.price_per_month
 FROM public.products p
 JOIN (VALUES
     ('Poussette Yoyo légère',       5, 90),
+    ('Lit parapluie compact',        3, 55),
     ('Siège auto groupe 0+',         4, 70),
     ('Berceau co-dodo',              3, 55),
     ('Transat vibrant Fisher-Price', 2, 35),
