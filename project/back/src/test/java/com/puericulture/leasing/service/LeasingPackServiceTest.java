@@ -71,13 +71,10 @@ class LeasingPackServiceTest {
         assertEquals(10, pack.getChildAgeMonths());
         verify(leasingProductRepository)
                 .findAvailableProductByCategoryAndCity(
-                        eq("Poussette"), eq("Paris"), any(), any(), eq(10));
+                        eq("TRANSPORT_BEBE"), eq("Paris"), any(), any(), eq(10));
         verify(leasingProductRepository)
                 .findAvailableProductByCategoryAndCity(
-                        eq("Couchage"), eq("Paris"), any(), any(), eq(10));
-        verify(leasingProductRepository)
-                .findAvailableProductByCategoryAndCity(
-                        eq("Siège auto"), eq("Paris"), any(), any(), eq(10));
+                        eq("SOMMEIL_LITERIE"), eq("Paris"), any(), any(), eq(10));
     }
 
     @Test
@@ -92,10 +89,10 @@ class LeasingPackServiceTest {
         assertEquals(3, pack.getChildAgeMonths());
         verify(leasingProductRepository)
                 .findAvailableProductByCategoryAndCity(
-                        eq("Couchage"), eq("Lyon"), any(), any(), eq(3));
+                        eq("SOMMEIL_LITERIE"), eq("Lyon"), any(), any(), eq(3));
         verify(leasingProductRepository, never())
                 .findAvailableProductByCategoryAndCity(
-                        eq("Siège auto"), any(), any(), any(), any());
+                        eq("TRANSPORT_BEBE"), any(), any(), any(), any());
     }
 
     @Test
@@ -110,9 +107,10 @@ class LeasingPackServiceTest {
         assertEquals(24, pack.getChildAgeMonths());
         verify(leasingProductRepository)
                 .findAvailableProductByCategoryAndCity(
-                        eq("Poussette"), eq("Bordeaux"), any(), any(), eq(24));
+                        eq("TRANSPORT_BEBE"), eq("Bordeaux"), any(), any(), eq(24));
         verify(leasingProductRepository, never())
-                .findAvailableProductByCategoryAndCity(eq("Couchage"), any(), any(), any(), any());
+                .findAvailableProductByCategoryAndCity(
+                        eq("SOMMEIL_LITERIE"), any(), any(), any(), any());
     }
 
     @Test
@@ -128,6 +126,6 @@ class LeasingPackServiceTest {
         assertEquals(6, pack.getChildAgeMonths());
         verify(leasingProductRepository)
                 .findAvailableProductByCategoryAndCity(
-                        eq("Poussette"), eq("Paris"), any(), any(), eq(6));
+                        eq("TRANSPORT_BEBE"), eq("Paris"), any(), any(), eq(6));
     }
 }
