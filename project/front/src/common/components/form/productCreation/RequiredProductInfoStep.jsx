@@ -248,6 +248,9 @@ export default function RequiredProductInfoStep() {
 
       <label className={`${labelClassName} mt-[18px]`} htmlFor="city">
         Ville
+        {values.mode === "LOCATION" && (
+          <span className="text-red-500 ml-1">*</span>
+        )}
       </label>
       <Field as="select" className={fieldClassName} id="city" name="city">
         <option value="">Select</option>
@@ -257,6 +260,7 @@ export default function RequiredProductInfoStep() {
           </option>
         ))}
       </Field>
+      {values.mode === "LOCATION" && <FieldError name="city" />}
 
       <div>
         <div>

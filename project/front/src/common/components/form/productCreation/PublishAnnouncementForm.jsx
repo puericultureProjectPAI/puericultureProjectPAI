@@ -48,6 +48,11 @@ const validationSchemas = {
     category: Yup.string().required("La catégorie est obligatoire"),
     condition: Yup.string().required("L’état est obligatoire"),
 
+    city: Yup.string().when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("La ville est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
     pricePerDay: priceSchema.when("mode", {
       is: "LOCATION",
       then: (schema) => schema.required("Le prix par jour est obligatoire"),
