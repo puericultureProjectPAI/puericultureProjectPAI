@@ -7,7 +7,7 @@ export default {
         figtree: ["Figtree", "sans-serif"],
       },
       colors: {
-        "text-brand": "#06032B",
+        "text-brand": "#000040",
         "feedback-text-inverse": "#FFFFFF",
 
         "feedback-border-alert": "#E91C2E",
@@ -25,9 +25,9 @@ export default {
         "bg-brand": "#000028",
         "icon-subtle": "#757388",
         "feedback-text-subtle": "#757388",
-        "feedback-text-brand": "#E91C2E",
-        "feedback-border-neutral": "#D1D1D6",
-        "feedback-border-brand": "#06032B",
+        "feedback-text-brand": "#000040",
+        "feedback-border-neutral": "#D6D6E0",
+        "feedback-border-brand": "#000040",
 
         //feed-back-background
         "feedback-background-service": "#006EFB",
