@@ -17,6 +17,9 @@ const fieldClassName =
 const labelClassName =
   "mb-[7px] block text-[16px] font-extrabold leading-tight text-[#080036]";
 
+const inputClassName =
+  "w-full rounded-lg border border-[#858199] bg-white px-[14px] py-[14px] text-[18px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
+
 export default function RequiredProductInfoStep() {
   const { values, setFieldValue } = useFormikContext();
   const [selectedFile, setSelectedFile] = useState(null);
@@ -80,7 +83,6 @@ export default function RequiredProductInfoStep() {
         }}
       />
 
-      {/* BOUTON IA uniquement pour la seconde main */}
       {selectedFile && values.mode === "SECOND_HAND" && (
         <button
           type="button"
@@ -92,7 +94,6 @@ export default function RequiredProductInfoStep() {
         </button>
       )}
 
-      {/* BADGE CONFIANCE */}
       {confidenceScore !== null && (
         <div
           className={`mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold ${getBadgeStyle(confidenceScore)}`}
@@ -103,7 +104,7 @@ export default function RequiredProductInfoStep() {
       )}
 
       <label className={`${labelClassName} mt-[15px]`} htmlFor="title">
-        Nom de l'article
+        Nom de l'article <span className="text-red-500 ml-1">*</span>
       </label>
       <Field
         className={fieldClassName}
@@ -114,7 +115,7 @@ export default function RequiredProductInfoStep() {
       <FieldError name="title" />
 
       <label className={`${labelClassName} mt-[14px]`} htmlFor="description">
-        Description
+        Description <span className="text-red-500 ml-1">*</span>
       </label>
       <Field
         as="textarea"
@@ -128,7 +129,7 @@ export default function RequiredProductInfoStep() {
       <div className="mt-[18px] grid grid-cols-2 gap-[16px]">
         <div>
           <label className={labelClassName} htmlFor="category">
-            Catégorie
+            Catégorie <span className="text-red-500 ml-1">*</span>
           </label>
           <Field
             as="select"
@@ -148,7 +149,7 @@ export default function RequiredProductInfoStep() {
 
         <div>
           <label className={labelClassName} htmlFor="condition">
-            État
+            État <span className="text-red-500 ml-1">*</span>
           </label>
           <Field
             as="select"
@@ -260,23 +261,101 @@ export default function RequiredProductInfoStep() {
         ))}
       </Field>
 
-      <label className={`${labelClassName} mt-[18px]`} htmlFor="price">
-        Prix
-      </label>
-      <div className="relative">
+      <div>
+        <div>
+          {values.mode === "TROC" ? (
+            <TrocCard />
+          ) : values.mode === "LOCATION" ? (
+            <LocationCard />
+          ) : (
+            <SecondHandCard />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PriceInput({ id, name, placeholder = "0,00" }) {
+  return (
+    <div className="flex flex-col gap-1 w-full">
+      <div className={`flex items-center w-full ${fieldClassName}`}>
         <Field
-          className={`${fieldClassName} pr-[42px]`}
-          id="price"
+          className="flex-1 min-w-0 bg-transparent outline-none"
+          id={id}
           min="0"
-          name="price"
-          placeholder="0,00"
+          name={name}
+          placeholder={placeholder}
           step="0.01"
           type="number"
         />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] font-semibold text-[#2f2d3c]">
+        <span className="select-none text-[22px] font-semibold text-[#2f2d3c] ml-2">
           €
         </span>
       </div>
+      <FieldError name={name} />
+    </div>
+  );
+}
+
+function LocationCard() {
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-[20px] pt-2">
+        <div>
+          <label className={labelClassName} htmlFor="rentalStartDate">
+            Du <span className="text-red-500 ml-1">*</span>
+          </label>
+          <Field
+            className={inputClassName}
+            id="rentalStartDate"
+            name="rentalStartDate"
+            placeholder="jj/mm/aaaa"
+            type="text"
+          />
+          <FieldError name="rentalStartDate" />
+        </div>
+        <div>
+          <label className={labelClassName} htmlFor="rentalEndDate">
+            Au <span className="text-red-500 ml-1">*</span>
+          </label>
+          <Field
+            className={inputClassName}
+            id="rentalEndDate"
+            name="rentalEndDate"
+            placeholder="jj/mm/aaaa"
+            type="text"
+          />
+          <FieldError name="rentalEndDate" />
+        </div>
+      </div>
+
+      <label className={`${labelClassName} pt-2`} htmlFor="dailyPrice">
+        Prix / jour <span className="text-red-500 ml-1">*</span>
+      </label>
+      <PriceInput id="dailyPrice" name="dailyPrice" />
+    </>
+  );
+}
+
+function TrocCard() {
+  return (
+    <div className="pt-2">
+      <label className={`${labelClassName} pt-2`} htmlFor="estimatedPrice">
+        Prix estimé <span className="text-red-500 ml-1">*</span>
+      </label>
+      <PriceInput id="estimatedPrice" name="estimatedPrice" />
+    </div>
+  );
+}
+
+function SecondHandCard() {
+  return (
+    <div className="pt-2">
+      <label className={`${labelClassName} pt-2`} htmlFor="price">
+        Prix <span className="text-red-500 ml-1">*</span>
+      </label>
+      <PriceInput id="price" name="price" />
     </div>
   );
 }
