@@ -85,11 +85,3 @@ export const getExchangesForProduct = (productId) => {
 export const getExchangeStatusForProduct = (productId) => {
   return apiClient.get(`/troc/exchanges/product/${productId}/status`);
 };
-
-/**
- * Retrieve automatic troc suggestions for the connected user.
- * @returns {Promise} List of troc suggestions
- */
-export const getTrocSuggestions = () => {
-  return apiClient.get("/troc/suggestions");
-};

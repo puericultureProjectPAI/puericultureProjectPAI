@@ -1,6 +1,13 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+/* @vitest-environment jsdom */
+
+import "@testing-library/jest-dom/vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import TrocSuggestionList from "./TrocSuggestionList.jsx";
+
+afterEach(() => {
+  cleanup();
+});
 
 describe("TrocSuggestionList", () => {
   const suggestion = {

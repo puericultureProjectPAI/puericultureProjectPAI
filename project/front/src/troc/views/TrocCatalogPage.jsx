@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import TrocSuggestionList from "../components/TrocSuggestionList.jsx";
-import { useExchangeManager } from "../hooks/useExchangeManager.jsx";
 import useTroc from "../hooks/useTroc";
 
 const fallbackImage = (category) =>
@@ -10,12 +9,15 @@ const fallbackImage = (category) =>
 export default function CatalogPage() {
   const navigate = useNavigate();
 
-  const { error, loading, getProductsTroc, products } = useTroc();
   const {
+    error,
     fetchTrocSuggestions,
-    loading: suggestionsLoading,
+    getProductsTroc,
+    loading,
+    products,
+    suggestionsLoading,
     trocSuggestions,
-  } = useExchangeManager();
+  } = useTroc();
 
   useEffect(() => {
     const timeoutId = globalThis.setTimeout(() => {

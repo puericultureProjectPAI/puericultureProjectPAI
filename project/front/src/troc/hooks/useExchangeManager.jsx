@@ -11,7 +11,6 @@ export const useExchangeManager = () => {
   const [myExchanges, setMyExchanges] = useState([]);
   const [proposedToMeExchanges, setProposedToMeExchanges] = useState([]);
   const [exchangesForProduct, setExchangesForProduct] = useState([]);
-  const [trocSuggestions, setTrocSuggestions] = useState([]);
 
   // Loading and error states
   const [loading, setLoading] = useState(false);
@@ -206,23 +205,6 @@ export const useExchangeManager = () => {
   );
 
   /**
-   * Fetch automatic troc suggestions for the connected user.
-   */
-  const fetchTrocSuggestions = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await exchangeApi.getTrocSuggestions();
-      setTrocSuggestions(response.data);
-    } catch (err) {
-      setError("Failed to fetch troc suggestions: " + err.message);
-      console.error("Error fetching troc suggestions:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  /**
    * Clear success message
    */
   const clearSuccessMessage = useCallback(() => {
@@ -241,7 +223,6 @@ export const useExchangeManager = () => {
     myExchanges,
     proposedToMeExchanges,
     exchangesForProduct,
-    trocSuggestions,
     loading,
     error,
     successMessage,
@@ -250,7 +231,6 @@ export const useExchangeManager = () => {
     fetchMyExchanges,
     fetchExchangesProposedToMe,
     fetchExchangesForProduct,
-    fetchTrocSuggestions,
     createNewExchange,
     acceptExchangeProposal,
     confirmExchangeProposal,
