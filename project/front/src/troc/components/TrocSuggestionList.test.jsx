@@ -1,13 +1,6 @@
-/* @vitest-environment jsdom */
-
-import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import TrocSuggestionList from "./TrocSuggestionList.jsx";
-
-afterEach(() => {
-  cleanup();
-});
 
 describe("TrocSuggestionList", () => {
   const suggestion = {
@@ -24,7 +17,7 @@ describe("TrocSuggestionList", () => {
     },
   };
 
-  it("renders product suggestions with their relevance score", () => {
+  it("renders catalogue-style suggestions with their relevance score", () => {
     render(
       <TrocSuggestionList
         loading={false}
@@ -61,7 +54,7 @@ describe("TrocSuggestionList", () => {
       screen.getByText("Aucune suggestion disponible pour le moment."),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Actualiser"));
+    fireEvent.click(screen.getByRole("button", { name: "Actualiser" }));
 
     expect(onRefresh).toHaveBeenCalledTimes(1);
   });
