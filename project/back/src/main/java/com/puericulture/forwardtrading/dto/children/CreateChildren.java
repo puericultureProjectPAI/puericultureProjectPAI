@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CreateChildren {
@@ -17,7 +19,7 @@ public class CreateChildren {
     private LocalDate dpa;
 
     @Schema(
-            examples = {"m", "f", "o"},
+            examples = {"m", "f", "s"},
             maxLength = 1,
             minLength = 1,
             allowableValues = {"m", "f", "s"})

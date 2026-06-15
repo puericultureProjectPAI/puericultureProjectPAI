@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import Layout from "./common/views/Layout";
 import Connection from "./common/views/Connection";
 import { AuthProvider } from "./common/security/AuthContext";
@@ -7,19 +7,25 @@ import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
+import CatalogPage from "./leasing/views/CatalogPage";
+import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
+import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocView from "./troc/views/TrocView";
+import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
 import AdminReportsView from "./admin/views/AdminReportsView";
 import AdminReportDetailView from "./admin/views/AdminReportDetailView";
+import { FamilyOnboardingView } from "./forward-trading/views/FamilyOnboardingView";
 
+import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
+import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
 
 export default function App() {
   useEffect(() => {
-    // PWA Logic: Captured at root to ensure shell availability
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       globalThis.deferredPrompt = e;
@@ -30,6 +36,7 @@ export default function App() {
       "beforeinstallprompt",
       handleBeforeInstallPrompt,
     );
+
     return () =>
       globalThis.removeEventListener(
         "beforeinstallprompt",
@@ -40,19 +47,36 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public Route */}
+        {/* Public Routes */}
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
-        {/* Security: Protected Shell*/}
+        {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Leasing pages avec leur propre layout full-screen */}
+          <Route path="/leasing/catalog" element={<CatalogPage />} />
+          <Route
+            path="/leasing/products/:id"
+            element={<LeasingProductDetailView />}
+          />
+          <Route
+            path="/forward/onboarding"
+            element={<FamilyOnboardingView />}
+          />
           <Route element={<Layout />}>
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<GlobalCatalogView />} />
+            <Route
+              path="/leasing/booking/:id"
+              element={<LeasingBookingPage />}
+            />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
-              {/* Future vertical routes go here */}
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
+              <Route
+                path="/second-hand/compare/:ean"
+                element={<PriceComparisonView />}
+              />
               <Route
                 path="/forward/timeline/:id"
                 element={<ForwardTradingView />}
@@ -66,6 +90,7 @@ export default function App() {
                 element={<PublishAnnouncementView />}
               />
               <Route path="/troc" element={<TrocView />} />
+              <Route path="/troc/catalog" element={<TrocCatalogPage />} />
             </Route>
 
             {/* Admin routes — restricted to users with role ADMIN */}
@@ -85,31 +110,10 @@ export default function App() {
               />
             </Route>
 
-            {/* Default Redirections: Explicit logic  */}
-            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
         </Route>
       </Routes>
     </AuthProvider>
-  );
-}
-
-function Home() {
-  const navigate = useNavigate();
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Project PAI</h1>
-      {/*Mobile-first styling*/}
-      <button className="w-full max-w-sm bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition-transform">
-        Main Action
-      </button>
-      <button
-        className="w-full max-w-sm bg-blue-600 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition-transform"
-        onClick={() => navigate("/second-hand/scan")}
-      >
-        Scanner un produit
-      </button>
-    </div>
   );
 }

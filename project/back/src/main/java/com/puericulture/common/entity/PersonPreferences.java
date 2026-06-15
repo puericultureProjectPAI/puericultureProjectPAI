@@ -28,4 +28,7 @@ public class PersonPreferences {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
+
+    @Column(name = "wants_more_children", nullable = true)
+    private Boolean wantsMoreChildren;
 }

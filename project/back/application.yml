@@ -18,31 +18,12 @@ spring:
   jpa:
     hibernate:
       # DANGEREUX EN PROD. Doit être écrasé par SPRING_JPA_HIBERNATE_DDL_AUTO=validate sur Render
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: ${SHOW_SQL:true}
-
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-
-moderation:
-  admin-email: ${ADMIN_EMAIL:}
 
 supabase:
   url: ${SUPABASE_URL}

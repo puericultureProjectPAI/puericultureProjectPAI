@@ -7,14 +7,30 @@ export default {
         figtree: ["Figtree", "sans-serif"],
       },
       colors: {
+        "text-brand": "#000040",
+        "feedback-text-inverse": "#FFFFFF",
+
+        "feedback-border-alert": "#E91C2E",
+
+        "feedback-icon-brand": "#FF9D00",
+        "feedback-icon-neutral": "#757388",
+        "icon-brand": "#040037",
+
         //bg-alternate
         "bg-alternate": "#F2F2F9",
         info: "#E8F3FF",
         "info-medium": "#E8F3FFBF",
         "info-low": "#E8F3FF80",
+        "bg-base": "#FFFFFF",
+        "bg-brand": "#000028",
+        "icon-subtle": "#757388",
+        "feedback-text-subtle": "#757388",
+        "feedback-text-brand": "#000040",
+        "feedback-border-neutral": "#D6D6E0",
+        "feedback-border-brand": "#000040",
 
         //feed-back-background
-
+        "feedback-background-service": "#006EFB",
         "feedback-background-info": "#3A51C9",
         "feedback-background-info-medium": "#3A51C9BF",
         "feedback-background-info-low": "#3A51C980",
@@ -22,6 +38,7 @@ export default {
         "feedback-background-neutral": "#F2F2F9",
         "feedback-background-neutral-medium": "#F2F2F9BF",
         "feedback-background-neutral-low": "#F2F2F980",
+        "feedback-background-neutral-bold-low": "rgba(117, 115, 136, 0.50)",
 
         "feedback-background-success": "#EEFEF2",
         "feedback-background-success-medium": "#EEFEF2BF",
@@ -45,6 +62,10 @@ export default {
         "feedback-background-alert-bold-low": "#E91C2E80",
 
         "feedback-icon-subtle": "#757388",
+
+        //brand
+        "color-brand": "#040037",
+
         //TEXT
         subtle: "#757388",
         neutral: "#33323D",

@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { useNavigate, NavLink } from "react-router";
+import { useNavigate } from "react-router";
 import { supabase } from "../utils/supabaseClient";
+
+import InstallPWA from "../components/InstallPWA";
+import LoginForm from "../components/LoginForm";
 
 /**
  * Minimalist Connection Component
@@ -10,19 +13,22 @@ export default function Connection() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
     setStatus("Logging in...");
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      setStatus(`Error: ${error.message}`);
+    if (signInError) {
+      setError("Email ou mot de passe incorrect.");
+      setStatus("");
     } else {
       setStatus("Login successful.");
       navigate("/home");
@@ -30,33 +36,20 @@ export default function Connection() {
   };
 
   return (
-    <div>
-      <h2>Auth Test Page</h2>
+    <div className="flex flex-col min-h-screen">
+      <LoginForm
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        onLogin={handleLogin}
+        status={status}
+        error={error}
+      />
 
-      <form onSubmit={(e) => e.preventDefault()}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br />
-        <button onClick={handleLogin}>Login</button>
-        <NavLink to="../register">Register</NavLink>
-      </form>
-
-      {status && (
-        <p>
-          <strong>Status:</strong> {status}
-        </p>
-      )}
+      <div className="fixed bottom-0 left-0 w-full z-50">
+        <InstallPWA />
+      </div>
     </div>
   );
 }
