@@ -88,7 +88,7 @@ export default function LeasingBookingSection({
   };
 
   return (
-    <div className="w-full px-[14px] py-[12px] font-['Figtree',sans-serif]">
+    <div className="w-full py-[12px] font-['Figtree',sans-serif]">
       <div className="border border-[rgba(117,115,136,0.75)] rounded-[8px] px-[12px] py-[12px] flex flex-col gap-[12px]">
         {/* Dates recap */}
         <div className="flex gap-[10px] items-center flex-wrap">
@@ -193,10 +193,10 @@ export default function LeasingBookingSection({
               type="button"
               onClick={handleBookClick}
               disabled={!hasSavedDates}
-              className={`h-[40px] rounded-[8px] w-full font-semibold text-[16px] border transition ${
+              className={`h-[40px] rounded-[8px] w-full font-semibold text-[16px] transition ${
                 hasSavedDates
-                  ? "bg-white border-[#040037] text-[#040037] hover:bg-gray-50 active:scale-[0.98]"
-                  : "bg-white border-[rgba(117,115,136,0.5)] text-[rgba(117,115,136,0.5)] cursor-not-allowed"
+                  ? "bg-[#040037] text-white hover:bg-[#040037]/90 active:scale-[0.98]"
+                  : "bg-[rgba(117,115,136,0.5)] text-white cursor-not-allowed"
               }`}
             >
               Réserver
