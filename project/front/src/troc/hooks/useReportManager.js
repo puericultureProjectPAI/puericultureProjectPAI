@@ -34,6 +34,23 @@ export const useReportManager = () => {
     }
   }, []);
 
+  const createReport = useCallback(async (exchangeId, request) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await reportApi.createReport(exchangeId, request);
+      return response.data;
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Impossible de soumettre le signalement. Veuillez réessayer.",
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const moderateReport = useCallback(async (reportId, decision, comment) => {
     setLoading(true);
     setError(null);
@@ -68,6 +85,7 @@ export const useReportManager = () => {
     loading,
     error,
     successMessage,
+    createReport,
     fetchAllReports,
     fetchReportById,
     moderateReport,

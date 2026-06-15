@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useImageManager } from "../../common/hooks/useImageManager";
-import * as reportApi from "../utils/reportApi";
+import { useReportManager } from "../hooks/useReportManager";
 
 const REPORT_TYPES = [
   { value: "ARTICLE_NON_CONFORME", label: "Article non conforme" },
@@ -22,9 +22,13 @@ const validationSchema = Yup.object({
 });
 
 const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
-  const [submitError, setSubmitError] = useState(null);
   const [attachmentUrls, setAttachmentUrls] = useState([]);
   const { uploadImage, isUploading, error: uploadError } = useImageManager();
+  const {
+    createReport,
+    loading: isSubmittingReport,
+    error: submitError,
+  } = useReportManager();
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -41,19 +45,15 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
   };
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    setSubmitError(null);
     try {
-      await reportApi.createReport(exchangeId, {
+      await createReport(exchangeId, {
         type: values.type,
         description: values.description,
         attachmentUrls: attachmentUrls.length > 0 ? attachmentUrls : null,
       });
       onSuccess();
-    } catch (err) {
-      setSubmitError(
-        err.response?.data?.message ||
-          "Impossible de soumettre le signalement. Veuillez réessayer.",
-      );
+    } catch {
+      // error already stored in submitError from useReportManager
     } finally {
       setSubmitting(false);
     }
@@ -187,10 +187,12 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || isUploading}
+                  disabled={isSubmitting || isSubmittingReport || isUploading}
                   className="rounded bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-gray-400"
                 >
-                  {isSubmitting ? "Envoi..." : "Soumettre le signalement"}
+                  {isSubmitting || isSubmittingReport
+                    ? "Envoi..."
+                    : "Soumettre le signalement"}
                 </button>
               </div>
             </Form>
