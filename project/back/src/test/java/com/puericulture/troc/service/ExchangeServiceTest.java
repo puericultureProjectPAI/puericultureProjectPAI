@@ -35,8 +35,6 @@ class ExchangeServiceTest {
 
     @Mock private ExchangeMapper exchangeMapper;
 
-    @Mock private MessageRepository messageRepository;
-
     @InjectMocks private ExchangeService exchangeService;
 
     private static final UUID MOCK_USER_ID =
