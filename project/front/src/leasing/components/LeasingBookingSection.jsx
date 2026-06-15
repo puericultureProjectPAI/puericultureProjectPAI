@@ -204,7 +204,7 @@ export default function LeasingBookingSection({
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="bg-[#040037] text-white h-[40px] rounded-[8px] w-full font-semibold text-[16px] hover:bg-[#040037]/90 transition active:scale-[0.98]"
+              className="h-[40px] w-full rounded-[8px] border border-[#040037] bg-white text-[15px] font-bold text-[#040037] hover:bg-[#F2F2F9] transition"
             >
               Modifier les dates
             </button>
