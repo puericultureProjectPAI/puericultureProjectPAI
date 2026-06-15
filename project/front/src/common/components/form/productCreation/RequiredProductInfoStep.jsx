@@ -224,7 +224,7 @@ export default function RequiredProductInfoStep() {
             className={`${fieldClassName} pr-[44px]`}
             id="lengthCm"
             name="lengthCm"
-            placeholder="Long"
+            placeholder="Longueur"
             type="number"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#555261]">
@@ -237,7 +237,7 @@ export default function RequiredProductInfoStep() {
             className={`${fieldClassName} pr-[44px]`}
             id="widthCm"
             name="widthCm"
-            placeholder="Larg"
+            placeholder="Largeur"
             type="number"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#555261]">
