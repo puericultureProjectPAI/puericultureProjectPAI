@@ -25,10 +25,6 @@ spring:
         format_sql: true
     show-sql: ${SHOW_SQL:true}
 
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-
 supabase:
   url: ${SUPABASE_URL}
   service:
