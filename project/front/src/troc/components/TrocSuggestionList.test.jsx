@@ -1,6 +1,12 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+// @vitest-environment jsdom
+
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import TrocSuggestionList from "./TrocSuggestionList.jsx";
+
+afterEach(() => {
+  cleanup();
+});
 
 describe("TrocSuggestionList", () => {
   const suggestion = {
@@ -11,13 +17,14 @@ describe("TrocSuggestionList", () => {
     estimatedPrice: 45,
     indicePertinence: 85,
     pertinenceReason: "Pertinence : même catégorie, même ville",
+    images: [],
     author: {
       firstName: "Jean",
       name: "Dupont",
     },
   };
 
-  it("renders catalogue-style suggestions with their relevance score", () => {
+  it("renders a suggestion and its relevance score", () => {
     render(
       <TrocSuggestionList
         loading={false}
@@ -26,18 +33,28 @@ describe("TrocSuggestionList", () => {
       />,
     );
 
-    expect(screen.getByText("Nos recommandations")).toBeInTheDocument();
-    expect(screen.getByText("Siège auto")).toBeInTheDocument();
-    expect(screen.getByText("85%")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Nos recommandations" }),
+    ).toBeTruthy();
+    expect(screen.getByText("Siège auto")).toBeTruthy();
+    expect(screen.getByText("85%")).toBeTruthy();
     expect(
       screen.getByText("Pertinence : même catégorie, même ville"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Voir les détails")).toBeInTheDocument();
-    expect(screen.getByText("Ignorer")).toBeInTheDocument();
-    expect(screen.getByText("Proposer un troc")).toBeInTheDocument();
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", {
+        name: /Voir (le détail|les détails)/i,
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", {
+        name: /^(Proposer un troc|Accepter et proposer un troc)$/i,
+      }),
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ignorer" })).toBeTruthy();
   });
 
-  it("renders an empty state and calls refresh", () => {
+  it("renders the empty state and refreshes suggestions", () => {
     const onRefresh = vi.fn();
 
     render(
@@ -50,7 +67,7 @@ describe("TrocSuggestionList", () => {
 
     expect(
       screen.getByText("Aucune suggestion disponible pour le moment."),
-    ).toBeInTheDocument();
+    ).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Actualiser" }));
 
@@ -60,15 +77,15 @@ describe("TrocSuggestionList", () => {
   it("hides a suggestion when it is ignored", () => {
     render(<TrocSuggestionList loading={false} suggestions={[suggestion]} />);
 
-    fireEvent.click(screen.getByText("Ignorer"));
+    fireEvent.click(screen.getByRole("button", { name: "Ignorer" }));
 
-    expect(screen.queryByText("Siège auto")).not.toBeInTheDocument();
+    expect(screen.queryByText("Siège auto")).toBeNull();
     expect(
       screen.getByText("Aucune suggestion disponible pour le moment."),
-    ).toBeInTheDocument();
+    ).toBeTruthy();
   });
 
-  it("calls accept callback when accepting a suggestion", () => {
+  it("calls the accept callback", () => {
     const onAccept = vi.fn();
 
     render(
@@ -79,8 +96,13 @@ describe("TrocSuggestionList", () => {
       />,
     );
 
-    fireEvent.click(screen.getByText("Proposer un troc"));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /^(Proposer un troc|Accepter et proposer un troc)$/i,
+      }),
+    );
 
+    expect(onAccept).toHaveBeenCalledTimes(1);
     expect(onAccept).toHaveBeenCalledWith(suggestion);
   });
 });
