@@ -65,6 +65,7 @@ public class ProductTrocService {
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
 
+        troc.setBrand(request.getBrand());
         troc.setDimensions(request.getDimensions());
         troc.setMaxWeightKg(request.getMaxWeightKg());
         troc.setMinAgeMonths(request.getMinAgeMonths());
