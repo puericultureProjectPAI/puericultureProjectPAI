@@ -14,21 +14,25 @@ const CATALOG_TABS = [
   {
     image: ongletSec,
     label: "Seconde main",
+    labelPadding: "pb-[18px]",
     path: "/second-hand/catalog",
   },
   {
     image: ongletTroc,
     label: "Échange",
+    labelPadding: "pb-[28px]",
     path: "/troc/catalog",
   },
   {
     image: ongletLeas,
     label: "Location",
+    labelPadding: "pb-[28px]",
     path: "/leasing/catalog",
   },
   {
     image: ongletFt,
     label: "Forward trading",
+    labelPadding: "pb-[18px]",
     path: "/forward/catalog",
   },
 ];
@@ -83,14 +87,14 @@ export default function CatalogPage() {
   };
 
   return (
-    <div className="relative flex flex-col overflow-hidden bg-white text-[#080036]">
+    <div className="relative flex flex-col overflow-hidden bg-white font-['Figtree'] text-[#080036]">
       <main className="flex-1">
         <section className="w-full overflow-x-auto hide-scrollbar">
           <div className="flex w-max gap-2 px-6 pb-4 pt-3">
             {CATALOG_TABS.map((tab) => (
               <button
                 key={tab.label}
-                className="flex h-[190px] w-[84px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[9px] border border-black/[0.03] bg-cover bg-center px-1 pb-[18px] shadow-[0_1px_2px_rgba(8,0,54,0.03)] transition-transform active:scale-[0.98]"
+                className={`flex h-[190px] w-[84px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[9px] border border-black/[0.03] bg-cover bg-center px-1 ${tab.labelPadding} font-['Figtree'] shadow-[0_1px_2px_rgba(8,0,54,0.03)] transition-transform active:scale-[0.98]`}
                 onClick={() => navigate(tab.path)}
                 style={{ backgroundImage: `url(${tab.image})` }}
                 type="button"
@@ -104,13 +108,38 @@ export default function CatalogPage() {
         </section>
 
         <section className="px-6 pt-1">
-          <h1 className="text-[20px] font-bold leading-[24px]">
-            Articles disponibles à l'échange
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-[20px] font-bold leading-[24px]">
+                Articles disponibles à l'échange
+              </h1>
 
-          <p className="mt-1 text-[14px] leading-[18px] text-[#7C7A8A]">
-            {loading ? "…" : `${products.length} articles`}
-          </p>
+              <p className="mt-1 text-[14px] leading-[18px] text-[#7C7A8A]">
+                {loading ? "…" : `${products.length} articles`}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Afficher les filtres"
+              className="flex h-10 w-10 shrink-0 items-center justify-center text-[#080036]"
+            >
+              <svg
+                aria-hidden="true"
+                className="h-8 w-8"
+                fill="none"
+                viewBox="0 0 32 32"
+              >
+                <path
+                  d="M5 6h22L19 16v9l-6 3V16L5 6Z"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.7"
+                />
+              </svg>
+            </button>
+          </div>
         </section>
 
         <section className="grid grid-cols-2 gap-3 px-6 pb-5 pt-4 md:grid-cols-3 lg:grid-cols-4">

@@ -15,21 +15,25 @@ const CATALOG_TABS = [
   {
     label: "Seconde main",
     image: ongletSec,
+    labelPadding: "pb-[18px]",
     path: "/second-hand/catalog",
   },
   {
     label: "Échange",
     image: ongletTroc,
+    labelPadding: "pb-[28px]",
     path: "/troc/catalog",
   },
   {
     label: "Location",
     image: ongletLeas,
+    labelPadding: "pb-[28px]",
     path: "/leasing/catalog",
   },
   {
     label: "Forward trading",
     image: ongletFt,
+    labelPadding: "pb-[18px]",
     path: "/forward/catalog",
   },
 ];
@@ -76,7 +80,7 @@ export default function CatalogPage() {
   };
 
   return (
-    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white text-[#080036]">
+    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white font-['Figtree'] text-[#080036]">
       <Header />
 
       <main className="flex-1 overflow-y-auto bg-white pb-3">
@@ -87,7 +91,7 @@ export default function CatalogPage() {
                 key={tab.label}
                 type="button"
                 onClick={() => navigate(tab.path)}
-                className="flex h-[190px] w-[84px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[9px] border border-black/[0.03] bg-cover bg-center px-1 pb-[18px] shadow-[0_1px_2px_rgba(8,0,54,0.03)] transition-transform active:scale-[0.98]"
+                className={`flex h-[190px] w-[84px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[9px] border border-black/[0.03] bg-cover bg-center px-1 ${tab.labelPadding} font-['Figtree'] shadow-[0_1px_2px_rgba(8,0,54,0.03)] transition-transform active:scale-[0.98]`}
                 style={{ backgroundImage: `url(${tab.image})` }}
               >
                 <span className="max-w-[76px] text-center text-[16px] font-normal leading-[20px] text-[#080036]">

@@ -65,7 +65,7 @@ const TrocSuggestionList = ({
   };
 
   return (
-    <section>
+    <section className="font-['Figtree']">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h2 className="text-[20px] font-bold leading-[24px] text-[#080036]">
@@ -165,23 +165,23 @@ const TrocSuggestionList = ({
 
                 <div className="mt-auto grid gap-2 pt-3">
                   <button
-                    className="h-9 rounded-[6px] border border-[#080036] px-2 text-[12px] font-semibold text-[#080036]"
+                    className="h-10 rounded-[8px] border border-[#080036] px-3 font-['Figtree'] text-[13px] font-medium text-[#080036]"
                     onClick={() => onViewDetails?.(suggestion)}
                     type="button"
                   >
-                    Voir détail
+                    Voir les détails
                   </button>
 
                   <button
-                    className="h-9 rounded-[6px] bg-[#080036] px-2 text-[12px] font-semibold leading-4 text-white"
+                    className="h-10 rounded-[8px] bg-[#080036] px-3 font-['Figtree'] text-[13px] font-semibold leading-4 text-white"
                     onClick={() => acceptSuggestion(suggestion)}
                     type="button"
                   >
-                    Accepter et proposer un troc
+                    Proposer un troc
                   </button>
 
                   <button
-                    className="h-8 text-[12px] font-medium text-[#7C7A8A] underline underline-offset-2"
+                    className="h-8 font-['Figtree'] text-[12px] font-medium text-[#7C7A8A] underline underline-offset-2"
                     onClick={() => ignoreSuggestion(suggestion)}
                     type="button"
                   >

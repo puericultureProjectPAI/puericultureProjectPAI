@@ -32,11 +32,9 @@ describe("TrocSuggestionList", () => {
     expect(
       screen.getByText("Pertinence : même catégorie, même ville"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Voir détail")).toBeInTheDocument();
+    expect(screen.getByText("Voir les détails")).toBeInTheDocument();
     expect(screen.getByText("Ignorer")).toBeInTheDocument();
-    expect(
-      screen.getByText("Accepter et proposer un troc"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Proposer un troc")).toBeInTheDocument();
   });
 
   it("renders an empty state and calls refresh", () => {
@@ -81,7 +79,7 @@ describe("TrocSuggestionList", () => {
       />,
     );
 
-    fireEvent.click(screen.getByText("Accepter et proposer un troc"));
+    fireEvent.click(screen.getByText("Proposer un troc"));
 
     expect(onAccept).toHaveBeenCalledWith(suggestion);
   });
