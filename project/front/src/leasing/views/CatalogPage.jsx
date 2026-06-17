@@ -4,6 +4,7 @@ import Header from "../../common/views/Header";
 import Navbar from "../../common/views/NavBar";
 import useCatalogFilters from "../hooks/useCatalogFilters";
 import ArrivalPackBanner from "../components/ArrivalPackBanner";
+import ArrivalPackInfoBanner from "../components/ArrivalPackInfoBanner";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
@@ -69,13 +70,26 @@ export default function CatalogPage() {
                 showFilters ? "Masquer les filtres" : "Afficher les filtres"
               }
               onClick={() => setShowFilters((value) => !value)}
-              className="flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
+              className="relative flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
             >
               <span className="material-symbols-rounded text-[20px]">
                 filter_alt
               </span>
+              {!appliedFilters && !showFilters && (
+                <span className="absolute right-0 top-0 flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3A51C9] opacity-75"></span>
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#3A51C9]"></span>
+                </span>
+              )}
             </button>
           </div>
+
+          {showFilters && !appliedFilters && (
+            <ArrivalPackInfoBanner
+              setShowFilters={setShowFilters}
+              isMini={true}
+            />
+          )}
 
           {showFilters && (
             <section className="mt-[11px] rounded-[8px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
@@ -161,12 +175,16 @@ export default function CatalogPage() {
           )}
         </section>
 
-        {appliedFilters && (
+        {appliedFilters ? (
           <ArrivalPackBanner
             city={appliedFilters.city}
             startDate={appliedFilters.startDate}
             endDate={appliedFilters.endDate}
           />
+        ) : (
+          !showFilters && (
+            <ArrivalPackInfoBanner setShowFilters={setShowFilters} />
+          )
         )}
 
         <section className="grid grid-cols-2 gap-[20px] px-[24px] pb-4 pt-[14px] md:grid-cols-3 lg:grid-cols-4">
