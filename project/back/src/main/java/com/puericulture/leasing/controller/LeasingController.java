@@ -72,6 +72,32 @@ public class LeasingController {
     @Operation(
             summary = "Reserve an arrival pack",
             description = "Creates one leasing reservation per selected product in the pack")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Arrival pack reserved successfully",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                LeasingPackReservationResponseDto
+                                                                        .class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Invalid dates or booking overlap",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Child not found or products not found",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(mediaType = "application/json"))
+            })
     @PostMapping("/reservations/pack")
     public ResponseEntity<LeasingPackReservationResponseDto> createPackReservation(
             @Valid @RequestBody LeasingPackReservationRequestDto dto,
