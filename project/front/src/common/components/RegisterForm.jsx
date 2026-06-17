@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Formik, Form, useField } from "formik";
 import logoKiabi from "../../assets/Logo_Kiabi.svg";
+import eyeIcon from "../../../src/assets/eye.svg";
+import eyeOffIcon from "../../../src/assets/eye-off.svg";
 import * as Yup from "yup";
 import CheckCircleIcon from "./CheckCircleIcon";
 import XCircleIcon from "./XCircleIcon";
@@ -13,8 +15,10 @@ const MyTextInput = ({
   ...props
 }) => {
   const [field, meta] = useField(props);
+  const [showPassword, setShowPassword] = useState(false);
   const isError = meta.touched && meta.error;
   const isSuccess = meta.touched && !meta.error && field.value;
+  const isPassword = props.type === "password";
 
   return (
     <div className="flex flex-col mb-4 font-figtree">
@@ -24,17 +28,38 @@ const MyTextInput = ({
           <span className="text-feedback-background-alert-bold">*</span>
         )}
       </label>
-      <input
-        {...field}
-        {...props}
-        className={`border rounded-lg p-3 outline-none transition-colors ${
-          isError
-            ? "border-feedback-background-alert-bold focus:border-feedback-background-alert-bold"
-            : isSuccess && showSuccessBorder
-              ? "border-feedback-background-success-bold focus:border-feedback-background-success-bold"
-              : "border-subtle focus:border-neutral"
-        }`}
-      />
+      <div className="relative">
+        <input
+          {...field}
+          {...props}
+          type={isPassword && showPassword ? "text" : props.type}
+          className={`w-full border rounded-lg p-3 ${isPassword ? "pr-11" : ""} outline-none transition-colors ${
+            isError
+              ? "border-feedback-background-alert-bold focus:border-feedback-background-alert-bold"
+              : isSuccess && showSuccessBorder
+                ? "border-feedback-background-success-bold focus:border-feedback-background-success-bold"
+                : "border-subtle focus:border-neutral"
+          }`}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={
+              showPassword
+                ? "Masquer le mot de passe"
+                : "Afficher le mot de passe"
+            }
+            className="absolute right-3.5 top-1/2 -translate-y-1/2"
+          >
+            <img
+              src={showPassword ? eyeOffIcon : eyeIcon}
+              alt=""
+              className="w-5 h-5 opacity-60"
+            />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
@@ -242,7 +267,6 @@ export default function RegisterForm({ onSubmit, isLoading }) {
 
                 <button
                   type="submit"
-                  type="submit"
                   disabled={
                     isLoading ||
                     !isValid ||
@@ -253,6 +277,14 @@ export default function RegisterForm({ onSubmit, isLoading }) {
                   className="w-full mt-2 bg-color-brand text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all disabled:bg-feedback-background-neutral-bold-low"
                 >
                   {isLoading ? "Création..." : "Créer mon compte"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="w-full mt-4 p-2 rounded-lg text-center text-feedback-text-subtle text-base font-normal"
+                >
+                  Retour
                 </button>
               </div>
             )}

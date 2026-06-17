@@ -25,15 +25,6 @@ spring:
         format_sql: true
     show-sql: ${SHOW_SQL:true}
 
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-
-google:
-  gemini:
-    api-key: ${GOOGLE_GEMINI_API_KEY}
-    url: ${GOOGLE_GEMINI_URL:https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent}
-
 supabase:
   url: ${SUPABASE_URL}
   service:

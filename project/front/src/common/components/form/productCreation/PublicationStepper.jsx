@@ -1,5 +1,5 @@
 export default function PublicationStepper({ currentStep }) {
-  const steps = [1, 2, 3];
+  const steps = [1, 2];
 
   return (
     <div className="mb-[40px] mt-[23px] flex items-center justify-between px-[3px]">

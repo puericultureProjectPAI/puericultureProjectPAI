@@ -64,12 +64,6 @@ export default function MyImageInput({
         </p>
       )}
 
-      {(uploadError || (meta.touched && meta.error)) && (
-        <p className="mb-2 text-xs font-semibold text-red-500">
-          {uploadError || meta.error}
-        </p>
-      )}
-
       {limitWarning && (
         <p className="mb-2 text-xs font-semibold text-orange-500">
           Maximum {maxImages} photos autorisées. Seules les premières ont été
@@ -119,6 +113,12 @@ export default function MyImageInput({
           </label>
         )}
       </div>
+
+      {(uploadError || (meta.touched && meta.error)) && (
+        <p className="mb-2 text-xs font-semibold text-red-500">
+          {uploadError || meta.error}
+        </p>
+      )}
     </div>
   );
 }

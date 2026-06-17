@@ -32,7 +32,7 @@ public class OnBoardingDto {
     @JsonProperty("children")
     @Valid
     @Schema(description = "List of children. Empty when familyStatus is 'expecting'.")
-    private List<ChildDto> children;
+    private List<OnBoardingChildDto> children;
 
     @JsonProperty("futurePlans")
     @NotNull @Schema(
@@ -45,7 +45,7 @@ public class OnBoardingDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Schema(description = "Information about a child")
-    public static class ChildDto {
+    public static class OnBoardingChildDto {
 
         @JsonProperty("name")
         @NotNull @Schema(description = "Child's first name", example = "Léo")
