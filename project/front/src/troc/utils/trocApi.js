@@ -19,3 +19,8 @@ export async function getProductDetail(id) {
   const response = await apiClient.get(`/troc/products/${id}`);
   return response.data;
 }
+
+export async function getTrocSuggestions() {
+  const response = await apiClient.get("/troc/suggestions");
+  return response.data;
+}

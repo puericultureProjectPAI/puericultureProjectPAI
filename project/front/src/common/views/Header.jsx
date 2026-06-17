@@ -5,8 +5,8 @@ import scanIcon from "../../assets/app-bar-scanqr-icon-inverse.svg";
 import calendarIcon from "../../assets/calendar-icon-inverse-m.svg";
 
 export default function Header() {
-  //A adapter plus tard avec la version PC
   const navigate = useNavigate();
+
   return (
     <header className="flex h-14 shrink-0 items-center justify-between bg-text-brand px-4 z-50">
       <button onClick={() => navigate("/home")} aria-label="Accueil">
