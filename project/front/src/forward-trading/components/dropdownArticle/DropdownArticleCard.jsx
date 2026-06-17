@@ -8,14 +8,14 @@ export default function DropdownArticleCard({ name, price, age }) {
 
       {/* Infos */}
       <div className="flex-1 max-w-52 flex flex-col justify-start items-start gap-2">
-        <span className="text-brand text-xl font-bold font-['Figtree']">
+        <span className="text-brand text-xl font-bold font-figtree">
           {name}
         </span>
-        <span className="text-neutral text-base font-normal font-['Figtree']">
+        <span className="text-neutral text-base font-normal font-figtree">
           {price}
         </span>
         {age && (
-          <span className="text-neutral text-base font-normal font-['Figtree']">
+          <span className="text-neutral text-base font-normal font-figtree">
             {age}
           </span>
         )}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
-import Dropdown from "./dropdown/Dropdown";
+import Dropdown from "./dropdownArticle/DropdownArticle";
 export default function TimelineFrise({ timelineId }) {
   const { periods, isLoading, error } = useTimelineData(timelineId);
   const [activePeriodId, setActivePeriodId] = useState(null);
