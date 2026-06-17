@@ -12,10 +12,11 @@ export const PRODUCT_CATEGORIES = [
 ];
 
 export const CONDITION_OPTIONS = [
+  "Neuf",
   "Très bon état",
   "Bon état",
   "État correct",
-  "Usure visible",
+  "Usé",
 ];
 
 export const CITY_OPTIONS = ["Lille", "Paris", "Lyon", "Marseille", "Bordeaux"];
