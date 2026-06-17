@@ -1,65 +1,214 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { schemaCreationEnfant } from "../utils/Validations";
+import { useState } from "react";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import headerImage from "../../assets/onboarding/header_onboarding.png";
 
-const CreationEnfantForm = ({ onSubmit, isPending }) => {
+// Imports de tes sous-composants
+import { StatusStep } from "../components/stepFormOnChildCreation/StatusStep";
+import { GrossesseStep } from "../components/stepFormOnChildCreation/GrossesseStep";
+import { DetailsStep } from "../components/stepFormOnChildCreation/DetailsStep";
+
+// SCHEMA DE VALIDATION YUP (Renommé pour éviter les conflits)
+const creationEnfantSchema = Yup.object().shape({
+  statut: Yup.string().required("Veuillez sélectionner une option."),
+  dpa: Yup.string().when("statut", {
+    is: "grossesse",
+    then: (schema) => schema.required("Veuillez renseigner une date valide"),
+    otherwise: (schema) => schema.nullable(),
+  }),
+  genre: Yup.string().required("Le genre est requis"),
+  prenom: Yup.string().required("Le prénom est requis"),
+  dateNaissance: Yup.string().when("statut", {
+    is: "parent",
+    then: (schema) =>
+      schema.required("Veuillez renseigner la date de naissance"),
+    otherwise: (schema) => schema.nullable(),
+  }),
+});
+
+// DEFINITION DES ETAPES (Renommé)
+const CREATION_ENFANT_STEPS = [
+  {
+    id: "STATUT",
+    title: "Votre enfant...",
+    subtitle:
+      "Pour personnaliser vos recommandations, dites-nous en plus sur vous.",
+    condition: () => true, // Toujours affiché en premier
+    component: (extraProps) => <StatusStep {...extraProps} />,
+    buttonLabel: null, // Pas de bouton "Suivant", on avance au clic
+  },
+  {
+    id: "GROSSESSE",
+    title: "Félicitation !",
+    subtitle: "Quand est-ce que le bébé sera né ?",
+    condition: (statut) => statut === "grossesse",
+    component: () => <GrossesseStep />,
+    buttonLabel: "Suivant",
+  },
+  {
+    id: "DETAILS",
+    title: "Quelques détails en plus",
+    subtitle: "Nous voulons en savoir plus sur votre enfant !",
+    condition: (statut) => !!statut, // Affiché s'il a choisi un statut
+    component: () => <DetailsStep />,
+    buttonLabel: "Ajouter mon enfant",
+  },
+];
+
+// FONCTIONS UTILITAIRES (Renommées)
+const getActiveCreationSteps = (statut) =>
+  CREATION_ENFANT_STEPS.filter((step) => step.condition(statut));
+
+const getCreationFieldsForStep = (stepId) =>
+  ({
+    STATUT: ["statut"],
+    GROSSESSE: ["dpa"],
+    DETAILS: ["genre", "prenom", "dateNaissance"],
+  })[stepId] ?? [];
+
+export const CreationEnfantForm = ({ onSubmitComplete }) => {
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const initialValues = {
-    prenom: "",
-    genre: "",
+    statut: "",
     dpa: "",
+    genre: "",
+    prenom: "",
+    dateNaissance: "",
+  };
+
+  const handleSubmit = async (values) => {
+    setIsSubmitting(true);
+    try {
+      // Nettoyage des données selon le statut avant l'envoi API
+      const payload = {
+        statut: values.statut,
+        genre: values.genre,
+        prenom: values.prenom,
+        date: values.statut === "grossesse" ? values.dpa : values.dateNaissance,
+      };
+
+      if (onSubmitComplete) await onSubmitComplete(payload);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={schemaCreationEnfant}
-      onSubmit={onSubmit}
-    >
-      {() => (
-        <Form>
-          <div>
-            <label htmlFor="prenom">Prénom de l'enfant :</label>
-            <Field
-              type="text"
-              id="prenom"
-              name="prenom"
-              placeholder="Ex: Léo"
-            />
-            <ErrorMessage name="prenom" component="div" />
-          </div>
+    <div className="max-w-md mx-auto w-full min-h-screen bg-base flex flex-col font-figtree pb-10">
+      {/* IMAGE D'EN-TÊTE FIXE */}
+      <div className="w-full h-64 flex flex-col justify-end items-center overflow-hidden shrink-0">
+        <img
+          className="w-full h-80 object-cover"
+          src={headerImage}
+          alt="Poussette"
+        />
+      </div>
 
-          <div>
-            <label htmlFor="genre">Genre :</label>
-            <Field as="select" id="genre" name="genre">
-              <option value="">Sélectionnez un genre</option>
-              <option value="f">Fille</option>
-              <option value="m">Garçon</option>
-              <option value="s">Autre</option>
-            </Field>
-            <ErrorMessage name="genre" component="div" />
-          </div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={creationEnfantSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values, validateForm, setFieldTouched, setFieldValue }) => {
+          const steps = getActiveCreationSteps(values.statut);
+          const currentStep = steps[currentStepIndex];
+          const isLastStep = currentStepIndex === steps.length - 1;
 
-          <div>
-            {/* Mise à jour du label et du placeholder */}
-            <label htmlFor="dpa">
-              Date de naissance (JJ/MM/AAAA ou MM/AAAA) :
-            </label>
-            <Field
-              type="text"
-              id="dpa"
-              name="dpa"
-              placeholder="Ex: 27/11/2026 ou 11/2026"
-              maxLength="10"
-            />
-            <ErrorMessage name="dpa" component="div" />
-          </div>
+          let progressPercent = 0;
+          if (currentStepIndex > 0) {
+            // On calcule le pourcentage dynamiquement en fonction du parcours choisi
+            progressPercent = (currentStepIndex / (steps.length - 1)) * 100;
+          }
 
-          <button type="submit" disabled={isPending}>
-            {isPending ? "Création en cours..." : "Créer l'enfant"}
-          </button>
-        </Form>
-      )}
-    </Formik>
+          const handleNext = async (e) => {
+            if (e) e.preventDefault();
+            const errors = await validateForm();
+            const fields = getCreationFieldsForStep(currentStep.id);
+            const hasError = fields.some((field) => errors[field]);
+
+            if (hasError) {
+              fields.forEach((field) => setFieldTouched(field, true, false));
+              return;
+            }
+            setCurrentStepIndex((prev) => prev + 1);
+          };
+
+          const handleStatusSelect = (value) => {
+            setFieldValue("statut", value);
+            setCurrentStepIndex((prev) => prev + 1);
+          };
+
+          const extraProps =
+            currentStep.id === "STATUT" ? { onSelect: handleStatusSelect } : {};
+
+          return (
+            <Form className="w-full flex flex-col flex-grow px-6">
+              {/* BARRE DE PROGRESSION AVEC ESPACEMENT */}
+              <div className="pt-8 w-full shrink-0 flex">
+                <div className="w-full h-1 bg-feedback-background-neutral rounded-full flex">
+                  <div
+                    className="h-full bg-feedback-background-service rounded-full transition-all duration-300"
+                    style={{ width: `${progressPercent}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* CONTENEUR DES TEXTES ET CHAMPS AVEC FLEX-GROW POUR REPOUSSER LES BOUTONS EN BAS */}
+              <div className="mt-10 flex flex-col flex-grow">
+                {/* TITRE & SOUS-TITRE */}
+                <h1 className="text-[32px] font-bold text-text-brand text-center leading-tight">
+                  {currentStep.title}
+                </h1>
+                <p className="text-[16px] text-text-brand text-center mt-6 px-2">
+                  {currentStep.subtitle}
+                </p>
+
+                {/* CONTENU DE L'ÉTAPE */}
+                <div className="w-full flex flex-col items-center gap-5 mt-10">
+                  {currentStep.component(extraProps)}
+                </div>
+              </div>
+
+              {/* ZONE DES BOUTONS */}
+              <div className="w-full pt-6 mt-auto flex flex-col items-center gap-4">
+                {currentStep.buttonLabel &&
+                  (isLastStep ? (
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-bg-brand text-feedback-text-inverse font-bold py-3.5 rounded-md hover:bg-opacity-90 transition-all disabled:opacity-50"
+                    >
+                      {isSubmitting
+                        ? "Création en cours..."
+                        : currentStep.buttonLabel}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="w-full bg-bg-brand text-feedback-text-inverse font-bold py-3.5 rounded-md hover:bg-opacity-90 transition-all"
+                    >
+                      {currentStep.buttonLabel}
+                    </button>
+                  ))}
+
+                {/* BOUTON RETOUR */}
+                {currentStepIndex > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStepIndex((prev) => prev - 1)}
+                    className="w-full text-center text-subtle text-sm mt-2 mb-2 hover:underline"
+                  >
+                    Retour
+                  </button>
+                )}
+              </div>
+            </Form>
+          );
+        }}
+      </Formik>
+    </div>
   );
 };
-
-export default CreationEnfantForm;
