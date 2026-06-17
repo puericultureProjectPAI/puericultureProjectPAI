@@ -16,7 +16,7 @@ export default function SecondHandCatalogPage() {
 
   useEffect(() => {
     fetchSecondHandProducts();
-  }, []);
+  }, [fetchSecondHandProducts]);
 
   return (
     <div className="relative flex flex-col overflow-hidden bg-white text-[#040037]">
@@ -61,7 +61,7 @@ export default function SecondHandCatalogPage() {
             products.map((product) => (
               <article
                 key={product.id}
-                onClick={() => navigate(`/second-hand/products/${product.id}`)}
+                onClick={() => navigate(``)}
                 className="min-h-[240px] rounded-xl bg-white p-3 shadow-[0_1px_4px_rgba(0,0,0,0.10)] cursor-pointer flex flex-col justify-between gap-2 transition-transform active:scale-95"
               >
                 {/* Image avec border-radius augmenté */}
@@ -73,7 +73,7 @@ export default function SecondHandCatalogPage() {
 
                 <div className="flex justify-end mt-auto">
                   <span className="rounded-full border border-[#040037] px-3 py-0.5 text-[11px] font-medium tracking-wide">
-                    Location
+                    Seconde Main
                   </span>
                 </div>
 
