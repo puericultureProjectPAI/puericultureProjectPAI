@@ -8,20 +8,74 @@ import { StatusStep } from "../components/stepFormOnChildCreation/StatusStep";
 import { GrossesseStep } from "../components/stepFormOnChildCreation/GrossesseStep";
 import { DetailsStep } from "../components/stepFormOnChildCreation/DetailsStep";
 
-// SCHEMA DE VALIDATION YUP (Renommé pour éviter les conflits)
+// FONCTION UTILITAIRE POUR SÉCURISER LE PARSING DE LA DATE
+// Un input type="date" renvoie YYYY-MM-DD, mais si un jour tu utilises un masque de texte DD/MM/YYYY, ça marchera aussi !
+const parseSafeDate = (value) => {
+  if (!value) return null;
+  if (value.includes("-")) {
+    return new Date(value);
+  }
+  if (value.includes("/")) {
+    const parts = value.split("/");
+    if (parts.length === 3)
+      return new Date(`${parts[2]}-${parts[1]}-${parts[0]}T00:00:00`);
+  }
+  return new Date(value);
+};
+
+// SCHEMA DE VALIDATION YUP MIS À JOUR
 const creationEnfantSchema = Yup.object().shape({
   statut: Yup.string().required("Veuillez sélectionner une option."),
+
   dpa: Yup.string().when("statut", {
     is: "grossesse",
-    then: (schema) => schema.required("Veuillez renseigner une date valide"),
+    then: (schema) =>
+      schema
+        .required("Veuillez renseigner une date valide")
+        .test(
+          "is-future",
+          "La date prévue doit être dans le futur",
+          (value) => {
+            const date = parseSafeDate(value);
+            if (!date || isNaN(date.getTime())) return false; // Stoppe si la date est invalide
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // On compare uniquement la date, on ignore l'heure
+
+            return date >= today;
+          },
+        ),
     otherwise: (schema) => schema.nullable(),
   }),
+
   genre: Yup.string().required("Le genre est requis"),
   prenom: Yup.string().required("Le prénom est requis"),
+
   dateNaissance: Yup.string().when("statut", {
     is: "parent",
     then: (schema) =>
-      schema.required("Veuillez renseigner la date de naissance"),
+      schema
+        .required("Veuillez renseigner la date de naissance")
+        .test("is-past", "La date ne peut pas être dans le futur", (value) => {
+          const date = parseSafeDate(value);
+          if (!date || isNaN(date.getTime())) return false;
+
+          const today = new Date();
+          return date <= today;
+        })
+        .test(
+          "max-24-months",
+          "L'enfant doit avoir moins de 24 mois",
+          (value) => {
+            const date = parseSafeDate(value);
+            if (!date || isNaN(date.getTime())) return false;
+
+            const limitDate = new Date();
+            limitDate.setMonth(limitDate.getMonth() - 24); // Calcule la date exacte d'il y a 2 ans
+
+            return date >= limitDate;
+          },
+        ),
     otherwise: (schema) => schema.nullable(),
   }),
 });

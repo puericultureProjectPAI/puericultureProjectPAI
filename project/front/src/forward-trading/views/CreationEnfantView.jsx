@@ -48,7 +48,7 @@ const CreationEnfantView = () => {
       // (Ça permet de garder le bouton "Création en cours..." bloqué pendant qu'on lit le message)
       await new Promise((resolve) => {
         setTimeout(() => {
-          navigate("/forward/onboarding");
+          navigate("/me");
           resolve();
         }, 2000);
       });
