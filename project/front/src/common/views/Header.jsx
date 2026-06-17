@@ -3,9 +3,12 @@ import { useNavigate } from "react-router";
 import kiabiLogo from "../../assets/logo-complet-couleur-brand.svg";
 import scanIcon from "../../assets/app-bar-scanqr-icon-inverse.svg";
 import calendarIcon from "../../assets/calendar-icon-inverse-m.svg";
+import { useChildren } from "../../forward-trading/hooks/useChildren";
 
 export default function Header() {
   const navigate = useNavigate();
+  const { children } = useChildren();
+  const firstTimelineId = children?.[0]?.timelineId;
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between bg-text-brand px-4 z-50">
@@ -20,9 +23,12 @@ export default function Header() {
           className="h-6 w-6"
           aria-hidden="true"
         />
-        {/* TODO: brancher la nav vers la timeline du 1er enfant
-                  quand le hook useChildren de Baptiste sera mergé */}
-        <button aria-label="Timeline">
+        <button
+          onClick={() => navigate(`/forward/timeline/${firstTimelineId}`)}
+          disabled={!firstTimelineId}
+          aria-label="Timeline"
+          className="disabled:opacity-40"
+        >
           <img src={calendarIcon} alt="" className="h-6" />
         </button>
       </div>
