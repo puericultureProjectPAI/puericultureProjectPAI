@@ -6,7 +6,6 @@ import calendarIcon from "../../assets/calendar-icon-inverse-m.svg";
 import { useChildren } from "../../forward-trading/hooks/useChildren";
 
 export default function Header() {
-  //A adapter plus tard avec la version PC
   const navigate = useNavigate();
   const { children } = useChildren();
   const firstTimelineId = children?.[0]?.timelineId;

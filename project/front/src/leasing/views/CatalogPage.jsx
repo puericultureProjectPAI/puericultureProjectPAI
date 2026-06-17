@@ -5,6 +5,7 @@ import Navbar from "../../common/views/NavBar";
 import useCatalogFilters from "../hooks/useCatalogFilters";
 import ArrivalPackBanner from "../components/ArrivalPackBanner";
 import ArrivalPackInfoBanner from "../components/ArrivalPackInfoBanner";
+import CatalogTabs from "../../common/components/CatalogTabs";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
@@ -50,6 +51,8 @@ export default function CatalogPage() {
   return (
     <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037]">
       <Header />
+
+      <CatalogTabs />
 
       <main className="flex-1 overflow-y-auto">
         <section className="px-[24px] pt-[12px]">
