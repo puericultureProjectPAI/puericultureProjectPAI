@@ -1,41 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import ongletFt from "../../assets/catalog/onglet-ft.png";
-import ongletLeas from "../../assets/catalog/onglet-leas.png";
-import ongletSec from "../../assets/catalog/onglet-sec.png";
-import ongletTroc from "../../assets/catalog/onglet-troc.png";
 import TrocSuggestionList from "../components/TrocSuggestionList.jsx";
 import useTroc from "../hooks/useTroc";
+import CatalogTabs from "../../common/components/CatalogTabs.jsx";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
-
-const CATALOG_TABS = [
-  {
-    image: ongletSec,
-    label: "Seconde main",
-    labelPadding: "pb-[18px]",
-    path: "/second-hand/catalog",
-  },
-  {
-    image: ongletTroc,
-    label: "Échange",
-    labelPadding: "pb-[28px]",
-    path: "/troc/catalog",
-  },
-  {
-    image: ongletLeas,
-    label: "Location",
-    labelPadding: "pb-[28px]",
-    path: "/leasing/catalog",
-  },
-  {
-    image: ongletFt,
-    label: "Forward trading",
-    labelPadding: "pb-[18px]",
-    path: "/forward/catalog",
-  },
-];
 
 const productImage = (product) =>
   product?.images?.[0]?.imageUrl ||
@@ -89,23 +59,7 @@ export default function CatalogPage() {
   return (
     <div className="relative flex flex-col overflow-hidden bg-white font-['Figtree'] text-[#080036]">
       <main className="flex-1">
-        <section className="w-full overflow-x-auto hide-scrollbar">
-          <div className="flex w-max gap-2 px-6 pb-4 pt-3">
-            {CATALOG_TABS.map((tab) => (
-              <button
-                key={tab.label}
-                className={`flex h-[190px] w-[84px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[9px] border border-black/[0.03] bg-cover bg-center px-1 ${tab.labelPadding} font-['Figtree'] shadow-[0_1px_2px_rgba(8,0,54,0.03)] transition-transform active:scale-[0.98]`}
-                onClick={() => navigate(tab.path)}
-                style={{ backgroundImage: `url(${tab.image})` }}
-                type="button"
-              >
-                <span className="max-w-[76px] text-center text-[16px] font-normal leading-[20px] text-[#080036]">
-                  {tab.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
+        <CatalogTabs />
 
         <section className="px-6 pt-1">
           <div className="flex items-start justify-between gap-4">
