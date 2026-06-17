@@ -1,15 +1,24 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import Header from "../../common/views/Header";
 import Navbar from "../../common/views/NavBar";
 import useCatalogFilters from "../hooks/useCatalogFilters";
+import ArrivalPackBanner from "../components/ArrivalPackBanner";
+import ArrivalPackInfoBanner from "../components/ArrivalPackInfoBanner";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
 
 export default function CatalogPage() {
   const navigate = useNavigate();
-  const [showFilters, setShowFilters] = useState(true);
+  const [searchParams] = useSearchParams();
+  const appliedCity = searchParams.get("city") || "";
+  const appliedStartDate = searchParams.get("startDate") || "";
+  const appliedEndDate = searchParams.get("endDate") || "";
+
+  const hasParams = !!(appliedCity && appliedStartDate && appliedEndDate);
+  const [showFilters, setShowFilters] = useState(!hasParams);
+
   const {
     products,
     loading,
@@ -28,6 +37,15 @@ export default function CatalogPage() {
     handleSearch,
     handleResetFilters,
   } = useCatalogFilters();
+
+  const appliedFilters =
+    appliedCity && appliedStartDate && appliedEndDate
+      ? {
+          city: appliedCity,
+          startDate: appliedStartDate,
+          endDate: appliedEndDate,
+        }
+      : null;
 
   return (
     <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037]">
@@ -52,13 +70,20 @@ export default function CatalogPage() {
                 showFilters ? "Masquer les filtres" : "Afficher les filtres"
               }
               onClick={() => setShowFilters((value) => !value)}
-              className="flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
+              className="relative flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
             >
               <span className="material-symbols-rounded text-[20px]">
                 filter_alt
               </span>
             </button>
           </div>
+
+          {showFilters && !appliedFilters && (
+            <ArrivalPackInfoBanner
+              setShowFilters={setShowFilters}
+              isMini={true}
+            />
+          )}
 
           {showFilters && (
             <section className="mt-[11px] rounded-[8px] border border-[#D9D7E2] bg-white px-[12px] py-[12px]">
@@ -131,7 +156,10 @@ export default function CatalogPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSearch}
+                  onClick={() => {
+                    const ok = handleSearch();
+                    if (ok) setShowFilters(false);
+                  }}
                   className="h-[40px] w-full rounded-[8px] bg-[#040037] text-[15px] font-bold text-white"
                 >
                   Rechercher
@@ -140,6 +168,18 @@ export default function CatalogPage() {
             </section>
           )}
         </section>
+
+        {appliedFilters ? (
+          <ArrivalPackBanner
+            city={appliedFilters.city}
+            startDate={appliedFilters.startDate}
+            endDate={appliedFilters.endDate}
+          />
+        ) : (
+          !showFilters && (
+            <ArrivalPackInfoBanner setShowFilters={setShowFilters} />
+          )
+        )}
 
         <section className="grid grid-cols-2 gap-[20px] px-[24px] pb-4 pt-[14px] md:grid-cols-3 lg:grid-cols-4">
           {loading && (
@@ -257,7 +297,7 @@ function DateInput({ value, onChange, hasError, min }) {
         value={value}
         min={min}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent text-[13px] outline-none"
+        className="h-full w-full bg-transparent text-[13px] outline-none"
       />
     </div>
   );
