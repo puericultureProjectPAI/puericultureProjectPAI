@@ -66,7 +66,10 @@ export default function ChatView() {
   const status = conversation?.status;
   const isReceiver = conversation != null && !conversation.proposer;
   const canReport =
-    status !== "CONFIRMED" && status !== "REFUSED" && status !== "BLOCKED";
+    !!conversation &&
+    status !== "CONFIRMED" &&
+    status !== "REFUSED" &&
+    status !== "BLOCKED";
 
   return (
     <div className="flex flex-col bg-white w-full h-full">
