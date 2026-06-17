@@ -75,12 +75,6 @@ export default function CatalogPage() {
               <span className="material-symbols-rounded text-[20px]">
                 filter_alt
               </span>
-              {!appliedFilters && !showFilters && (
-                <span className="absolute right-0 top-0 flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3A51C9] opacity-75"></span>
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#3A51C9]"></span>
-                </span>
-              )}
             </button>
           </div>
 

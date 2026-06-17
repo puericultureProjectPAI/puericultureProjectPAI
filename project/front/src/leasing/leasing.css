@@ -1,24 +1,2 @@
 @import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded");
-
-@keyframes shimmer-sweep {
-  0% {
-    background-position: 150% 0;
-  }
-  100% {
-    background-position: -150% 0;
-  }
-}
-
-.shimmer-right-to-left {
-  background: linear-gradient(
-    90deg,
-    #e8f3ff 0%,
-    #e8f3ff 35%,
-    rgba(255, 255, 255, 0.75) 50%,
-    #e8f3ff 65%,
-    #e8f3ff 100%
-  );
-  background-size: 300% 100%;
-  animation: shimmer-sweep 2.5s infinite ease-in-out;
-}
