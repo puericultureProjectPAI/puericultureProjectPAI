@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
+import Header from "../../common/views/Header";
+import Navbar from "../../common/views/NavBar";
+import useCatalogFilters from "../hooks/useCatalogFilters";
+import ArrivalPackBanner from "../components/ArrivalPackBanner";
+import ArrivalPackInfoBanner from "../components/ArrivalPackInfoBanner";
+
 import ongletFt from "../../assets/catalog/onglet-ft.png";
 import ongletLeas from "../../assets/catalog/onglet-leas.png";
 import ongletSec from "../../assets/catalog/onglet-sec.png";
 import ongletTroc from "../../assets/catalog/onglet-troc.png";
-import Header from "../../common/views/Header";
-import Navbar from "../../common/views/NavBar";
-import useCatalogFilters from "../hooks/useCatalogFilters";
 
 const fallbackImage = (category) =>
   `https://placehold.co/400x300?text=${encodeURIComponent(category)}`;
@@ -40,7 +43,13 @@ const CATALOG_TABS = [
 
 export default function CatalogPage() {
   const navigate = useNavigate();
-  const [showFilters, setShowFilters] = useState(false);
+  const [searchParams] = useSearchParams();
+  const appliedCity = searchParams.get("city") || "";
+  const appliedStartDate = searchParams.get("startDate") || "";
+  const appliedEndDate = searchParams.get("endDate") || "";
+
+  const hasParams = !!(appliedCity && appliedStartDate && appliedEndDate);
+  const [showFilters, setShowFilters] = useState(!hasParams);
 
   const {
     products,
@@ -61,23 +70,14 @@ export default function CatalogPage() {
     handleResetFilters,
   } = useCatalogFilters();
 
-  const openProduct = (product) => {
-    const params = new URLSearchParams();
-
-    if (startDate) {
-      params.set("startDate", startDate);
-    }
-
-    if (endDate) {
-      params.set("endDate", endDate);
-    }
-
-    const queryString = params.toString();
-
-    navigate(
-      `/leasing/products/${product.id}${queryString ? `?${queryString}` : ""}`,
-    );
-  };
+  const appliedFilters =
+    appliedCity && appliedStartDate && appliedEndDate
+      ? {
+          city: appliedCity,
+          startDate: appliedStartDate,
+          endDate: appliedEndDate,
+        }
+      : null;
 
   return (
     <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white font-['Figtree'] text-[#080036]">
@@ -121,13 +121,20 @@ export default function CatalogPage() {
                 showFilters ? "Masquer les filtres" : "Afficher les filtres"
               }
               onClick={() => setShowFilters((value) => !value)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#080036] transition hover:bg-[#F2F2F9]"
+              className="relative flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#040037] transition hover:bg-[#F2F2F9]"
             >
               <span className="material-symbols-rounded text-[34px] leading-none">
                 filter_alt
               </span>
             </button>
           </div>
+
+          {showFilters && !appliedFilters && (
+            <ArrivalPackInfoBanner
+              setShowFilters={setShowFilters}
+              isMini={true}
+            />
+          )}
 
           {showFilters && (
             <section className="mt-4 rounded-[10px] border border-[#D9D7E2] bg-white p-3 shadow-sm">
@@ -199,8 +206,11 @@ export default function CatalogPage() {
 
                 <button
                   type="button"
-                  onClick={handleSearch}
-                  className="h-10 flex-1 rounded-[8px] bg-[#080036] text-[14px] font-bold text-white"
+                  onClick={() => {
+                    const ok = handleSearch();
+                    if (ok) setShowFilters(false);
+                  }}
+                  className="h-[40px] w-full rounded-[8px] bg-[#040037] text-[15px] font-bold text-white"
                 >
                   Rechercher
                 </button>
@@ -209,7 +219,19 @@ export default function CatalogPage() {
           )}
         </section>
 
-        <section className="grid grid-cols-2 gap-3 px-6 pb-5 pt-4 md:grid-cols-3 lg:grid-cols-4">
+        {appliedFilters ? (
+          <ArrivalPackBanner
+            city={appliedFilters.city}
+            startDate={appliedFilters.startDate}
+            endDate={appliedFilters.endDate}
+          />
+        ) : (
+          !showFilters && (
+            <ArrivalPackInfoBanner setShowFilters={setShowFilters} />
+          )
+        )}
+
+        <section className="grid grid-cols-2 gap-[20px] px-[24px] pb-4 pt-[14px] md:grid-cols-3 lg:grid-cols-4">
           {loading && (
             <p className="col-span-full py-6 text-center text-[13px] text-[#7C7A8A]">
               Chargement…
@@ -233,7 +255,17 @@ export default function CatalogPage() {
             products.map((product) => (
               <article
                 key={product.id}
-                onClick={() => openProduct(product)}
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (startDate) params.set("startDate", startDate);
+                  if (endDate) params.set("endDate", endDate);
+                  const queryString = params.toString();
+                  navigate(
+                    `/leasing/products/${product.id}${
+                      queryString ? `?${queryString}` : ""
+                    }`,
+                  );
+                }}
                 className={`overflow-hidden rounded-[9px] bg-white shadow-[0_1px_4px_rgba(0,0,0,0.10)] transition-transform active:scale-[0.99] ${
                   product.available
                     ? "cursor-pointer"
@@ -313,8 +345,8 @@ function DateInput({ value, onChange, hasError, min }) {
         type="date"
         value={value}
         min={min}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full bg-transparent text-[13px] outline-none"
+        onChange={(e) => onChange(e.target.value)}
+        className="h-full w-full bg-transparent text-[13px] outline-none"
       />
     </div>
   );
