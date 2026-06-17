@@ -182,7 +182,11 @@ const ExchangeProposalForm = ({
                   }
                 </p>
               </div>
-              <div className="text-2xl text-gray-400">↔</div>
+              <div className="text-gray-400">
+                <span className="material-symbols-rounded text-[28px]">
+                  sync_alt
+                </span>
+              </div>
               <div className="flex-1 text-right">
                 <p className="text-xs text-gray-600">You receive:</p>
                 <p className="font-semibold">
@@ -200,7 +204,10 @@ const ExchangeProposalForm = ({
         {/* Info box: what happens after submission */}
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <p className="text-xs font-semibold text-gray-700 mb-2">
-            📋 What happens next:
+            <span className="material-symbols-rounded text-[16px] align-middle">
+              info
+            </span>{" "}
+            What happens next:
           </p>
           <ul className="text-xs text-gray-600 space-y-1">
             <li>1. Your proposal is sent to the product owner</li>

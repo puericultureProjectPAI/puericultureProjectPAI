@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useSubmitBooking, useLeasingProfile } from "../hooks/useLeasing";
+import {
+  useSubmitBooking,
+  useSubmitPackBooking,
+  useLeasingProfile,
+} from "../hooks/useLeasing";
 import { useAuth } from "../../common/security/AuthContext";
 import LeasingBackHeader from "../components/LeasingBackHeader";
 
@@ -24,6 +28,9 @@ export default function LeasingBookingPage() {
   const { isAuthenticated } = useAuth();
 
   const {
+    isPack = false,
+    products = [],
+    productIds = [],
     productTitle = "",
     startDate = "",
     endDate = "",
@@ -36,6 +43,7 @@ export default function LeasingBookingPage() {
 
   const { data: profile } = useLeasingProfile();
   const bookingMutation = useSubmitBooking(id);
+  const packBookingMutation = useSubmitPackBooking();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -45,9 +53,14 @@ export default function LeasingBookingPage() {
 
   useEffect(() => {
     if (!startDate || !endDate) {
-      navigate(`/leasing/products/${id}`);
+      navigate(isPack ? "/leasing/catalog" : `/leasing/products/${id}`);
+      return;
     }
-  }, [startDate, endDate, id, navigate]);
+
+    if (isPack && productIds.length === 0) {
+      navigate("/leasing/catalog");
+    }
+  }, [startDate, endDate, id, isPack, navigate, productIds.length]);
 
   const formik = useFormik({
     initialValues: {
@@ -68,13 +81,19 @@ export default function LeasingBookingPage() {
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitError("");
       try {
-        const response = await bookingMutation.mutateAsync({
+        const bookingPayload = {
           startDate,
           endDate,
           deliveryStreet: values.deliveryStreet.trim(),
           deliveryZipCode: values.deliveryZipCode.trim(),
           deliveryCity: values.deliveryCity.trim(),
-        });
+        };
+        const response = isPack
+          ? await packBookingMutation.mutateAsync({
+              ...bookingPayload,
+              productIds,
+            })
+          : await bookingMutation.mutateAsync(bookingPayload);
         setSuccessData(response);
       } catch (err) {
         const apiMessage = err.response?.data?.message || err.message;
@@ -90,9 +109,13 @@ export default function LeasingBookingPage() {
   const isFormValid =
     formik.values.deliveryStreet.trim() &&
     formik.values.deliveryZipCode.trim() &&
-    formik.values.deliveryCity.trim();
+    formik.values.deliveryCity.trim() &&
+    (!isPack || productIds.length > 0);
 
   const fallbackImage = `https://placehold.co/135x135?text=${encodeURIComponent(productTitle || "Article")}`;
+  const reservationNumbers =
+    successData?.reservationNumbers ||
+    (successData?.reservationNumber ? [successData.reservationNumber] : []);
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white text-[#040037] font-['Figtree',sans-serif]">
@@ -105,20 +128,31 @@ export default function LeasingBookingPage() {
               check_circle
             </span>
             <h2 className="font-bold text-[20px] text-[#040037] mb-[8px]">
-              Réservation confirmée !
+              {isPack ? "Pack réservé !" : "Réservation confirmée !"}
             </h2>
             <p className="font-normal text-[16px] text-[#757388] leading-normal mb-[24px]">
-              L'article a été bloqué pour vos dates de location.
+              {isPack
+                ? "Les articles ont été bloqués pour vos dates de location."
+                : "L'article a été bloqué pour vos dates de location."}
             </p>
 
             <div className="w-full border border-[rgba(117,115,136,0.75)] rounded-[8px] p-[12px] flex flex-col gap-[8px] mb-[24px] text-left">
-              <div className="flex flex-wrap gap-[4px]">
+              <div className="flex flex-col gap-[4px]">
                 <span className="font-bold text-[16px] text-[#757388]">
-                  Numéro de réservation :
+                  {reservationNumbers.length > 1
+                    ? "Numéros de réservation :"
+                    : "Numéro de réservation :"}
                 </span>
-                <span className="font-bold text-[16px] text-[#040037]">
-                  {formatReservationNumber(successData.reservationNumber)}
-                </span>
+                <div className="flex flex-wrap gap-[6px]">
+                  {reservationNumbers.map((reservationNumber) => (
+                    <span
+                      key={reservationNumber}
+                      className="font-bold text-[16px] text-[#040037]"
+                    >
+                      {formatReservationNumber(reservationNumber)}
+                    </span>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-wrap gap-[4px]">
                 <span className="font-bold text-[16px] text-[#757388]">
@@ -151,27 +185,59 @@ export default function LeasingBookingPage() {
           </div>
         ) : (
           <div className="px-[24px] py-[16px] flex flex-col gap-[16px]">
-            {/* Récap article */}
-            <div className="flex gap-[4px] items-start">
-              <img
-                src={firstImageUrl || fallbackImage}
-                alt={productTitle}
-                className="rounded-[8px] size-[135px] object-cover shrink-0"
-                onError={(e) => {
-                  e.currentTarget.src = fallbackImage;
-                }}
-              />
-              <div className="flex-1 flex flex-col gap-[10px] p-[10px]">
+            {isPack ? (
+              <div className="border border-[rgba(117,115,136,0.75)] rounded-[8px] p-[12px] flex flex-col gap-[10px]">
                 <h1 className="font-bold text-[20px] text-[#040037] leading-tight">
-                  {productTitle}
+                  Pack arrivée
                 </h1>
-                <div className="bg-white border border-[#040037] flex h-[35px] items-center justify-center px-[12px] rounded-[12px] self-start">
-                  <span className="font-normal text-[16px] text-[#040037]">
-                    Location
-                  </span>
+                <ul className="flex flex-col gap-[8px]">
+                  {products.map((product) => (
+                    <li
+                      key={product.id}
+                      className="flex items-center gap-[10px]"
+                    >
+                      <img
+                        src={
+                          product.firstImageUrl ||
+                          `https://placehold.co/56x56?text=${encodeURIComponent(product.category || "Article")}`
+                        }
+                        alt={product.postTitle}
+                        className="h-[56px] w-[56px] shrink-0 rounded-[8px] object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-bold text-[16px] text-[#040037]">
+                          {product.postTitle}
+                        </p>
+                        <p className="truncate text-[14px] text-[#757388]">
+                          {product.category}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="flex gap-[4px] items-start">
+                <img
+                  src={firstImageUrl || fallbackImage}
+                  alt={productTitle}
+                  className="rounded-[8px] size-[135px] object-cover shrink-0"
+                  onError={(e) => {
+                    e.currentTarget.src = fallbackImage;
+                  }}
+                />
+                <div className="flex-1 flex flex-col gap-[10px] p-[10px]">
+                  <h1 className="font-bold text-[20px] text-[#040037] leading-tight">
+                    {productTitle}
+                  </h1>
+                  <div className="bg-white border border-[#040037] flex h-[35px] items-center justify-center px-[12px] rounded-[12px] self-start">
+                    <span className="font-normal text-[16px] text-[#040037]">
+                      Location
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Récap réservation */}
             <div className="border border-[rgba(117,115,136,0.75)] rounded-[8px] p-[12px] flex flex-col gap-[12px]">

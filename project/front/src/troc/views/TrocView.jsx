@@ -16,6 +16,7 @@ import { useExchangeManager } from "../hooks/useExchangeManager";
 import { useAuth } from "../../common/security/AuthContext";
 import ExchangeProposalForm from "../components/ExchangeProposalForm";
 import ExchangeList from "../components/ExchangeList";
+import TrocSuggestionList from "../components/TrocSuggestionList";
 
 // Mock products - In real app, these would come from backend and use the authenticated user's ID
 // For now, we generate mock products dynamically with the real user ID
@@ -94,7 +95,8 @@ const TrocView = () => {
     user?.user_metadata?.lastName || "",
   );
 
-  const { fetchMyExchanges, fetchExchangesProposedToMe } = exchangeManager;
+  const { fetchMyExchanges, fetchExchangesProposedToMe, fetchTrocSuggestions } =
+    exchangeManager;
 
   /**
    * Initialize: Load all exchanges when component mounts
@@ -104,7 +106,9 @@ const TrocView = () => {
     fetchMyExchanges();
     // Load exchanges proposed to this user
     fetchExchangesProposedToMe();
-  }, [fetchMyExchanges, fetchExchangesProposedToMe]);
+    // Load automatic troc suggestions
+    fetchTrocSuggestions();
+  }, [fetchMyExchanges, fetchExchangesProposedToMe, fetchTrocSuggestions]);
 
   /**
    * Handle exchange creation
@@ -205,7 +209,10 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            📋 Overview
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              dashboard
+            </span>{" "}
+            Overview
           </button>
           <button
             onClick={() => setActiveSection("propose")}
@@ -215,7 +222,23 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            ✏️ Propose Exchange
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              edit
+            </span>{" "}
+            Propose Exchange
+          </button>
+          <button
+            onClick={() => setActiveSection("suggestions")}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+              activeSection === "suggestions"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              smart_toy
+            </span>{" "}
+            Suggestions
           </button>
           <button
             onClick={() => setActiveSection("manage")}
@@ -225,7 +248,10 @@ const TrocView = () => {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            📦 Manage Exchanges
+            <span className="material-symbols-rounded text-[18px] align-middle">
+              inventory_2
+            </span>{" "}
+            Manage Exchanges
           </button>
         </div>
 
@@ -239,7 +265,10 @@ const TrocView = () => {
                 {/* Proposer Journey */}
                 <div>
                   <h3 className="font-bold text-lg text-blue-600 mb-3">
-                    🎯 As a Proposer
+                    <span className="material-symbols-rounded text-[20px] align-middle">
+                      ads_click
+                    </span>{" "}
+                    As a Proposer
                   </h3>
                   <div className="space-y-3">
                     <div className="flex gap-3">
@@ -281,7 +310,10 @@ const TrocView = () => {
                 {/* Receiver Journey */}
                 <div>
                   <h3 className="font-bold text-lg text-purple-600 mb-3">
-                    👤 As a Receiver
+                    <span className="material-symbols-rounded text-[20px] align-middle">
+                      person
+                    </span>{" "}
+                    As a Receiver
                   </h3>
                   <div className="space-y-3">
                     <div className="flex gap-3">
@@ -336,24 +368,42 @@ const TrocView = () => {
             {/* Quick Actions */}
             <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
               <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid md:grid-cols-4 gap-4">
                 <button
                   onClick={() => setActiveSection("propose")}
                   className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-semibold"
                 >
-                  ➕ Create New Proposal
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    add
+                  </span>{" "}
+                  Create New Proposal
                 </button>
                 <button
                   onClick={() => setActiveSection("manage")}
                   className="p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-center font-semibold"
                 >
-                  📊 View All Exchanges
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    bar_chart
+                  </span>{" "}
+                  View All Exchanges
+                </button>
+                <button
+                  onClick={() => setActiveSection("suggestions")}
+                  className="p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-center font-semibold"
+                >
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    smart_toy
+                  </span>{" "}
+                  View Suggestions
                 </button>
                 <button
                   onClick={exchangeManager.fetchExchangesProposedToMe}
                   className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-center font-semibold"
                 >
-                  🔄 Refresh Proposals
+                  <span className="material-symbols-rounded text-[18px] align-middle">
+                    refresh
+                  </span>{" "}
+                  Refresh Proposals
                 </button>
               </div>
             </div>
@@ -376,6 +426,15 @@ const TrocView = () => {
               }}
             />
           </div>
+        )}
+
+        {/* Suggestions Section */}
+        {activeSection === "suggestions" && (
+          <TrocSuggestionList
+            suggestions={exchangeManager.trocSuggestions}
+            loading={exchangeManager.loading}
+            onRefresh={fetchTrocSuggestions}
+          />
         )}
 
         {/* Manage Exchanges Section */}
