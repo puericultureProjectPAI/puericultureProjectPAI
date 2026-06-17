@@ -30,7 +30,7 @@ export default function GlobalCatalogView() {
       <div className="flex-1 overflow-y-auto pb-6">
         {/* Categories Horizontal List */}
         <div className="w-full overflow-x-auto hide-scrollbar">
-          <div className="flex gap-3 px-6 py-4 w-max">
+          <div className="flex gap-3 px-6 py-4 w-max mx-auto">
             {[
               {
                 label: "Seconde main",
