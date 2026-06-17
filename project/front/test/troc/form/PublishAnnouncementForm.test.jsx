@@ -15,21 +15,14 @@ const { uploadMock } = vi.hoisted(() => ({
   uploadMock: vi.fn().mockResolvedValue("https://example.com/photo.jpg"),
 }));
 
-vi.mock("../../../src/common/hooks/useProductImage", () => ({
-  useProductImage: () => ({
+vi.mock("../../../src/common/hooks/useImageManager", () => ({
+  useImageManager: () => ({
     uploadImage: uploadMock,
     deleteImage: vi.fn().mockResolvedValue(true),
     isUploading: false,
     isDeleting: false,
     error: null,
   }),
-}));
-
-vi.mock("../../../src/common/utils/apiClient.jsx", () => ({
-  apiClient: {
-    post: vi.fn(),
-    get: vi.fn(),
-  },
 }));
 
 describe("PublishAnnouncementForm", () => {
@@ -39,7 +32,7 @@ describe("PublishAnnouncementForm", () => {
       <PublishAnnouncementForm error="" onSubmit={onSubmit} success="" />,
     );
 
-    // Step 1: mode selection → navigate to step 2
+    fireEvent.click(screen.getByRole("button", { name: /troc/i }));
     fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
 
     // Step 2: all required TROC fields (TROC submits directly from step 2)
@@ -62,14 +55,19 @@ describe("PublishAnnouncementForm", () => {
     fireEvent.change(screen.getByLabelText(/Catégorie/i), {
       target: { value: "Poussettes, porte-bébés et sièges auto" },
     });
-    fireEvent.change(screen.getByLabelText(/État/i), {
-      target: { value: "Très bon état" },
-    });
     fireEvent.change(screen.getByLabelText(/Ville/i), {
       target: { value: "Lille" },
     });
-    fireEvent.change(screen.getByLabelText(/Prix/i), {
-      target: { value: "40" },
+
+    fireEvent.change(screen.getByLabelText(/État/i), {
+      target: { value: "Très bon état" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /continuer/i }));
+
+    await screen.findByRole("button", { name: /publier/i });
+    fireEvent.change(screen.getByLabelText(/Prix estimé/i), {
+      target: { value: 40 },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /publier/i }));
@@ -85,8 +83,13 @@ describe("PublishAnnouncementForm", () => {
       condition: "Très bon état",
       price: 0,
       brand: "",
-      ageRange: "",
-      maxWeight: "",
+      dailyPrice: 0,
+      dimensions: "",
+      maxAgeMonths: NaN,
+      minAgeMonths: NaN,
+      maxWeightKg: NaN,
+      rentalEndDate: "",
+      rentalStartDate: "",
     });
   });
 });

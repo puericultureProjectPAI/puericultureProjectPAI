@@ -4,8 +4,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSubmitBooking, useLeasingProfile } from "../hooks/useLeasing";
 import { useAuth } from "../../common/security/AuthContext";
-import Header from "../../common/views/Header";
-import Navbar from "../../common/views/NavBar";
 import LeasingBackHeader from "../components/LeasingBackHeader";
 
 const formatDateFR = (dateStr) => {
@@ -13,6 +11,11 @@ const formatDateFR = (dateStr) => {
   const [year, month, day] = dateStr.split("-");
   return `${day}/${month}/${year}`;
 };
+
+const formatReservationNumber = (reservationNumber) =>
+  reservationNumber
+    ? `N°${String(reservationNumber).replace(/^RES-/, "")}`
+    : "";
 
 export default function LeasingBookingPage() {
   const { id } = useParams();
@@ -36,7 +39,7 @@ export default function LeasingBookingPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/connection");
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
@@ -92,11 +95,10 @@ export default function LeasingBookingPage() {
   const fallbackImage = `https://placehold.co/135x135?text=${encodeURIComponent(productTitle || "Article")}`;
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#040037] font-['Figtree',sans-serif]">
-      <Header />
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white text-[#040037] font-['Figtree',sans-serif]">
       <LeasingBackHeader />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="min-h-0 flex-1 overflow-y-auto">
         {successData ? (
           <div className="flex flex-col items-center justify-center min-h-full px-[24px] py-[24px] text-center">
             <span className="material-symbols-rounded text-[64px] text-[#188638] mb-[16px]">
@@ -115,7 +117,7 @@ export default function LeasingBookingPage() {
                   Numéro de réservation :
                 </span>
                 <span className="font-bold text-[16px] text-[#040037]">
-                  {successData.reservationNumber}
+                  {formatReservationNumber(successData.reservationNumber)}
                 </span>
               </div>
               <div className="flex flex-wrap gap-[4px]">
@@ -316,8 +318,6 @@ export default function LeasingBookingPage() {
           </div>
         )}
       </main>
-
-      <Navbar />
     </div>
   );
 }

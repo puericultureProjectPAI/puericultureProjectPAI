@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import com.puericulture.common.dto.PersonDto;
 import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
+import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.config.errormanager.exception.NotFoundException;
 import com.puericulture.troc.dto.ProductTrocDto;
@@ -17,6 +18,7 @@ import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.mapper.ProductTrocMapper;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import com.puericulture.troc.service.ProductTrocService;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,6 +103,47 @@ class ProductTrocServiceTest {
         assertThatThrownBy(() -> productTrocService.createTroc(request, AUTHOR_ID))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Authenticated person not found");
+    }
+
+    @Test
+    void createTrocShouldAttachImagesInOrderWhenImagesProvided() {
+        TrocRequest request = validRequest();
+        request.setImages(
+                List.of("https://cloudinary.com/img1.jpg", "https://cloudinary.com/img2.jpg"));
+
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
+        given(trocRepository.save(any(ProductTroc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(ProductTroc.class))).willReturn(new ProductTrocDto());
+
+        productTrocService.createTroc(request, AUTHOR_ID);
+
+        ArgumentCaptor<ProductTroc> captor = ArgumentCaptor.forClass(ProductTroc.class);
+        verify(trocRepository).save(captor.capture());
+
+        List<ProductImage> images = captor.getValue().getImages();
+        assertThat(images).hasSize(2);
+        assertThat(images.get(0).getImageUrl()).isEqualTo("https://cloudinary.com/img1.jpg");
+        assertThat(images.get(0).getPosition()).isEqualTo(1);
+        assertThat(images.get(1).getImageUrl()).isEqualTo("https://cloudinary.com/img2.jpg");
+        assertThat(images.get(1).getPosition()).isEqualTo(2);
+    }
+
+    @Test
+    void createTrocShouldSaveTrocWithNoImagesWhenImagesIsNull() {
+        TrocRequest request = validRequest();
+
+        given(personRepository.findById(AUTHOR_ID)).willReturn(Optional.of(author));
+        given(trocRepository.save(any(ProductTroc.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(trocMapper.toDto(any(ProductTroc.class))).willReturn(new ProductTrocDto());
+
+        productTrocService.createTroc(request, AUTHOR_ID);
+
+        ArgumentCaptor<ProductTroc> captor = ArgumentCaptor.forClass(ProductTroc.class);
+        verify(trocRepository).save(captor.capture());
+
+        assertThat(captor.getValue().getImages()).isEmpty();
     }
 
     private TrocRequest validRequest() {
