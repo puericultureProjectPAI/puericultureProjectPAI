@@ -2,6 +2,8 @@ package com.puericulture.leasing.controller;
 
 import com.puericulture.leasing.dto.LeasingArticleDetailDto;
 import com.puericulture.leasing.dto.LeasingArticleRequest;
+import com.puericulture.leasing.dto.LeasingPackReservationRequestDto;
+import com.puericulture.leasing.dto.LeasingPackReservationResponseDto;
 import com.puericulture.leasing.dto.LeasingProfileDto;
 import com.puericulture.leasing.dto.LeasingReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationResponseDto;
@@ -65,6 +67,43 @@ public class LeasingController {
             @AuthenticationPrincipal String authenticatedPersonId) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(leasingBookingService.createReservation(dto, authenticatedPersonId));
+    }
+
+    @Operation(
+            summary = "Reserve an arrival pack",
+            description = "Creates one leasing reservation per selected product in the pack")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Arrival pack reserved successfully",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                LeasingPackReservationResponseDto
+                                                                        .class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Invalid dates or booking overlap",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Child not found or products not found",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(mediaType = "application/json"))
+            })
+    @PostMapping("/reservations/pack")
+    public ResponseEntity<LeasingPackReservationResponseDto> createPackReservation(
+            @Valid @RequestBody LeasingPackReservationRequestDto dto,
+            @AuthenticationPrincipal String authenticatedPersonId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(leasingBookingService.createPackReservation(dto, authenticatedPersonId));
     }
 
     @Operation(

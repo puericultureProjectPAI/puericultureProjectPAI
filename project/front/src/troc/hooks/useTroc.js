@@ -4,6 +4,7 @@ import {
   getProducts,
   getMyAvailableProducts,
   getProductDetail,
+  getTrocSuggestions,
 } from "../utils/trocApi";
 import { createExchange as createExchangeApi } from "../utils/exchangeApi";
 
@@ -13,6 +14,9 @@ export default function useTroc() {
   const [success, setSuccess] = useState("");
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
+  const [suggestionsError, setSuggestionsError] = useState("");
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [trocSuggestions, setTrocSuggestions] = useState([]);
 
   const publishTroc = async (values) => {
     setError("");
@@ -41,9 +45,6 @@ export default function useTroc() {
     try {
       const response = await getProducts(values);
       setProducts(response);
-      setTimeout(() => {
-        setSuccess("");
-      }, 3000);
       return true;
     } catch (requestError) {
       setError("Impossible de récupérer les produits.");
@@ -108,10 +109,29 @@ export default function useTroc() {
     }
   };
 
+  const fetchTrocSuggestions = useCallback(async () => {
+    setSuggestionsLoading(true);
+    setSuggestionsError("");
+
+    try {
+      const suggestions = await getTrocSuggestions();
+      setTrocSuggestions(suggestions);
+      return true;
+    } catch (requestError) {
+      setSuggestionsError("Impossible de récupérer les suggestions de troc.");
+      console.error(
+        "Erreur lors de la récupération des suggestions de troc",
+        requestError,
+      );
+      return false;
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  }, []);
+
   return {
     error,
-    loading,
-    publishTroc,
+    fetchTrocSuggestions,
     getProductsTroc,
     fetchMyProducts,
     fetchProductDetail,
@@ -119,5 +139,10 @@ export default function useTroc() {
     success,
     products,
     product,
+    loading,
+    publishTroc,
+    suggestionsError,
+    suggestionsLoading,
+    trocSuggestions,
   };
 }

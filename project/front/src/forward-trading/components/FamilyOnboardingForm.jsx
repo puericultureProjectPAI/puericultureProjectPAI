@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { SuccessScreenOnBoarding } from "./SuccessScreenOnBoarding";
 import { ProgressBar } from "./ProgressBar";
-import { StatusStep } from "./stepFormOnBoarding/StatusStep";
+import { StatusStep } from "./stepFormOnBoarding/statusStep";
 import { PregnancyStep } from "./stepFormOnBoarding/PregnancyStep";
 import { ChildrenStep } from "./stepFormOnBoarding/ChildrenStep";
 import { FutureStep } from "./stepFormOnBoarding/FutureStep";

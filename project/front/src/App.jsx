@@ -10,6 +10,7 @@ import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
 import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
 import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
+import ArrivalPackPage from "./leasing/views/ArrivalPackPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
 import TrocCatalogPage from "./troc/views/TrocCatalogPage";
 import ProductTrocDetailView from "./troc/views/ProductTrocDetailView";
@@ -56,6 +57,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           {/* Leasing pages avec leur propre layout full-screen */}
           <Route path="/leasing/catalog" element={<CatalogPage />} />
+          <Route path="/leasing/pack" element={<ArrivalPackPage />} />
           <Route
             path="/leasing/products/:id"
             element={<LeasingProductDetailView />}

@@ -10,7 +10,7 @@ const getDateInFrance = (daysFromToday = 0) => {
   return date.toISOString().split("T")[0];
 };
 
-const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
+const getMinimumRentalStartDateFrance = () => getDateInFrance(0);
 
 const hasActiveFilters = ({ city, startDate, endDate }) =>
   !!city || !!startDate || !!endDate;
@@ -33,7 +33,7 @@ const getFilterValidationError = (
     (startDate && startDate < minStartDate) ||
     (endDate && endDate < minStartDate)
   ) {
-    return "La date de début doit être au moins 3 jours après aujourd'hui.";
+    return "La date de début doit être à partir d'aujourd'hui.";
   }
 
   if (startDate && endDate && endDate < startDate) {
@@ -158,7 +158,7 @@ export default function useCatalogFilters() {
 
     if (validationError) {
       setDateError(validationError);
-      return;
+      return false;
     }
 
     setDateError("");
@@ -167,10 +167,11 @@ export default function useCatalogFilters() {
     const nextSearchParams = buildSearchParamsFromFilters(filters);
     if (nextSearchParams.toString() === searchParams.toString()) {
       loadProductsFromFilters(filters);
-      return;
+      return true;
     }
 
     setSearchParams(nextSearchParams);
+    return true;
   };
 
   const handleResetFilters = () => {
