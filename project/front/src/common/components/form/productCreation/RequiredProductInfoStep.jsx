@@ -22,6 +22,7 @@ export default function RequiredProductInfoStep() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isAILoading, setIsAILoading] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState(null);
+  const [aiError, setAiError] = useState(null);
 
   const handleAIRequest = async () => {
     if (!selectedFile) return;
@@ -30,6 +31,8 @@ export default function RequiredProductInfoStep() {
     formData.append("images", selectedFile);
 
     setIsAILoading(true);
+    setAiError(null);
+    setConfidenceScore(null);
 
     try {
       const response = await apiClient.post(
@@ -37,28 +40,38 @@ export default function RequiredProductInfoStep() {
         formData,
       );
 
-      const { title, description, category, confidenceScore } = response.data;
+      const {
+        title,
+        description,
+        category,
+        condition,
+        confidenceScore: score,
+      } = response.data;
 
       if (title) setFieldValue("title", title);
       if (description) setFieldValue("description", description);
       if (category) setFieldValue("category", category);
-      if (confidenceScore !== undefined) setConfidenceScore(confidenceScore);
-    } catch (error) {
-      console.error("Erreur IA Gemini", error);
+      if (condition) setFieldValue("condition", condition);
+
+      if (score !== undefined) setConfidenceScore(score);
+    } catch {
+      setAiError(
+        "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement.",
+      );
     } finally {
       setIsAILoading(false);
     }
   };
 
   const getBadgeStyle = (score) => {
-    if (score >= 80) return "bg-green-100 text-green-700 border-green-300";
-    if (score >= 50) return "bg-orange-100 text-orange-700 border-orange-300";
-    return "bg-red-100 text-red-700 border-red-300";
+    if (score >= 70) return "border-green-300 bg-green-100 text-green-700";
+    if (score >= 35) return "border-orange-300 bg-orange-100 text-orange-700";
+    return "border-red-300 bg-red-100 text-red-700";
   };
 
   const getBadgeEmoji = (score) => {
-    if (score >= 80) return "🟢";
-    if (score >= 50) return "🟠";
+    if (score >= 70) return "🟢";
+    if (score >= 35) return "🟠";
     return "🔴";
   };
 
@@ -74,23 +87,24 @@ export default function RequiredProductInfoStep() {
         maxImages={5}
         onChange={(event) => {
           const file = event.target.files?.[0];
-          if (file) {
-            setSelectedFile(file);
-          }
+          if (file) setSelectedFile(file);
         }}
       />
 
-      {/* BOUTON IA uniquement pour la seconde main */}
-      {values.mode === "SECOND_HAND" && (
-        <button
-          type="button"
-          onClick={handleAIRequest}
-          disabled={!selectedFile || isAILoading}
-          className="mt-4 mb-4 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
-        >
-          {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={handleAIRequest}
+        disabled={!selectedFile || isAILoading}
+        className={`mb-2 mt-4 w-full flex items-center justify-center rounded-xl px-4 py-3 text-sm font-bold text-white shadow-md transition-all ${
+          !selectedFile || isAILoading
+            ? "cursor-not-allowed bg-gray-300"
+            : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+        }`}
+      >
+        {isAILoading
+          ? "Génération en cours... ⏳"
+          : "✨ Générer l'annonce avec l'IA"}
+      </button>
 
       {confidenceScore !== null && (
         <div
@@ -100,6 +114,8 @@ export default function RequiredProductInfoStep() {
           <span>Fiabilité IA : {Math.round(confidenceScore)}%</span>
         </div>
       )}
+
+      {aiError && <p className="mb-4 text-xs text-orange-500">{aiError}</p>}
 
       <label className={`${labelClassName} mt-[15px]`} htmlFor="title">
         Nom de l'article <span className="text-red-500 ml-1">*</span>

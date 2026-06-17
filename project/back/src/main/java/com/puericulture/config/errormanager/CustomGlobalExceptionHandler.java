@@ -1,10 +1,12 @@
 package com.puericulture.config.errormanager;
 
 import com.puericulture.config.errormanager.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
  * format JSON.
  */
 @RestControllerAdvice
+@Slf4j
 public class CustomGlobalExceptionHandler {
 
     /**
@@ -124,6 +127,29 @@ public class CustomGlobalExceptionHandler {
                                 .build());
     }
 
+    /** Gère les erreurs de validation des champs (@Valid, @NotBlank, @NotNull…) (400). */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex) {
+        String message =
+                ex.getBindingResult().getFieldErrors().stream()
+                        .map(fe -> fe.getField() + " : " + fe.getDefaultMessage())
+                        .findFirst()
+                        .orElse("Données invalides");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ErrorResponse.builder().message(message).build());
+    }
+
+    /** Gère les arguments illégaux (valeur de champ inconnue, entité introuvable…) (400). */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ErrorResponse.builder().message(ex.getMessage()).build());
+    }
+
     /**
      * Filet de sécurité final (500). Capture toutes les exceptions non traitées spécifiquement.
      *
@@ -132,6 +158,7 @@ public class CustomGlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        log.error("Unhandled exception", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ErrorResponse.builder().message("Une erreur est survenue...").build());

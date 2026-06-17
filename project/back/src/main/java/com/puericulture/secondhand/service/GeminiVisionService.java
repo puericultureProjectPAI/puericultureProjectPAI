@@ -41,6 +41,9 @@ public class GeminiVisionService {
                     "Santé et grossesse",
                     "Autres articles pour bébé et enfant");
 
+    private static final List<String> ALLOWED_CONDITIONS =
+            List.of("Neuf", "Très bon état", "Bon état", "État correct", "Usé");
+
     public ProductAnalysisResponse analyzeImages(List<MultipartFile> images) {
         try {
             Map<String, Object> requestBody = buildGeminiPayload(images);
@@ -75,12 +78,15 @@ public class GeminiVisionService {
                 "Analyze the provided image(s). "
                         + "IMPORTANT: The title and description must be in FRENCH. "
                         + "The category must be exactly one of the allowed categories, written exactly as provided. "
+                        + "The condition must be exactly one of the allowed conditions, written exactly as provided. "
                         + "Return ONLY a valid JSON object. "
                         + "Categories allowed: "
                         + ALLOWED_CATEGORIES
                         + ". "
+                        + "Conditions allowed: [\"Neuf\", \"Très bon état\", \"Bon état\", \"État correct\", \"Usé\"]. "
                         + "Confidence score must be between 0 and 100. "
-                        + "Format: {\"title\": \"string\", \"description\": \"string\", \"category\": \"string\", \"confidenceScore\": number}. "
+                        + "If the image contains multiple distinct items or is of insufficient quality, set multipleItemsDetected to true and condition to null. "
+                        + "Format: {\"title\": \"string\", \"description\": \"string\", \"category\": \"string\", \"confidenceScore\": number, \"condition\": \"string or null\", \"multipleItemsDetected\": boolean}. "
                         + "Do not include markdown markers like ```json.";
 
         log.debug("Prompt envoyé : {}", prompt);
@@ -148,6 +154,9 @@ public class GeminiVisionService {
         }
         if (result.getConfidenceScore() < 0 || result.getConfidenceScore() > 100) {
             result.setConfidenceScore(0.0);
+        }
+        if (result.getCondition() != null && !ALLOWED_CONDITIONS.contains(result.getCondition())) {
+            result.setCondition(null);
         }
 
         return result;

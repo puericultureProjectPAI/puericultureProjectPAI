@@ -44,7 +44,7 @@ class GeminiVisionServiceTest {
                   "candidates": [{
                     "content": {
                       "parts": [{
-                        "text": "{\\"title\\": \\"Poussette Joie\\", \\"description\\": \\"Belle poussette\\", \\"category\\": \\"Poussettes, porte-bébés et sièges auto\\", \\"confidenceScore\\": 85}"
+                        "text": "{\\"title\\": \\"Poussette Joie\\", \\"description\\": \\"Belle poussette\\", \\"category\\": \\"Poussettes, porte-bébés et sièges auto\\", \\"confidenceScore\\": 85, \\"condition\\": \\"Bon état\\", \\"multipleItemsDetected\\": false}"
                       }]
                     }
                   }]
@@ -62,6 +62,8 @@ class GeminiVisionServiceTest {
         assertThat(result.getTitle()).isEqualTo("Poussette Joie");
         assertThat(result.getCategory()).isEqualTo("Poussettes, porte-bébés et sièges auto");
         assertThat(result.getConfidenceScore()).isEqualTo(85.0);
+        assertThat(result.getCondition()).isEqualTo("Bon état");
+        assertThat(result.isMultipleItemsDetected()).isFalse();
     }
 
     @Test
@@ -114,6 +116,59 @@ class GeminiVisionServiceTest {
         ProductAnalysisResponse result = geminiVisionService.analyzeImages(List.of(image));
 
         assertThat(result.getConfidenceScore()).isEqualTo(0.0);
+    }
+
+    @Test
+    void analyzeImages_shouldSetConditionToNull_whenGeminiReturnsUnknownCondition() {
+        String geminiResponse =
+                """
+                {
+                  "candidates": [{
+                    "content": {
+                      "parts": [{
+                        "text": "{\\"title\\": \\"Produit\\", \\"description\\": \\"Desc\\", \\"category\\": \\"Jeux et jouets\\", \\"confidenceScore\\": 70, \\"condition\\": \\"Parfait\\", \\"multipleItemsDetected\\": false}"
+                      }]
+                    }
+                  }]
+                }
+                """;
+
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(geminiResponse, HttpStatus.OK));
+
+        MultipartFile image =
+                new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
+
+        ProductAnalysisResponse result = geminiVisionService.analyzeImages(List.of(image));
+
+        assertThat(result.getCondition()).isNull();
+    }
+
+    @Test
+    void analyzeImages_shouldReturnNullConditionAndMultipleItemsFlag_whenMultipleItemsDetected() {
+        String geminiResponse =
+                """
+                {
+                  "candidates": [{
+                    "content": {
+                      "parts": [{
+                        "text": "{\\"title\\": \\"Produit\\", \\"description\\": \\"Desc\\", \\"category\\": \\"Jeux et jouets\\", \\"confidenceScore\\": 0, \\"condition\\": null, \\"multipleItemsDetected\\": true}"
+                      }]
+                    }
+                  }]
+                }
+                """;
+
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(geminiResponse, HttpStatus.OK));
+
+        MultipartFile image =
+                new MockMultipartFile("image", "test.jpg", "image/jpeg", "image".getBytes());
+
+        ProductAnalysisResponse result = geminiVisionService.analyzeImages(List.of(image));
+
+        assertThat(result.isMultipleItemsDetected()).isTrue();
+        assertThat(result.getCondition()).isNull();
     }
 
     @Test
