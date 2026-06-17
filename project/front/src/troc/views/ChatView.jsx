@@ -169,12 +169,14 @@ export default function ChatView() {
               key={msg.id}
               className="flex flex-row justify-end items-end gap-3"
             >
-              <div className="flex flex-col items-end gap-1">
+              <div className="flex flex-col items-end gap-1 max-w-[75%]">
                 <div
-                  className="bg-[#E8F3FF] px-3 py-3 max-w-[75%]"
+                  className="bg-[#E8F3FF] px-3 py-3"
                   style={{ borderRadius: "16px 16px 0px 16px" }}
                 >
-                  <p className="text-[16px] text-[#33323D]">{msg.content}</p>
+                  <p className="text-[16px] text-[#33323D] break-words">
+                    {msg.content}
+                  </p>
                 </div>
                 <span className="text-[12px] text-[#757388]">
                   {formatTime(msg.sentAt)}
@@ -193,12 +195,14 @@ export default function ChatView() {
                   {getInitials(otherUser)}
                 </span>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 max-w-[75%]">
                 <div
-                  className="bg-[#F2F2F9] px-3 py-3 max-w-[75%]"
+                  className="bg-[#F2F2F9] px-3 py-3"
                   style={{ borderRadius: "16px 16px 16px 0px" }}
                 >
-                  <p className="text-[16px] text-[#33323D]">{msg.content}</p>
+                  <p className="text-[16px] text-[#33323D] break-words">
+                    {msg.content}
+                  </p>
                 </div>
                 <span className="text-[12px] text-[#757388]">
                   {formatTime(msg.sentAt)}

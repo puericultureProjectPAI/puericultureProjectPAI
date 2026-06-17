@@ -7,6 +7,7 @@ import com.puericulture.troc.dto.ConversationDto;
 import com.puericulture.troc.dto.MessageDto;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.Message;
+import com.puericulture.troc.mapper.MessageMapper;
 import com.puericulture.troc.mapper.ProductTrocMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
 import com.puericulture.troc.repository.MessageRepository;
@@ -28,6 +29,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ExchangeRepository exchangeRepository;
     private final ProductTrocMapper productTrocMapper;
+    private final MessageMapper messageMapper;
 
     @PersistenceContext private EntityManager em;
 
@@ -51,7 +53,7 @@ public class MessageService {
         messageRepository.markAllAsReadForUser(exchangeId, userId);
 
         return messageRepository.findByExchangeIdOrderByMessageTimeAsc(exchangeId).stream()
-                .map(this::toMessageDto)
+                .map(messageMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +69,7 @@ public class MessageService {
         message.setExchange(exchange);
         message.setContent(content);
 
-        return toMessageDto(messageRepository.save(message));
+        return messageMapper.toDto(messageRepository.save(message));
     }
 
     private void assertUserInExchange(Exchange exchange, UUID userId) {
@@ -93,16 +95,6 @@ public class MessageService {
                 .lastMessageTime(last.map(Message::getMessageTime).orElse(null))
                 .proposer(isProposer)
                 .unreadCount(unread)
-                .build();
-    }
-
-    private MessageDto toMessageDto(Message message) {
-        return MessageDto.builder()
-                .id(message.getId())
-                .senderId(message.getSender().getId())
-                .content(message.getContent())
-                .sentAt(message.getMessageTime())
-                .read(message.getMessageRead())
                 .build();
     }
 }
