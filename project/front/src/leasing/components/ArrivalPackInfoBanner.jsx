@@ -62,7 +62,7 @@ export default function ArrivalPackInfoBanner({
   return (
     <div
       onClick={handleActivateFilters}
-      className="shimmer-right-to-left mx-4 mb-4 mt-2 flex cursor-pointer items-center justify-between gap-[12px] rounded-[10px] border border-[#D0E3FF] p-[10px] shadow-[0px_1px_3px_rgba(0,0,0,0.05)] transition hover:opacity-95"
+      className="shimmer-right-to-left relative mx-4 mb-4 mt-2 flex cursor-pointer items-center justify-between gap-[12px] rounded-[10px] border border-[#D0E3FF] p-[10px] pr-[40px] shadow-[0px_1px_3px_rgba(0,0,0,0.05)] transition hover:opacity-95"
     >
       {/* Premium Sparkles Icon with Pulse */}
       <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-white text-[#3A51C9] shadow-xs">
@@ -81,22 +81,24 @@ export default function ArrivalPackInfoBanner({
         </p>
       </div>
 
-      {/* Actions (Chevron Chevron Right + Close) */}
-      <div className="flex items-center gap-[8px] shrink-0">
-        <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full bg-white text-[#3A51C9] shadow-xs hover:bg-[#E8F3FF] transition">
-          <span className="material-symbols-rounded text-[18px]">
+      {/* Arrow Action */}
+      <div className="flex items-center shrink-0">
+        <div className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#3A51C9] shadow-xs hover:bg-[#E8F3FF] transition">
+          <span className="material-symbols-rounded text-[22px]">
             chevron_right
           </span>
         </div>
-        <button
-          type="button"
-          onClick={closeBanner}
-          className="flex h-[24px] w-[24px] items-center justify-center rounded-full text-[#757388] transition hover:bg-white/50 hover:text-[#040037]"
-          aria-label="Fermer"
-        >
-          <span className="material-symbols-rounded text-[14px]">close</span>
-        </button>
       </div>
+
+      {/* Close Button */}
+      <button
+        type="button"
+        onClick={closeBanner}
+        className="absolute right-[8px] top-[8px] flex h-[20px] w-[20px] items-center justify-center rounded-full text-[#757388] transition hover:bg-white/50 hover:text-[#040037]"
+        aria-label="Fermer"
+      >
+        <span className="material-symbols-rounded text-[12px]">close</span>
+      </button>
     </div>
   );
 }
