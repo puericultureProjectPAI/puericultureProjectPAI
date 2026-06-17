@@ -21,6 +21,18 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long> {
 
     List<Exchange> findByReceiverProduct(ProductTroc product);
 
+    @Query(
+            """
+        SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END
+        FROM Exchange e
+        WHERE
+            (e.proposerProduct.id = :firstProductId AND e.receiverProduct.id = :secondProductId)
+            OR (e.proposerProduct.id = :secondProductId AND e.receiverProduct.id = :firstProductId)
+    """)
+    boolean existsBetweenProducts(
+            @Param("firstProductId") Long firstProductId,
+            @Param("secondProductId") Long secondProductId);
+
     Optional<Exchange> findByReceiverProductIdAndProposerProductAuthorId(
             Long receiverProductId, UUID proposerAuthorId);
 
