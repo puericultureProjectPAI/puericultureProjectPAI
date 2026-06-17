@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../common/security/AuthContext";
 import TrocSuggestionList from "../components/TrocSuggestionList.jsx";
 import useTroc from "../hooks/useTroc";
 import CatalogTabs from "../../common/components/CatalogTabs.jsx";
@@ -22,6 +23,7 @@ const formatPrice = (price) => {
 
 export default function CatalogPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const {
     error,
@@ -54,6 +56,11 @@ export default function CatalogPage() {
     if (product?.id) {
       navigate(`/troc/products/${product.id}`);
     }
+  };
+
+  const handlePropose = (product) => {
+    if (!isAuthenticated) navigate("/connection");
+    else navigate(`/troc/select-my-product/${product.id}`);
   };
 
   return (
@@ -155,7 +162,7 @@ export default function CatalogPage() {
 
           <TrocSuggestionList
             loading={suggestionsLoading}
-            onAccept={goToProductDetail}
+            onAccept={handlePropose}
             onRefresh={fetchTrocSuggestions}
             onViewDetails={goToProductDetail}
             suggestions={trocSuggestions}
