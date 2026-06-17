@@ -128,4 +128,67 @@ public interface LeasingProductRepository extends JpaRepository<LeasingArticle, 
                             + "ORDER BY p.city ASC",
             nativeQuery = true)
     List<String> findAllAvailableCities();
+
+    @Query(
+            value =
+                    """
+                SELECT p.id, p.post_title AS "postTitle", p.category, p.city,
+                    pl.price_per_day AS "pricePerDay", pl.price_per_month AS "pricePerMonth",
+                    p.condition, 'Location' AS "badgeLabel", pi_first.image_url AS "firstImageUrl", true AS "available"
+                FROM public.products p
+                INNER JOIN public.product_leasing pl ON pl.product_id = p.id
+                LEFT JOIN LATERAL (
+                    SELECT image_url FROM public.product_images
+                    WHERE product_id = p.id ORDER BY image_position ASC LIMIT 1
+                ) pi_first ON true
+                WHERE LOWER(p.category) = LOWER(:category)
+                  AND LOWER(p.city) = LOWER(:city)
+                  AND (p.min_age_months IS NULL OR p.min_age_months <= :childAgeMonths)
+                  AND (p.max_age_months IS NULL OR p.max_age_months >= :childAgeMonths)
+                  AND NOT EXISTS (
+                    SELECT 1 FROM public.client_products cp
+                    JOIN public.leasing_orders lo ON lo.client_product_id = cp.id
+                    WHERE cp.product_id = p.id
+                      AND lo.start_date <= :endDate AND lo.end_date >= :startDate
+                )
+                ORDER BY p.id DESC
+                LIMIT 1
+                """,
+            nativeQuery = true)
+    java.util.Optional<LeasingProductSummary> findAvailableProductByCategoryAndCity(
+            @Param("category") String category,
+            @Param("city") String city,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("childAgeMonths") Integer childAgeMonths);
+
+    @Query(
+            value =
+                    """
+                SELECT p.id, p.post_title AS "postTitle", p.category, p.city,
+                    pl.price_per_day AS "pricePerDay", pl.price_per_month AS "pricePerMonth",
+                    p.condition, 'Location' AS "badgeLabel", pi_first.image_url AS "firstImageUrl", true AS "available"
+                FROM public.products p
+                INNER JOIN public.product_leasing pl ON pl.product_id = p.id
+                LEFT JOIN LATERAL (
+                    SELECT image_url FROM public.product_images
+                    WHERE product_id = p.id ORDER BY image_position ASC LIMIT 1
+                ) pi_first ON true
+                WHERE LOWER(p.city) = LOWER(:city)
+                  AND (p.min_age_months IS NULL OR p.min_age_months <= :childAgeMonths)
+                  AND (p.max_age_months IS NULL OR p.max_age_months >= :childAgeMonths)
+                  AND NOT EXISTS (
+                    SELECT 1 FROM public.client_products cp
+                    JOIN public.leasing_orders lo ON lo.client_product_id = cp.id
+                    WHERE cp.product_id = p.id
+                      AND lo.start_date <= :endDate AND lo.end_date >= :startDate
+                )
+                ORDER BY p.id DESC
+                """,
+            nativeQuery = true)
+    List<LeasingProductSummary> findEligibleProductsByCityAndAge(
+            @Param("city") String city,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("childAgeMonths") Integer childAgeMonths);
 }
