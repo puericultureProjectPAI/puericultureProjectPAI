@@ -2,6 +2,8 @@ package com.puericulture.leasing.controller;
 
 import com.puericulture.leasing.dto.LeasingArticleDetailDto;
 import com.puericulture.leasing.dto.LeasingArticleRequest;
+import com.puericulture.leasing.dto.LeasingPackReservationRequestDto;
+import com.puericulture.leasing.dto.LeasingPackReservationResponseDto;
 import com.puericulture.leasing.dto.LeasingProfileDto;
 import com.puericulture.leasing.dto.LeasingReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationResponseDto;
