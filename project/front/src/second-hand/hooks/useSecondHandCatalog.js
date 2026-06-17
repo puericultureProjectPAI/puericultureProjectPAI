@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { getSecondHandProducts } from "../utils/secondHandApi.js";
 
 export default function useSecondHandCatalog() {
@@ -6,7 +6,7 @@ export default function useSecondHandCatalog() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchSecondHandProducts = async () => {
+  const fetchSecondHandProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -20,7 +20,7 @@ export default function useSecondHandCatalog() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     products,
