@@ -22,6 +22,7 @@ import GlobalCatalogView from "./common/views/GlobalCatalogView";
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
 import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
+import SecondHandCatalogPage from "./second-hand/views/SecondHandCatalogPage.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -73,6 +74,10 @@ export default function App() {
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
+              <Route
+                path="/second-hand/catalog"
+                element={<SecondHandCatalogPage />}
+              />
               <Route
                 path="/second-hand/compare/:ean"
                 element={<PriceComparisonView />}
