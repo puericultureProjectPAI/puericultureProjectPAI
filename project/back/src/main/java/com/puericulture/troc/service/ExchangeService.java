@@ -155,6 +155,8 @@ public class ExchangeService {
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
 
+        requireNotBlocked(exchange);
+
         if (!exchange.getStatus().equals(ExchangeStatus.PENDING)) {
 
             throw new BadRequestException("Only pending exchanges can be accepted");
@@ -187,6 +189,12 @@ public class ExchangeService {
         saveSystemMessage(exchange, "✓ Échange accepté");
     }
 
+    private void requireNotBlocked(Exchange exchange) {
+        if (exchange.getStatus() == ExchangeStatus.BLOCKED) {
+            throw new BadRequestException("Exchange is frozen due to an active report");
+        }
+    }
+
     /**
      * Sets all conflicting exchanges to REFUSED status and persists them
      *
@@ -208,6 +216,8 @@ public class ExchangeService {
                 exchangeRepository
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
+
+        requireNotBlocked(exchange);
 
         if (!exchange.getStatus().equals(ExchangeStatus.ACCEPTED)) {
 
@@ -243,6 +253,8 @@ public class ExchangeService {
                 exchangeRepository
                         .findById(exchangeId)
                         .orElseThrow(() -> new NotFoundException("Exchange not found"));
+
+        requireNotBlocked(exchange);
 
         if (exchange.getStatus() != ExchangeStatus.PENDING
                 && exchange.getStatus() != ExchangeStatus.ACCEPTED) {

@@ -17,7 +17,10 @@ import ProductTrocDetailView from "./troc/views/ProductTrocDetailView";
 import MyProductsSelectionView from "./troc/views/MyProductsSelectionView";
 import MessagesListView from "./troc/views/MessagesListView";
 import ChatView from "./troc/views/ChatView";
+import ReportPage from "./troc/views/ReportPage";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import AdminReportsView from "./admin/views/AdminReportsView";
+import AdminReportDetailView from "./admin/views/AdminReportDetailView";
 import { FamilyOnboardingView } from "./forward-trading/views/FamilyOnboardingView";
 
 import GlobalCatalogView from "./common/views/GlobalCatalogView";
@@ -108,6 +111,27 @@ export default function App() {
               />
               <Route path="/troc/messages" element={<MessagesListView />} />
               <Route path="/troc/chat/:exchangeId" element={<ChatView />} />
+              <Route
+                path="/troc/exchanges/:exchangeId/report"
+                element={<ReportPage />}
+              />
+            </Route>
+
+            {/* Admin routes — restricted to users with role ADMIN */}
+            <Route
+              element={
+                <RoleGuard
+                  access={(user) =>
+                    user.user_metadata?.role?.toUpperCase() === "ADMIN"
+                  }
+                />
+              }
+            >
+              <Route path="/admin/reports" element={<AdminReportsView />} />
+              <Route
+                path="/admin/reports/:reportId"
+                element={<AdminReportDetailView />}
+              />
             </Route>
 
             <Route path="*" element={<Navigate to="/home" replace />} />

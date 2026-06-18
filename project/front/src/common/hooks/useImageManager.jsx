@@ -29,7 +29,7 @@ export const useImageManager = () => {
 
       const formData = new FormData();
       formData.append("file", optimizedFile);
-      if (!isLocalMock) {
+      if (uploadPreset) {
         formData.append("upload_preset", uploadPreset);
       }
 
