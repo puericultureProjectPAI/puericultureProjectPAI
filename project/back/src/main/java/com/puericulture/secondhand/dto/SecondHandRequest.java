@@ -20,4 +20,9 @@ public class SecondHandRequest {
     private String city;
     private String category;
     private String imageReference;
+    private Integer maxWeightKg;
+    private String dimensions;
+    private Integer minAgeMonths;
+    private Integer maxAgeMonths;
+    private String brand;
 }

@@ -2,6 +2,8 @@ package com.puericulture.secondhand.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.puericulture.config.errormanager.exception.BadRequestException;
+import com.puericulture.config.errormanager.exception.InternalServerError;
 import com.puericulture.secondhand.dto.ProductAnalysisResponse;
 import java.io.IOException;
 import java.util.*;
@@ -12,7 +14,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Slf4j
@@ -57,16 +58,30 @@ public class GeminiVisionService {
                     restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
             if (response.getStatusCode() != HttpStatus.OK) {
-                throw new ResponseStatusException(
-                        HttpStatus.SERVICE_UNAVAILABLE, "Gemini API Error");
+                // Technical error: upstream AI provider is down → 500, not a client error.
+                throw new InternalServerError("Gemini API unavailable");
             }
 
-            return parseAndValidateResponse(response.getBody());
+            ProductAnalysisResponse result = parseAndValidateResponse(response.getBody());
 
+            // If the AI is not confident that the image represents a puériculture item,
+            // return a business error so the frontend can inform the user and allow manual input.
+            if (!result.isMultipleItemsDetected()
+                    && (result.getConfidenceScore() == null
+                            || result.getConfidenceScore() < 30.0)) {
+                throw new BadRequestException(
+                        "L'image ne semble pas être un article de puériculture. Veuillez remplir les champs manuellement.");
+            }
+
+            return result;
+
+        } catch (BadRequestException | InternalServerError e) {
+            // Business (400) or technical (500) error already mapped — propagate as-is
+            throw e;
         } catch (Exception e) {
+            // Any other failure (timeout, parsing, I/O…) is technical → 500.
             log.error("Error during AI analysis: {}", e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE, "AI Service currently unavailable", e);
+            throw new InternalServerError("AI Service currently unavailable");
         }
     }
 
