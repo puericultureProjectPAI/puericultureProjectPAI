@@ -70,6 +70,10 @@ export default function App() {
             path="/forward/onboarding"
             element={<FamilyOnboardingView />}
           />
+          <Route
+            path="/forward/create-children"
+            element={<CreationEnfantView />}
+          />
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />
             <Route
