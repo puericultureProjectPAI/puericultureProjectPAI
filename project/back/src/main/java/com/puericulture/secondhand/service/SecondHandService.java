@@ -53,6 +53,12 @@ public class SecondHandService {
         secondHand.setPrice(request.getPrice());
         secondHand.setCondition(request.getCondition());
 
+        secondHand.setMaxWeightKg(request.getMaxWeightKg());
+        secondHand.setDimensions(request.getDimensions());
+        secondHand.setMinAgeMonths(request.getMinAgeMonths());
+        secondHand.setMaxAgeMonths(request.getMaxAgeMonths());
+        secondHand.setBrand(request.getBrand());
+
         SecondHand saved = secondHandRepository.save(secondHand);
 
         if (request.getImageReference() != null && !request.getImageReference().isBlank()) {
