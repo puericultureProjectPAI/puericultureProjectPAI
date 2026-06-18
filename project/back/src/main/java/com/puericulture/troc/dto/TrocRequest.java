@@ -56,6 +56,9 @@ public class TrocRequest {
     @Schema(description = "Maximum age of the product in months.", example = "12")
     private Integer maxAgeMonths;
 
+    @Schema(description = "Brand of the product.", example = "Chicco")
+    private String brand;
+
     @Schema(
             description = "Condition of the product.",
             example = "Neuf",

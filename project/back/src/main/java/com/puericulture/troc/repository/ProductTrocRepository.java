@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 public interface ProductTrocRepository extends JpaRepository<ProductTroc, Long> {
     List<ProductTroc> findByStatus(ProductTrocStatus status);
 
+    // Find products authored by a specific user with given status
+    List<ProductTroc> findByAuthorIdAndStatus(UUID authorId, ProductTrocStatus status);
+
     @Query(
             """
         SELECT p

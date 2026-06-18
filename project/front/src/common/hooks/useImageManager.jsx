@@ -27,13 +27,11 @@ export const useImageManager = () => {
     try {
       const optimizedFile = await optimizeImage(rawFile);
 
-      if (isLocalMock) {
-        return URL.createObjectURL(optimizedFile);
-      }
-
       const formData = new FormData();
       formData.append("file", optimizedFile);
-      formData.append("upload_preset", uploadPreset);
+      if (uploadPreset) {
+        formData.append("upload_preset", uploadPreset);
+      }
 
       const response = await fetch(uploadUrl, {
         method: "POST",
