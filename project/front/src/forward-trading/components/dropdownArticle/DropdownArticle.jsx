@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import DropdownHeader from "./DropdownHeader";
 import DropdownArticleCard from "./DropdownArticleCard";
 
@@ -8,6 +9,7 @@ export default function Dropdown({
   defaultOpen = false,
 }) {
   const [open, setOpen] = useState(defaultOpen && articles.length > 0);
+  const navigate = useNavigate();
 
   return (
     <div className="self-stretch flex flex-col">
@@ -25,7 +27,16 @@ export default function Dropdown({
       >
         <div className="p-2 flex flex-col gap-2">
           {articles.map((article, i) => (
-            <DropdownArticleCard key={i} {...article} />
+            <button
+              key={i}
+              type="button"
+              onClick={() =>
+                navigate("/forward/article", { state: { article } })
+              }
+              className="text-left"
+            >
+              <DropdownArticleCard {...article} />
+            </button>
           ))}
         </div>
       </div>

@@ -6,6 +6,7 @@ import { AuthProvider } from "./common/security/AuthContext";
 import RoleGuard from "./common/security/RoleGuard";
 import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
+import ForwardArticleDetailView from "./forward-trading/views/ForwardArticleDetailView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
 import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
@@ -99,6 +100,10 @@ export default function App() {
               <Route
                 path="/forward/create-children"
                 element={<CreationEnfantView />}
+              />
+              <Route
+                path="/forward/article"
+                element={<ForwardArticleDetailView />}
               />
               <Route
                 path="/product/create"
