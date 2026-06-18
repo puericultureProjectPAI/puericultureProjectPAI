@@ -66,7 +66,9 @@ public class GeminiVisionService {
 
             // If the AI is not confident that the image represents a puériculture item,
             // return a business error so the frontend can inform the user and allow manual input.
-            if (result.getConfidenceScore() == null || result.getConfidenceScore() < 30.0) {
+            if (!result.isMultipleItemsDetected()
+                    && (result.getConfidenceScore() == null
+                            || result.getConfidenceScore() < 30.0)) {
                 throw new BadRequestException(
                         "L'image ne semble pas être un article de puériculture. Veuillez remplir les champs manuellement.");
             }
