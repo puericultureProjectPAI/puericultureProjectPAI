@@ -60,7 +60,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
   };
 
   const fieldClassName =
-    "w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
+    "rounded-md border border-[#858199] bg-white px-3 py-[9px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
 
   const labelClassName =
     "mb-[7px] block text-[16px] font-extrabold leading-tight text-[#080036]";
@@ -96,7 +96,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
 
               <div>
                 <label htmlFor="type" className={labelClassName}>
-                  Type de problème *
+                  Type de problème <span className="text-red-500 ml-1">*</span>
                 </label>
 
                 <Field
@@ -122,7 +122,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
 
               <div>
                 <label htmlFor="description" className={labelClassName}>
-                  Description *
+                  Description <span className="text-red-500 ml-1">*</span>
                 </label>
 
                 <Field
@@ -131,7 +131,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                   name="description"
                   rows={4}
                   placeholder="Décrivez le problème rencontré..."
-                  className={`${fieldClassName} min-h-[100px] resize-none`}
+                  className={`${fieldClassName} w-full min-h-[100px] resize-none`}
                 />
 
                 <ErrorMessage
@@ -195,7 +195,7 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting || isSubmittingReport || isUploading}
-                  className="rounded-xl bg-[#3A51C9] px-5 py-3 text-[14px] font-bold text-white shadow-md transition-all hover:bg-[#3145ad] disabled:cursor-not-allowed disabled:bg-gray-300"
+                  className="rounded-xl bg-[#080036] px-5 py-3 text-[14px] text-white shadow-md transition-all hover:bg-[#1a1157] disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
                   {isSubmitting || isSubmittingReport
                     ? "Envoi..."
