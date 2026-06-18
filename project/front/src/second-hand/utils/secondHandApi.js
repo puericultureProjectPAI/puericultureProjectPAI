@@ -6,14 +6,12 @@ export async function createSecondHand(payload) {
 }
 
 export async function getProduct(ean) {
-  const response = await apiClient.get(`api/v1/products/${ean}`);
+  const response = await apiClient.get(`/v1/products/${ean}`);
   return response.data;
 }
 
 export async function getPriceComparison(ean) {
-  const response = await apiClient.get(
-    `api/v1/products/${ean}/price-comparison`,
-  );
+  const response = await apiClient.get(`/v1/products/${ean}/price-comparison`);
   return response.data;
 }
 export const getSecondHandProducts = async () => {
