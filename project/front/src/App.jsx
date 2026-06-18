@@ -21,6 +21,8 @@ import GlobalCatalogView from "./common/views/GlobalCatalogView";
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
 import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
+import SecondHandCatalogPage from "./second-hand/views/SecondHandCatalogPage";
+import SecondHandProductDetailView from "./second-hand/views/SecondHandProductDetailView";
 
 export default function App() {
   useEffect(() => {
@@ -74,6 +76,14 @@ export default function App() {
               <Route
                 path="/second-hand/compare/:ean"
                 element={<PriceComparisonView />}
+              />
+              <Route
+                path="/second-hand/catalog"
+                element={<SecondHandCatalogPage />}
+              />
+              <Route
+                path="/second-hand/products/:id"
+                element={<SecondHandProductDetailView />}
               />
               <Route
                 path="/forward/timeline/:id"

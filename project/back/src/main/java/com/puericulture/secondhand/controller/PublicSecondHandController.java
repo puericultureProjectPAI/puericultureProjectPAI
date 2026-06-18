@@ -1,5 +1,6 @@
 package com.puericulture.secondhand.controller;
 
+import com.puericulture.secondhand.dto.SecondHandDetailDto;
 import com.puericulture.secondhand.dto.SecondHandListItemDto;
 import com.puericulture.secondhand.service.SecondHandService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,5 +48,34 @@ public class PublicSecondHandController {
     @GetMapping("/products")
     public ResponseEntity<List<SecondHandListItemDto>> getAllProducts() {
         return ResponseEntity.ok(secondHandService.getAllProducts());
+    }
+
+    @Operation(
+            summary = "Get second-hand product details",
+            description = "Retrieves the detailed information of a second-hand product by its ID")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Product details retrieved successfully.",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                SecondHandDetailDto.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Second-hand product not found.",
+                        content = @Content(mediaType = "application/json"))
+            })
+    @GetMapping("/products/{id}")
+    public ResponseEntity<SecondHandDetailDto> getProductDetail(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(secondHandService.getSecondHandDetail(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

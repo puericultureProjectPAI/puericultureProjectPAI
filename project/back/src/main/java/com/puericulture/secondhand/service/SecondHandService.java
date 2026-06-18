@@ -5,6 +5,7 @@ import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
 import com.puericulture.common.repository.ProductImageRepository;
+import com.puericulture.secondhand.dto.SecondHandDetailDto;
 import com.puericulture.secondhand.dto.SecondHandDto;
 import com.puericulture.secondhand.dto.SecondHandListItemDto;
 import com.puericulture.secondhand.dto.SecondHandRequest;
@@ -69,5 +70,17 @@ public class SecondHandService {
     @Transactional(readOnly = true)
     public List<SecondHandListItemDto> getAllProducts() {
         return secondHandRepository.findAllListItems();
+    }
+
+    @Transactional(readOnly = true)
+    public SecondHandDetailDto getSecondHandDetail(Long id) {
+        SecondHand secondHand =
+                secondHandRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Second-hand product not found"));
+        return secondHandMapper.toDetailDto(secondHand);
     }
 }
