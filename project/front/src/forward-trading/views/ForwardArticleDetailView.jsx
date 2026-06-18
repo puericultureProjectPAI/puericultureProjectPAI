@@ -1,10 +1,33 @@
-import { useLocation } from "react-router";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import pointsIcon from "../../assets/credit-icon-neutral-m.svg";
 import photoIcon from "../../assets/photo-icon-subtle.svg";
 
 export default function ForwardArticleDetailView() {
   const { state } = useLocation();
   const article = state?.article;
+  const navigate = useNavigate();
+  const [reservationStatus, setReservationStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleReserver = async () => {
+    setIsLoading(true);
+    setReservationStatus(null);
+    try {
+      // TODO: remplacer par le vrai appel quand l'endpoint est prêt
+      // const response = await fetch(`/api/timeline-events/${article.id}/reserve`, { method: "PATCH" });
+      // if (!response.ok) throw new Error("Échec de la réservation");
+      await new Promise((resolve) => setTimeout(resolve, 800)); // simule la latence
+      setReservationStatus("success");
+      setTimeout(() => {
+        navigate(`/lot/${article.lotId}`);
+      }, 1500);
+    } catch {
+      setReservationStatus("error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!article || article.isValide === false) {
     return (
@@ -54,6 +77,17 @@ export default function ForwardArticleDetailView() {
       </div>
 
       <hr className="border-feedback-border-neutral" />
+      {/* Feedback message */}
+      {reservationStatus === "success" && (
+        <p className="text-center text-feedback-text-success text-base font-semibold">
+          Votre article est bien réservé.
+        </p>
+      )}
+      {reservationStatus === "error" && (
+        <p className="text-center text-feedback-text-alert text-base font-semibold">
+          La réservation a échoué. Veuillez réessayer.
+        </p>
+      )}
 
       {/* Buttons: actions belong to PUE-310 / PUE-311, only displayed here */}
       <div className="flex flex-col gap-2.5 py-4">
@@ -65,9 +99,11 @@ export default function ForwardArticleDetailView() {
         </button>
         <button
           type="button"
-          className="h-10 rounded-lg bg-bg-brand text-white text-base font-semibold"
+          onClick={handleReserver}
+          disabled={isLoading || reservationStatus === "success"}
+          className="h-10 rounded-lg bg-bg-brand text-white text-base font-semibold disabled:opacity-50"
         >
-          Réserver
+          {isLoading ? "Réservation…" : "Réserver"}
         </button>
       </div>
     </div>

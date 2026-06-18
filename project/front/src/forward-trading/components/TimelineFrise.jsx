@@ -64,6 +64,8 @@ export default function TimelineFrise({ timelineId }) {
             min_age_utilisation: 0,
             max_age_utilisation: 36,
             isValide: true,
+            id: 1,
+            lotId: 42,
           },
         ]}
         defaultOpen={true}
