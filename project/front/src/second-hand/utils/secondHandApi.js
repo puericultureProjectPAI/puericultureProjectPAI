@@ -16,3 +16,8 @@ export async function getPriceComparison(ean) {
   );
   return response.data;
 }
+export const getSecondHandProducts = async () => {
+  const response = await apiClient.get(`/public/second-hand/products`);
+
+  return response.data;
+};
