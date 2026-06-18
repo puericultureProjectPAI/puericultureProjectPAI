@@ -3,12 +3,23 @@ import { useLocation, useNavigate } from "react-router";
 import pointsIcon from "../../assets/credit-icon-neutral-m.svg";
 import photoIcon from "../../assets/photo-icon-subtle.svg";
 
+const DELETE_REASONS = [
+  { key: "DEJA_POSSEDE", label: "Je possède déjà cet article" },
+  { key: "NE_PLUS_RECOMMANDER", label: "Ne plus recommander cet article" },
+  { key: "TYPE_ACHAT_INADAPTE", label: "Le type d'achat ne me convient pas" },
+];
+
 export default function ForwardArticleDetailView() {
   const { state } = useLocation();
-  const article = state?.article;
   const navigate = useNavigate();
+  const article = state?.article;
+
   const [reservationStatus, setReservationStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState(null); // null | "success" | "error"
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleReserver = async () => {
     setIsLoading(true);
@@ -17,7 +28,7 @@ export default function ForwardArticleDetailView() {
       // TODO: remplacer par le vrai appel quand l'endpoint est prêt
       // const response = await fetch(`/api/timeline-events/${article.id}/reserve`, { method: "PATCH" });
       // if (!response.ok) throw new Error("Échec de la réservation");
-      await new Promise((resolve) => setTimeout(resolve, 800)); // simule la latence
+      await new Promise((resolve) => setTimeout(resolve, 800));
       setReservationStatus("success");
       setTimeout(() => {
         navigate(`/lot/${article.lotId}`);
@@ -26,6 +37,26 @@ export default function ForwardArticleDetailView() {
       setReservationStatus("error");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSupprimer = async () => {
+    // const handleSupprimer = async (raison) => {
+    setIsDeleting(true);
+    setDeleteStatus(null);
+    try {
+      // TODO: remplacer par le vrai appel quand l'endpoint est prêt
+      // const response = await fetch(`/api/timeline-events/${article.id}?raison=${raison}`, { method: "DELETE" });
+      // if (!response.ok) throw new Error("Échec de la suppression");
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setDeleteStatus("success");
+      setTimeout(() => {
+        navigate(`/lot/${article.lotId}`);
+      }, 1500);
+    } catch {
+      setDeleteStatus("error");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -77,7 +108,8 @@ export default function ForwardArticleDetailView() {
       </div>
 
       <hr className="border-feedback-border-neutral" />
-      {/* Feedback message */}
+
+      {/* Feedback réservation */}
       {reservationStatus === "success" && (
         <p className="text-center text-feedback-text-success text-base font-semibold">
           Votre article est bien réservé.
@@ -89,11 +121,43 @@ export default function ForwardArticleDetailView() {
         </p>
       )}
 
+      {/* Menu suppression */}
+      {showDeleteMenu && (
+        <div className="flex flex-col gap-2">
+          <p className="text-text-neutral text-base font-semibold">
+            Pourquoi supprimer cet article ?
+          </p>
+          {DELETE_REASONS.map((reason) => (
+            <button
+              key={reason.key}
+              type="button"
+              onClick={() => handleSupprimer(reason.key)}
+              disabled={isDeleting || deleteStatus === "success"}
+              className="h-10 px-3 rounded-lg outline outline-1 outline-feedback-border-neutral text-text-neutral text-base text-left disabled:opacity-50"
+            >
+              {reason.label}
+            </button>
+          ))}
+          {deleteStatus === "success" && (
+            <p className="text-center text-feedback-text-success text-base font-semibold">
+              Article supprimé avec succès.
+            </p>
+          )}
+          {deleteStatus === "error" && (
+            <p className="text-center text-feedback-text-alert text-base font-semibold">
+              La suppression a échoué. Veuillez réessayer.
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Buttons: actions belong to PUE-310 / PUE-311, only displayed here */}
       <div className="flex flex-col gap-2.5 py-4">
         <button
           type="button"
-          className="h-10 rounded-lg outline outline-1 outline-feedback-border-alert text-feedback-background-alert-bold text-base font-semibold"
+          onClick={() => setShowDeleteMenu((prev) => !prev)}
+          disabled={isDeleting || deleteStatus === "success"}
+          className="h-10 rounded-lg outline outline-1 outline-feedback-border-alert text-feedback-background-alert-bold text-base font-semibold disabled:opacity-50"
         >
           Supprimer du lot
         </button>
