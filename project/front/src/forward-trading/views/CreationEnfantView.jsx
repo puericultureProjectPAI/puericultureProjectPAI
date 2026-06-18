@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // <-- Import du hook de redirection
+import { useNavigate } from "react-router-dom";
 import { CreationEnfantForm } from "../components/CreationEnfantForm";
 import { createChild } from "../services/childrenServices";
 
 const CreationEnfantView = () => {
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState(null);
-  const [showSuccess, setShowSuccess] = useState(false); // <-- Nouvel état pour la notification
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const navigate = useNavigate(); // <-- Initialisation du hook
+  const navigate = useNavigate();
 
   const handleFormSubmit = async (values) => {
     setIsError(false);
@@ -16,26 +16,15 @@ const CreationEnfantView = () => {
     setShowSuccess(false);
 
     try {
-      // 1. Formatage de la date
-      const parts = values.date.split("/");
-      let formattedDate = "";
+      // 1. PLUS BESOIN DE FORMATAGE !
+      // Puisqu'on utilise type="date", values.date est DÉJÀ formaté en "YYYY-MM-DD"
+      // C'est exactement le format qu'attend ton DTO Java (LocalDate)
 
-      if (parts.length === 2) {
-        const [month, year] = parts;
-        formattedDate = `${year}-${month}-01`;
-      } else if (parts.length === 3) {
-        const [day, month, year] = parts;
-        formattedDate = `${year}-${month}-${day}`;
-      }
-
-      // 2. Préparation du Payload API
-      // (J'ai utilisé la distinction birthDate/dpa dont on a parlé)
+      // 2. Préparation du Payload API (Option 1 : On envoie toujours 'dpa')
       const payloadForBackend = {
         name: values.prenom,
         gender: values.genre,
-        ...(values.statut === "grossesse"
-          ? { dpa: formattedDate }
-          : { birthDate: formattedDate }),
+        dpa: values.date,
       };
 
       // 3. Appel API
@@ -44,8 +33,7 @@ const CreationEnfantView = () => {
       // 4. Succès : On affiche la bulle verte
       setShowSuccess(true);
 
-      // 5. On crée une pause artificielle de 2 secondes AVANT de rendre la main au formulaire
-      // (Ça permet de garder le bouton "Création en cours..." bloqué pendant qu'on lit le message)
+      // 5. On crée une pause artificielle de 2 secondes avant redirection
       await new Promise((resolve) => {
         setTimeout(() => {
           navigate("/me");
