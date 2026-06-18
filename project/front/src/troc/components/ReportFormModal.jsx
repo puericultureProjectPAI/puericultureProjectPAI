@@ -59,17 +59,23 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
     }
   };
 
+  const fieldClassName =
+    "w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
+
+  const labelClassName =
+    "mb-[7px] block text-[16px] font-extrabold leading-tight text-[#080036]";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-lg bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b p-4">
-          <h2 className="text-lg font-bold text-gray-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 font-figtree">
+      <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-[#E5E7EB] p-5">
+          <h2 className="text-[20px] font-extrabold text-[#080036]">
             Signaler un problème
           </h2>
           <button
             onClick={onClose}
             aria-label="Fermer"
-            className="text-gray-500 hover:text-gray-700 text-xl leading-none"
+            className="text-[#555261] hover:text-[#080036] text-xl leading-none"
           >
             ✕
           </button>
@@ -81,25 +87,23 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
-            <Form className="space-y-4 p-4">
+            <Form className="space-y-4 p-5">
               {submitError && (
-                <div className="rounded border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-700">
+                <div className="rounded-md border border-red-300 bg-red-100 px-4 py-3 text-sm font-medium text-red-700">
                   {submitError}
                 </div>
               )}
 
               <div>
-                <label
-                  htmlFor="type"
-                  className="mb-1 block text-sm font-semibold text-gray-700"
-                >
+                <label htmlFor="type" className={labelClassName}>
                   Type de problème *
                 </label>
+
                 <Field
                   as="select"
                   id="type"
                   name="type"
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                  className={fieldClassName}
                 >
                   <option value="">Sélectionnez un type...</option>
                   {REPORT_TYPES.map((t) => (
@@ -108,40 +112,39 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                     </option>
                   ))}
                 </Field>
+
                 <ErrorMessage
                   name="type"
                   component="p"
-                  className="mt-1 text-xs text-red-600"
+                  className="mt-1 text-[12px] text-red-600"
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="description"
-                  className="mb-1 block text-sm font-semibold text-gray-700"
-                >
+                <label htmlFor="description" className={labelClassName}>
                   Description *
                 </label>
+
                 <Field
                   as="textarea"
                   id="description"
                   name="description"
                   rows={4}
                   placeholder="Décrivez le problème rencontré..."
-                  className="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                  className={`${fieldClassName} min-h-[100px] resize-none`}
                 />
+
                 <ErrorMessage
                   name="description"
                   component="p"
-                  className="mt-1 text-xs text-red-600"
+                  className="mt-1 text-[12px] text-red-600"
                 />
               </div>
 
               <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">
-                  Pièces jointes (optionnel)
-                </p>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-dashed border-gray-400 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50">
+                <p className={labelClassName}>Pièces jointes (optionnel)</p>
+
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-[#858199] px-4 py-3 text-[14px] font-bold text-[#2f2d3c] transition-colors hover:bg-[#f7f7fa]">
                   <input
                     type="file"
                     accept="image/*"
@@ -151,9 +154,11 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                   />
                   {isUploading ? "Envoi en cours..." : "+ Ajouter une image"}
                 </label>
+
                 {uploadError && (
-                  <p className="mt-1 text-xs text-red-600">{uploadError}</p>
+                  <p className="mt-1 text-[12px] text-red-600">{uploadError}</p>
                 )}
+
                 {attachmentUrls.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {attachmentUrls.map((url, i) => (
@@ -161,13 +166,14 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                         <img
                           src={url}
                           alt={`Pièce jointe ${i + 1}`}
-                          className="h-16 w-16 rounded border object-cover"
+                          className="h-16 w-16 rounded-xl border border-[#858199] object-cover"
                         />
+
                         <button
                           type="button"
                           onClick={() => removeAttachment(i)}
                           aria-label={`Supprimer la pièce jointe ${i + 1}`}
-                          className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white"
+                          className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white"
                         >
                           ×
                         </button>
@@ -177,18 +183,19 @@ const ReportFormModal = ({ exchangeId, onClose, onSuccess }) => {
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-4 pt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  className="rounded-xl border border-[#858199] px-5 py-3 text-[14px] font-bold text-[#2f2d3c] transition-colors hover:bg-[#f7f7fa]"
                 >
                   Annuler
                 </button>
+
                 <button
                   type="submit"
                   disabled={isSubmitting || isSubmittingReport || isUploading}
-                  className="rounded bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-gray-400"
+                  className="rounded-xl bg-[#3A51C9] px-5 py-3 text-[14px] font-bold text-white shadow-md transition-all hover:bg-[#3145ad] disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
                   {isSubmitting || isSubmittingReport
                     ? "Envoi..."
