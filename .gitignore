@@ -1,5 +1,7 @@
 node_modules
 .idea
+.vscode
 CLAUDE.md
+CLAUDE.local.md
 .claude/
 skill.md

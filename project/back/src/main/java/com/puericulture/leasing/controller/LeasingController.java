@@ -1,8 +1,13 @@
 package com.puericulture.leasing.controller;
 
+import com.puericulture.leasing.dto.LeasingArticleDetailDto;
+import com.puericulture.leasing.dto.LeasingArticleRequest;
+import com.puericulture.leasing.dto.LeasingPackReservationRequestDto;
+import com.puericulture.leasing.dto.LeasingPackReservationResponseDto;
 import com.puericulture.leasing.dto.LeasingProfileDto;
 import com.puericulture.leasing.dto.LeasingReservationRequestDto;
 import com.puericulture.leasing.dto.LeasingReservationResponseDto;
+import com.puericulture.leasing.service.LeasingArticleService;
 import com.puericulture.leasing.service.LeasingBookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class LeasingController {
 
     private final LeasingBookingService leasingBookingService;
+    private final LeasingArticleService leasingArticleService;
 
     @Operation(
             summary = "Reserve a leasing article",
@@ -64,6 +70,43 @@ public class LeasingController {
     }
 
     @Operation(
+            summary = "Reserve an arrival pack",
+            description = "Creates one leasing reservation per selected product in the pack")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Arrival pack reserved successfully",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                LeasingPackReservationResponseDto
+                                                                        .class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Invalid dates or booking overlap",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Child not found or products not found",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(mediaType = "application/json"))
+            })
+    @PostMapping("/reservations/pack")
+    public ResponseEntity<LeasingPackReservationResponseDto> createPackReservation(
+            @Valid @RequestBody LeasingPackReservationRequestDto dto,
+            @AuthenticationPrincipal String authenticatedPersonId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(leasingBookingService.createPackReservation(dto, authenticatedPersonId));
+    }
+
+    @Operation(
             summary = "Get user address for leasing delivery",
             description =
                     "Retrieves the street, zip code, and city of the authenticated customer profile")
@@ -86,5 +129,37 @@ public class LeasingController {
     public ResponseEntity<LeasingProfileDto> getLeasingProfile(
             @AuthenticationPrincipal String authenticatedPersonId) {
         return ResponseEntity.ok(leasingBookingService.getLeasingProfile(authenticatedPersonId));
+    }
+
+    @Operation(
+            summary = "Créer un article leasing",
+            description = "Crée un nouvel article disponible à la location avec ses images.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Article créé avec succès",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                LeasingArticleDetailDto.class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Données invalides",
+                        content = @Content(mediaType = "application/json")),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Non authentifié",
+                        content = @Content(mediaType = "application/json"))
+            })
+    @PostMapping("/articles")
+    public ResponseEntity<LeasingArticleDetailDto> createArticle(
+            @Valid @RequestBody LeasingArticleRequest request,
+            @AuthenticationPrincipal String authenticatedPersonId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(leasingArticleService.createArticle(request, authenticatedPersonId));
     }
 }

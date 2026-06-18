@@ -20,7 +20,7 @@ const getDateInFrance = (daysFromToday = 0) => {
   return date.toISOString().split("T")[0];
 };
 
-const getMinimumRentalStartDateFrance = () => getDateInFrance(3);
+const getMinimumRentalStartDateFrance = () => getDateInFrance(0);
 
 const getDateInOneMonthFrance = (startDate) => {
   const date = new Date(
@@ -219,6 +219,22 @@ async function requestSafetyAnalysis(articleTitle, childAge) {
   return await apiClient.post("/leasing/security-check", payload);
 }
 
+const calcDays = (start, end) => {
+  if (!start || !end) return 0;
+  const s = new Date(start);
+  const e = new Date(end);
+  if (s > e) return 0;
+  return Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+};
+
+const calcPrice = (start, end, pricePerDay, pricePerMonth) => {
+  const days = calcDays(start, end);
+  if (days === 0) return 0;
+  const months = Math.floor(days / 30);
+  const remainingDays = days % 30;
+  return months * Number(pricePerMonth) + remainingDays * Number(pricePerDay);
+};
+
 export default function LeasingProductDetailView() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -230,6 +246,20 @@ export default function LeasingProductDetailView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImage, setCurrentImage] = useState(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+
+  const openImageModal = (index) => {
+    setModalImageIndex(index);
+    setIsImageModalOpen(true);
+  };
+
+  const closeImageModal = () => setIsImageModalOpen(false);
+
+  const goModalPrev = (total) =>
+    setModalImageIndex((i) => (i - 1 + total) % total);
+
+  const goModalNext = (total) => setModalImageIndex((i) => (i + 1) % total);
 
   const {
     data: person,
@@ -444,9 +474,15 @@ export default function LeasingProductDetailView() {
       ? product.imageUrls
       : [fallbackImage(product.postTitle)];
 
+  const totalPrice = calcPrice(
+    initialStartDate,
+    initialEndDate,
+    product.pricePerDay,
+    product.pricePerMonth,
+  );
   const priceDisplay =
-    product.pricePerMonth != null
-      ? Number(product.pricePerMonth).toLocaleString("fr-FR", {
+    totalPrice > 0
+      ? totalPrice.toLocaleString("fr-FR", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }) + " €"
@@ -496,14 +532,21 @@ export default function LeasingProductDetailView() {
       <main className="flex-1 overflow-y-auto">
         {/* Image carousel — full width on mobile, fixed height on desktop */}
         <section>
-          <img
-            src={images[currentImage]}
-            alt={product.postTitle}
-            className="h-[200px] md:h-[280px] w-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = fallbackImage(product.postTitle);
-            }}
-          />
+          <button
+            type="button"
+            className="w-full cursor-pointer"
+            onClick={() => openImageModal(currentImage)}
+            aria-label="Agrandir l'image"
+          >
+            <img
+              src={images[currentImage]}
+              alt={product.postTitle}
+              className="h-[200px] md:h-[280px] w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = fallbackImage(product.postTitle);
+              }}
+            />
+          </button>
           {images.length > 1 && (
             <div className="flex justify-center gap-[4px] pt-[8px]">
               {images.map((_, i) => (
@@ -597,6 +640,78 @@ export default function LeasingProductDetailView() {
           <LeasingReviewsSection leasingId={id} />
         </section>
       </main>
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#040037]/60 backdrop-blur-xs font-['Figtree',sans-serif]"
+          onClick={closeImageModal}
+        >
+          <div
+            className="relative flex w-full max-w-[600px] flex-col items-center px-[16px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={closeImageModal}
+              className="absolute -top-[40px] right-[16px] text-white hover:opacity-80 transition"
+              aria-label="Fermer"
+            >
+              <span className="material-symbols-rounded text-[28px]">
+                close
+              </span>
+            </button>
+
+            <div className="relative w-full">
+              <img
+                src={images[modalImageIndex]}
+                alt={product.postTitle}
+                className="max-h-[80vh] w-full rounded-[8px] object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = fallbackImage(product.postTitle);
+                }}
+              />
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => goModalPrev(images.length)}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 p-[8px] text-white hover:opacity-80 transition"
+                    aria-label="Image précédente"
+                  >
+                    <span className="material-symbols-rounded text-[36px]">
+                      chevron_left
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => goModalNext(images.length)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-[8px] text-white hover:opacity-80 transition"
+                    aria-label="Image suivante"
+                  >
+                    <span className="material-symbols-rounded text-[36px]">
+                      chevron_right
+                    </span>
+                  </button>
+                </>
+              )}
+            </div>
+
+            {images.length > 1 && (
+              <div className="mt-[12px] flex gap-[6px]">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setModalImageIndex(i)}
+                    className={`h-[6px] w-[6px] rounded-full transition-colors ${
+                      i === modalImageIndex ? "bg-white" : "bg-white/40"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <NavBar />
 
       {isSafetyModalOpen && (

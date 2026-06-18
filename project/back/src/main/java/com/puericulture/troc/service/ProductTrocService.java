@@ -4,6 +4,8 @@ import com.puericulture.common.entity.Person;
 import com.puericulture.common.entity.ProductCategory;
 import com.puericulture.common.entity.ProductImage;
 import com.puericulture.common.repository.PersonRepository;
+import com.puericulture.config.errormanager.exception.NotFoundException;
+import com.puericulture.troc.dto.ProductTrocDetailDto;
 import com.puericulture.troc.dto.ProductTrocDto;
 import com.puericulture.troc.dto.TrocRequest;
 import com.puericulture.troc.entity.ProductTroc;
@@ -50,10 +52,7 @@ public class ProductTrocService {
         Person author =
                 personRepository
                         .findById(authorId)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Authenticated person not found"));
+                        .orElseThrow(() -> new NotFoundException("Authenticated person not found"));
 
         ProductTroc troc = new ProductTroc();
         troc.setPostTitle(request.getTitle());
@@ -63,7 +62,9 @@ public class ProductTrocService {
         troc.setCategory(ProductCategory.fromLabel(request.getCategory()));
         troc.setAuthor(author);
         troc.setEstimatedPrice(request.getEstimatedPrice());
+        troc.setCondition(request.getCondition());
 
+        troc.setBrand(request.getBrand());
         troc.setDimensions(request.getDimensions());
         troc.setMaxWeightKg(request.getMaxWeightKg());
         troc.setMinAgeMonths(request.getMinAgeMonths());
@@ -83,5 +84,42 @@ public class ProductTrocService {
 
         ProductTroc createdTroc = trocRepository.save(troc);
         return trocMapper.toDto(createdTroc);
+    }
+
+    @Transactional(readOnly = true)
+    public ProductTrocDetailDto getTrocDetail(Long id) {
+        ProductTroc troc =
+                trocRepository
+                        .findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Troc not found"));
+
+        ProductTrocDto baseDto = trocMapper.toDto(troc);
+
+        ProductTrocDetailDto dto = new ProductTrocDetailDto();
+
+        org.springframework.beans.BeanUtils.copyProperties(baseDto, dto);
+
+        // Map image URLs from attached images on Product
+        var images = troc.getImages();
+        if (images != null && !images.isEmpty()) {
+            java.util.List<String> urls = new java.util.ArrayList<>();
+            images.forEach(img -> urls.add(img.getImageUrl()));
+            dto.setImageUrls(urls);
+        }
+
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<ProductTrocDto> findMyAvailableProducts(UUID authorId) {
+        java.util.List<ProductTroc> trocs =
+                trocRepository.findByAuthorIdAndStatus(authorId, ProductTrocStatus.AVAILABLE);
+
+        java.util.List<ProductTrocDto> dtos = new java.util.ArrayList<>();
+        for (ProductTroc troc : trocs) {
+            dtos.add(trocMapper.toDto(troc));
+        }
+
+        return dtos;
     }
 }

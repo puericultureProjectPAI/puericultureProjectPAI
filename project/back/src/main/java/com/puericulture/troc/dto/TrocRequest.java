@@ -37,10 +37,11 @@ public class TrocRequest {
     @Schema(description = "City where the product is located.", example = "Lille")
     private String city;
 
+    @NotBlank
     @Schema(
             description =
                     "Product category identifier. It is not the business type; Troc is represented by the product_troc specialization.",
-            example = "3")
+            example = "Jeux et jouets")
     private String category;
 
     @Schema(description = "Dimensions of the product.", example = "50x30 cm")
@@ -55,7 +56,13 @@ public class TrocRequest {
     @Schema(description = "Maximum age of the product in months.", example = "12")
     private Integer maxAgeMonths;
 
-    @Schema(description = "Condition of the product.", example = "Neuf")
+    @Schema(description = "Brand of the product.", example = "Chicco")
+    private String brand;
+
+    @Schema(
+            description = "Condition of the product.",
+            example = "Neuf",
+            allowableValues = {"Neuf", "Très bon état", "Bon état", "État correct", "Usé"})
     private String condition;
 
     @Schema(

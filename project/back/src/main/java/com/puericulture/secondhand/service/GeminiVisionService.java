@@ -2,6 +2,8 @@ package com.puericulture.secondhand.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.puericulture.config.errormanager.exception.BadRequestException;
+import com.puericulture.config.errormanager.exception.InternalServerError;
 import com.puericulture.secondhand.dto.ProductAnalysisResponse;
 import java.io.IOException;
 import java.util.*;
@@ -12,14 +14,13 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class GeminiVisionService {
 
-    @Value("${OPENAI_API_KEY}")
+    @Value("${GEMINI_API_KEY}")
     private String apiKey;
 
     private final String apiUrl =
@@ -41,6 +42,9 @@ public class GeminiVisionService {
                     "Santé et grossesse",
                     "Autres articles pour bébé et enfant");
 
+    private static final List<String> ALLOWED_CONDITIONS =
+            List.of("Neuf", "Très bon état", "Bon état", "État correct", "Usé");
+
     public ProductAnalysisResponse analyzeImages(List<MultipartFile> images) {
         try {
             Map<String, Object> requestBody = buildGeminiPayload(images);
@@ -54,16 +58,30 @@ public class GeminiVisionService {
                     restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
             if (response.getStatusCode() != HttpStatus.OK) {
-                throw new ResponseStatusException(
-                        HttpStatus.SERVICE_UNAVAILABLE, "Gemini API Error");
+                // Technical error: upstream AI provider is down → 500, not a client error.
+                throw new InternalServerError("Gemini API unavailable");
             }
 
-            return parseAndValidateResponse(response.getBody());
+            ProductAnalysisResponse result = parseAndValidateResponse(response.getBody());
 
+            // If the AI is not confident that the image represents a puériculture item,
+            // return a business error so the frontend can inform the user and allow manual input.
+            if (!result.isMultipleItemsDetected()
+                    && (result.getConfidenceScore() == null
+                            || result.getConfidenceScore() < 30.0)) {
+                throw new BadRequestException(
+                        "L'image ne semble pas être un article de puériculture. Veuillez remplir les champs manuellement.");
+            }
+
+            return result;
+
+        } catch (BadRequestException | InternalServerError e) {
+            // Business (400) or technical (500) error already mapped — propagate as-is
+            throw e;
         } catch (Exception e) {
+            // Any other failure (timeout, parsing, I/O…) is technical → 500.
             log.error("Error during AI analysis: {}", e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE, "AI Service currently unavailable", e);
+            throw new InternalServerError("AI Service currently unavailable");
         }
     }
 
@@ -75,12 +93,15 @@ public class GeminiVisionService {
                 "Analyze the provided image(s). "
                         + "IMPORTANT: The title and description must be in FRENCH. "
                         + "The category must be exactly one of the allowed categories, written exactly as provided. "
+                        + "The condition must be exactly one of the allowed conditions, written exactly as provided. "
                         + "Return ONLY a valid JSON object. "
                         + "Categories allowed: "
                         + ALLOWED_CATEGORIES
                         + ". "
+                        + "Conditions allowed: [\"Neuf\", \"Très bon état\", \"Bon état\", \"État correct\", \"Usé\"]. "
                         + "Confidence score must be between 0 and 100. "
-                        + "Format: {\"title\": \"string\", \"description\": \"string\", \"category\": \"string\", \"confidenceScore\": number}. "
+                        + "If the image contains multiple distinct items or is of insufficient quality, set multipleItemsDetected to true and condition to null. "
+                        + "Format: {\"title\": \"string\", \"description\": \"string\", \"category\": \"string\", \"confidenceScore\": number, \"condition\": \"string or null\", \"multipleItemsDetected\": boolean}. "
                         + "Do not include markdown markers like ```json.";
 
         log.debug("Prompt envoyé : {}", prompt);
@@ -148,6 +169,9 @@ public class GeminiVisionService {
         }
         if (result.getConfidenceScore() < 0 || result.getConfidenceScore() > 100) {
             result.setConfidenceScore(0.0);
+        }
+        if (result.getCondition() != null && !ALLOWED_CONDITIONS.contains(result.getCondition())) {
+            result.setCondition(null);
         }
 
         return result;

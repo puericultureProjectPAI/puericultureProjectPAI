@@ -8,8 +8,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom"; // L'injection du contexte de navigation
 import { describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom"; // L'injection du contexte de navigation
 import PublishAnnouncementForm from "../../../src/common/components/form/productCreation/PublishAnnouncementForm.jsx";
 
 const { uploadMock, navigateMock } = vi.hoisted(() => ({
@@ -109,13 +109,12 @@ describe("PublishAnnouncementForm", () => {
       condition: "Très bon état",
       price: 0,
       brand: "",
-      dailyPrice: 0,
+      pricePerDay: 0,
+      pricePerMonth: 0,
       dimensions: "",
       maxAgeMonths: null,
       minAgeMonths: null,
       maxWeightKg: null,
-      rentalEndDate: "",
-      rentalStartDate: "",
     });
   });
 });
