@@ -36,7 +36,7 @@ export default function RequiredProductInfoStep() {
 
     try {
       const response = await apiClient.post(
-        "second-hand/v1/ai/analyze-products",
+        "/second-hand/v1/ai/analyze-products",
         formData,
       );
 
@@ -54,9 +54,11 @@ export default function RequiredProductInfoStep() {
       if (condition) setFieldValue("condition", condition);
 
       if (score !== undefined) setConfidenceScore(score);
-    } catch {
+    } catch (error) {
+      const backendMsg = error.response?.data?.message;
       setAiError(
-        "L'IA n'a pas pu analyser vos images. Veuillez remplir les champs manuellement.",
+        backendMsg ||
+          "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
       );
     } finally {
       setIsAILoading(false);
