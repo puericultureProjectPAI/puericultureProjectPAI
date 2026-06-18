@@ -41,7 +41,7 @@ export default function RegisterView() {
       }
     } else {
       setStatus("Compte créé avec succès ! Redirection vers l'onboarding...");
-      setTimeout(() => navigate("/onboarding"), 1500);
+      setTimeout(() => navigate("/forward/onboarding"), 1500);
     }
   };
 

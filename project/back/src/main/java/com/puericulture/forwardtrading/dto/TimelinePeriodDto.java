@@ -28,4 +28,7 @@ public class TimelinePeriodDto {
 
     @Schema(description = "Timeline period product")
     private List<TimelineArticleDto> products;
+
+    @Schema(description = "Period status based on child's age")
+    private String status;
 }

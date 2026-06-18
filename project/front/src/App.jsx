@@ -8,15 +8,24 @@ import ProtectedRoute from "./common/security/ProtectedRoute";
 import ForwardTradingView from "./forward-trading/views/ForwardTradingView";
 import RegisterView from "./common/views/RegisterView";
 import CatalogPage from "./leasing/views/CatalogPage";
-import ProductDetailPage from "./leasing/views/ProductDetailPage";
+import LeasingProductDetailView from "./leasing/views/LeasingProductDetailView";
+import LeasingBookingPage from "./leasing/views/LeasingBookingPage";
+import ArrivalPackPage from "./leasing/views/ArrivalPackPage";
 import PublishAnnouncementView from "./common/views/PublishAnnouncementView.jsx";
-import TrocView from "./troc/views/TrocView";
+import TrocCatalogPage from "./troc/views/TrocCatalogPage";
+import ProductTrocDetailView from "./troc/views/ProductTrocDetailView";
+import MyProductsSelectionView from "./troc/views/MyProductsSelectionView";
+import MessagesListView from "./troc/views/MessagesListView";
+import ChatView from "./troc/views/ChatView";
 import CreationEnfantView from "./forward-trading/views/CreationEnfantView";
+import { FamilyOnboardingView } from "./forward-trading/views/FamilyOnboardingView";
+
 import GlobalCatalogView from "./common/views/GlobalCatalogView";
 // Second-hand
 import SecondHandScan from "./second-hand/views/SecondHandScan";
 import Profile from "./common/views/Profile.jsx";
 import PriceComparisonView from "./second-hand/views/PriceComparisonView.jsx";
+import SecondHandCatalogPage from "./second-hand/views/SecondHandCatalogPage.jsx";
 
 export default function App() {
   useEffect(() => {
@@ -45,18 +54,33 @@ export default function App() {
         <Route path="/login" element={<Connection />} />
         <Route path="/register" element={<RegisterView />} />
 
-        {/* Leasing - public */}
-        <Route path="/leasing/catalog" element={<CatalogPage />} />
-        <Route path="/leasing/products/:id" element={<ProductDetailPage />} />
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Leasing pages avec leur propre layout full-screen */}
+          <Route path="/leasing/catalog" element={<CatalogPage />} />
+          <Route path="/leasing/pack" element={<ArrivalPackPage />} />
+          <Route
+            path="/leasing/products/:id"
+            element={<LeasingProductDetailView />}
+          />
+          <Route
+            path="/forward/onboarding"
+            element={<FamilyOnboardingView />}
+          />
           <Route element={<Layout />}>
             <Route path="/home" element={<GlobalCatalogView />} />
+            <Route
+              path="/leasing/booking/:id"
+              element={<LeasingBookingPage />}
+            />
             <Route path="/me" element={<Profile />} />
             <Route element={<RoleGuard access={() => true} />}>
               {/* Second-hand : scan de code-barres */}
               <Route path="/second-hand/scan" element={<SecondHandScan />} />
+              <Route
+                path="/second-hand/catalog"
+                element={<SecondHandCatalogPage />}
+              />
               <Route
                 path="/second-hand/compare/:ean"
                 element={<PriceComparisonView />}
@@ -73,7 +97,17 @@ export default function App() {
                 path="/product/create"
                 element={<PublishAnnouncementView />}
               />
-              <Route path="/troc" element={<TrocView />} />
+              <Route path="/troc/catalog" element={<TrocCatalogPage />} />
+              <Route
+                path="/troc/products/:id"
+                element={<ProductTrocDetailView />}
+              />
+              <Route
+                path="/troc/select-my-product/:receiverId"
+                element={<MyProductsSelectionView />}
+              />
+              <Route path="/troc/messages" element={<MessagesListView />} />
+              <Route path="/troc/chat/:exchangeId" element={<ChatView />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/home" replace />} />

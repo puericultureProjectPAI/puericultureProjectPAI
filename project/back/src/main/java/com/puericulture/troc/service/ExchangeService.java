@@ -8,10 +8,12 @@ import com.puericulture.troc.dto.ExchangeResponse;
 import com.puericulture.troc.dto.ProductExchangeStatusResponse;
 import com.puericulture.troc.entity.Exchange;
 import com.puericulture.troc.entity.ExchangeStatus;
+import com.puericulture.troc.entity.Message;
 import com.puericulture.troc.entity.ProductTroc;
 import com.puericulture.troc.entity.ProductTrocStatus;
 import com.puericulture.troc.mapper.ExchangeMapper;
 import com.puericulture.troc.repository.ExchangeRepository;
+import com.puericulture.troc.repository.MessageRepository;
 import com.puericulture.troc.repository.ProductTrocRepository;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
     private final ProductTrocRepository productTrocRepository;
     private final ExchangeMapper exchangeMapper;
+    private final MessageRepository messageRepository;
 
     // private static final UUID MOCK_USER_ID =
     //         UUID.fromString("10814ed3-a02b-4b69-9d64-aa96ed92bceb");
@@ -32,11 +35,21 @@ public class ExchangeService {
     public ExchangeService(
             ExchangeRepository exchangeRepository,
             ProductTrocRepository productTrocRepository,
-            ExchangeMapper exchangeMapper) {
+            ExchangeMapper exchangeMapper,
+            MessageRepository messageRepository) {
 
         this.exchangeRepository = exchangeRepository;
         this.productTrocRepository = productTrocRepository;
         this.exchangeMapper = exchangeMapper;
+        this.messageRepository = messageRepository;
+    }
+
+    private void saveSystemMessage(Exchange exchange, String content) {
+        Message msg = new Message();
+        msg.setSender(exchange.getReceiverProduct().getAuthor());
+        msg.setExchange(exchange);
+        msg.setContent(content);
+        messageRepository.save(msg);
     }
 
     public ExchangeResponse createExchange(
@@ -171,6 +184,7 @@ public class ExchangeService {
         productTrocRepository.save(exchange.getReceiverProduct());
 
         exchangeRepository.save(exchange);
+        saveSystemMessage(exchange, "✓ Échange accepté");
     }
 
     /**
@@ -215,6 +229,7 @@ public class ExchangeService {
         productTrocRepository.save(exchange.getReceiverProduct());
 
         exchangeRepository.save(exchange);
+        saveSystemMessage(exchange, "✓ Échange terminé");
     }
 
     public void refuseExchange(
@@ -251,6 +266,7 @@ public class ExchangeService {
         }
 
         exchangeRepository.save(exchange);
+        saveSystemMessage(exchange, "✗ Échange refusé");
     }
 
     public List<ExchangeResponse> getExchangesProposedToConnectedUserForProduct(

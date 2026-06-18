@@ -1,16 +1,14 @@
 import { Form, Formik } from "formik";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import ModeSelectionStep from "./ModeSelectionStep.jsx";
-import OptionalProductInfoStep from "./OptionalProductInfoStep.jsx";
 import PublicationFormActions from "./PublicationFormActions.jsx";
 import PublicationMobileShell from "./PublicationMobileShell.jsx";
 import RequiredProductInfoStep from "./RequiredProductInfoStep.jsx";
-import TrocSpecificStep from "./TrocSpecificStep.jsx";
-import SecondHandSpecificStep from "../../../../second-hand/components/SecondHandSpecificStep.jsx";
 
 const initialValues = {
-  mode: "TROC",
+  mode: "SECOND_HAND",
   images: [],
   title: "",
   description: "",
@@ -20,39 +18,77 @@ const initialValues = {
   brand: "",
   model: "",
   dimensions: "",
+  ageRange: "",
+  maxWeightKg: "",
+  lengthCm: "",
+  widthCm: "",
   radius: "",
   wantedArticle: "",
   estimatedPrice: "",
   price: "",
+  pricePerDay: "",
+  pricePerMonth: "",
 };
+
+const priceSchema = Yup.number()
+  .transform((value, originalValue) =>
+    originalValue === "" || originalValue === null ? undefined : value,
+  )
+  .typeError("Le prix doit être un nombre")
+  .min(0, "Le prix doit être positif");
 
 const validationSchemas = {
   1: Yup.object({
-    mode: Yup.string().oneOf(["TROC", "SECOND_HAND"]).required(),
+    mode: Yup.string().oneOf(["TROC", "SECOND_HAND", "LOCATION"]).required(),
   }),
   2: Yup.object({
-    images: Yup.array().min(1, "Au moins une image est obligatoire"),
+    images: Yup.array().min(1, "Une image est obligatoire"),
     title: Yup.string().required("Le nom de l'article est obligatoire"),
     description: Yup.string().required("La description est obligatoire"),
     category: Yup.string().required("La catégorie est obligatoire"),
-    city: Yup.string().required("La ville est obligatoire"),
+    condition: Yup.string().required("L’état est obligatoire"),
+
+    city: Yup.string().when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("La ville est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    pricePerDay: priceSchema.when("mode", {
+      is: "LOCATION",
+      then: (schema) => schema.required("Le prix par jour est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    estimatedPrice: priceSchema.when("mode", {
+      is: "TROC",
+      then: (schema) => schema.required("Le prix estimé est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    price: priceSchema.when("mode", {
+      is: "SECOND_HAND",
+      then: (schema) => schema.required("Le prix est obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   }),
-  3: Yup.object({}),
-  4: Yup.object({
-    estimatedPrice: Yup.number()
-      .typeError("Le prix estimé doit être un nombre")
-      .min(0, "Le prix estimé doit être positif")
-      .when("mode", {
-        is: "TROC",
-        then: (schema) => schema.required("Le prix estimé est obligatoire"),
-        otherwise: (schema) => schema.optional(),
-      }),
-  }),
-  5: Yup.object({}),
+};
+
+const REDIRECTION_ROUTES = {
+  SECOND_HAND: "/second-hand/catalog",
+  TROC: "/troc/catalog",
+  LOCATION: "/leasing/catalog",
 };
 
 export default function PublishAnnouncementForm({ error, onSubmit, success }) {
   const [step, setStep] = useState(1);
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    if (step > 1) {
+      setStep(step - 1);
+      return;
+    }
+
+    window.history.back();
+  };
 
   return (
     <Formik
@@ -62,36 +98,57 @@ export default function PublishAnnouncementForm({ error, onSubmit, success }) {
         const payload = {
           title: values.title,
           description: values.description,
-          estimatedPrice: Number(values.estimatedPrice),
+          estimatedPrice: Number(values.estimatedPrice || 0),
           images: values.images,
           price: values.price ? Number(values.price) : 0,
           city: values.city,
           category: values.category,
           condition: values.condition,
+          brand: values.brand,
+          minAgeMonths: values.ageRange
+            ? parseInt(values.ageRange.split("-")[0])
+            : null,
+          maxAgeMonths:
+            values.ageRange && values.ageRange.includes("-")
+              ? parseInt(values.ageRange.split("-")[1])
+              : null,
+          maxWeightKg: values.maxWeightKg
+            ? parseInt(
+                values.maxWeightKg.includes("-")
+                  ? values.maxWeightKg.split("-")[1]
+                  : values.maxWeightKg,
+              )
+            : null,
+          dimensions:
+            (values.lengthCm ? values.lengthCm : "") +
+            (values.lengthCm && values.widthCm ? "x" : "") +
+            (values.widthCm ? values.widthCm : "") +
+            (values.lengthCm || values.widthCm ? "cm" : ""),
+          pricePerDay: values.pricePerDay ? Number(values.pricePerDay) : 0,
+          pricePerMonth: values.pricePerMonth
+            ? Number(values.pricePerMonth)
+            : 0,
         };
 
         const isCreated = await onSubmit(values.mode, payload);
         if (isCreated) {
           helpers.resetForm();
-          setStep(1);
+          const targetRoute = REDIRECTION_ROUTES[values.mode] || "/";
+          navigate(targetRoute, { replace: true });
         }
         helpers.setSubmitting(false);
       }}
     >
-      {({ isSubmitting, setFieldValue, setTouched, validateForm, values }) => (
+      {({ isSubmitting, setTouched, validateForm, values }) => (
         <PublicationMobileShell
           currentStep={step}
           error={error}
+          onBack={goBack}
           success={success}
         >
           <Form>
-            {step === 1 && <ModeSelectionStep setFieldValue={setFieldValue} />}
+            {step === 1 && <ModeSelectionStep />}
             {step === 2 && <RequiredProductInfoStep />}
-            {step === 3 && <OptionalProductInfoStep />}
-            {step === 4 && values.mode === "TROC" && <TrocSpecificStep />}
-            {step === 4 && values.mode === "SECOND_HAND" && (
-              <SecondHandSpecificStep />
-            )}
             <PublicationFormActions
               isSubmitting={isSubmitting}
               setStep={setStep}

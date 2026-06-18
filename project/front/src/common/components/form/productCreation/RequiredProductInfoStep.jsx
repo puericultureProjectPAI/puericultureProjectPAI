@@ -1,9 +1,21 @@
 import { Field, useFormikContext } from "formik";
-import { PRODUCT_CATEGORIES } from "../../../../troc/constants/publicationOptions.js";
-import MyImageInput from "../MyImageInput.jsx";
+import {
+  AGE_RANGE_OPTIONS,
+  CITY_OPTIONS,
+  CONDITION_OPTIONS,
+  PRODUCT_CATEGORIES,
+  WEIGHT_OPTIONS,
+} from "../../../../troc/constants/publicationOptions.js";
 import FieldError from "../FieldError.jsx";
-import { useState } from "react";
+import MyImageInput from "../MyImageInput.jsx";
 import { apiClient } from "../../../utils/apiClient.jsx";
+import { useEffect, useState } from "react";
+
+const fieldClassName =
+  "w-full rounded-md border border-[#858199] bg-white px-3 py-[9px] text-[14px] font-medium text-[#2f2d3c] outline-none placeholder:text-[#555261] focus:border-[#080036]";
+
+const labelClassName =
+  "mb-[7px] block text-[16px] font-extrabold leading-tight text-[#080036]";
 
 export default function RequiredProductInfoStep() {
   const { values, setFieldValue } = useFormikContext();
@@ -20,23 +32,33 @@ export default function RequiredProductInfoStep() {
 
     setIsAILoading(true);
     setAiError(null);
+    setConfidenceScore(null);
 
     try {
       const response = await apiClient.post(
-        "second-hand/v1/ai/analyze-products",
+        "/second-hand/v1/ai/analyze-products",
         formData,
       );
 
-      const { title, description, category, confidenceScore } = response.data;
+      const {
+        title,
+        description,
+        category,
+        condition,
+        confidenceScore: score,
+      } = response.data;
 
       if (title) setFieldValue("title", title);
       if (description) setFieldValue("description", description);
       if (category) setFieldValue("category", category);
-      if (confidenceScore !== undefined) setConfidenceScore(confidenceScore);
+      if (condition) setFieldValue("condition", condition);
+
+      if (score !== undefined) setConfidenceScore(score);
     } catch (error) {
-      console.error("Erreur IA Gemini", error);
+      const backendMsg = error.response?.data?.message;
       setAiError(
-        "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
+        backendMsg ||
+          "L'IA n'a pas pu analyser votre image. Veuillez remplir les champs manuellement.",
       );
     } finally {
       setIsAILoading(false);
@@ -44,50 +66,48 @@ export default function RequiredProductInfoStep() {
   };
 
   const getBadgeStyle = (score) => {
-    if (score >= 80) return "bg-green-100 text-green-700 border-green-300";
-    if (score >= 50) return "bg-orange-100 text-orange-700 border-orange-300";
-    return "bg-red-100 text-red-700 border-red-300";
+    if (score >= 70) return "border-green-300 bg-green-100 text-green-700";
+    if (score >= 35) return "border-orange-300 bg-orange-100 text-orange-700";
+    return "border-red-300 bg-red-100 text-red-700";
   };
 
   const getBadgeEmoji = (score) => {
-    if (score >= 80) return "🟢";
-    if (score >= 50) return "🟠";
+    if (score >= 70) return "🟢";
+    if (score >= 35) return "🟠";
     return "🔴";
   };
 
   return (
-    <div>
+    <div className="font-figtree">
+      <div className="mb-[7px] self-stretch">
+        <p className="text-center font-normal text-[15px] text-[#3A51C9]">
+          Max 5 photos JPG ou PNG
+        </p>
+      </div>
       <MyImageInput
         name="images"
         maxImages={5}
         onChange={(event) => {
           const file = event.target.files?.[0];
-          if (file) {
-            setSelectedFile(file);
-          }
+          if (file) setSelectedFile(file);
         }}
       />
 
-      {/* BOUTON IA uniquement pour la seconde main */}
-      {selectedFile && values.mode === "SECOND_HAND" && (
-        <button
-          type="button"
-          onClick={handleAIRequest}
-          disabled={isAILoading}
-          className="mt-4 mb-4 w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50"
-        >
-          {isAILoading ? "Génération en cours... ⏳" : "💡 Générer avec l'IA"}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={handleAIRequest}
+        disabled={!selectedFile || isAILoading}
+        className={`mb-2 mt-4 w-full flex items-center justify-center rounded-xl px-4 py-3 text-sm font-bold text-white shadow-md transition-all ${
+          !selectedFile || isAILoading
+            ? "cursor-not-allowed bg-gray-300"
+            : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+        }`}
+      >
+        {isAILoading
+          ? "Génération en cours... ⏳"
+          : "✨ Générer l'annonce avec l'IA"}
+      </button>
 
-      {/* MESSAGE D'ERREUR IA */}
-      {aiError && (
-        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {aiError}
-        </div>
-      )}
-
-      {/* BADGE CONFIANCE */}
       {confidenceScore !== null && (
         <div
           className={`mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold ${getBadgeStyle(confidenceScore)}`}
@@ -97,69 +117,272 @@ export default function RequiredProductInfoStep() {
         </div>
       )}
 
-      <label
-        className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
-        htmlFor="title"
-      >
-        Nom de l'article
+      {aiError && <p className="mb-4 text-xs text-orange-500">{aiError}</p>}
+
+      <label className={`${labelClassName} mt-[15px]`} htmlFor="title">
+        Nom de l'article <span className="text-red-500 ml-1">*</span>
       </label>
       <Field
-        className="mb-1 w-full rounded-md border border-[#b8b6c7] px-3 py-2 text-sm outline-none focus:border-[#080036]"
+        className={fieldClassName}
         id="title"
         name="title"
         placeholder="Ex : Veste en jean bleue"
       />
       <FieldError name="title" />
 
-      <label
-        className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
-        htmlFor="description"
-      >
-        Description
+      <label className={`${labelClassName} mt-[14px]`} htmlFor="description">
+        Description <span className="text-red-500 ml-1">*</span>
       </label>
       <Field
         as="textarea"
-        className="mb-1 min-h-16 w-full rounded-md border border-[#b8b6c7] px-3 py-2 text-sm outline-none focus:border-[#080036]"
+        className={`${fieldClassName} min-h-[66px] resize-none`}
         id="description"
         name="description"
         placeholder="Décrivez l'article..."
       />
       <FieldError name="description" />
 
-      <label
-        className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
-        htmlFor="category"
-      >
-        Catégorie
+      <div className="mt-[18px] grid grid-cols-2 gap-[16px]">
+        <div>
+          <label className={labelClassName} htmlFor="category">
+            Catégorie <span className="text-red-500 ml-1">*</span>
+          </label>
+          <Field
+            as="select"
+            className={fieldClassName}
+            id="category"
+            name="category"
+          >
+            <option value="">Select</option>
+            {PRODUCT_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </Field>
+          <FieldError name="category" />
+        </div>
+
+        <div>
+          <label className={labelClassName} htmlFor="condition">
+            État <span className="text-red-500 ml-1">*</span>
+          </label>
+          <Field
+            as="select"
+            className={fieldClassName}
+            id="condition"
+            name="condition"
+          >
+            <option value="">Select</option>
+            {CONDITION_OPTIONS.map((condition) => (
+              <option key={condition} value={condition}>
+                {condition}
+              </option>
+            ))}
+          </Field>
+          <FieldError name="condition" />
+        </div>
+      </div>
+
+      <label className={`${labelClassName} mt-[16px]`} htmlFor="brand">
+        Marque
       </label>
       <Field
-        as="select"
-        className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-        id="category"
-        name="category"
-      >
+        className={fieldClassName}
+        id="brand"
+        name="brand"
+        placeholder="Ex : KIABI"
+      />
+
+      <div className="mt-[18px] grid grid-cols-2 gap-[16px]">
+        <div>
+          <label className={labelClassName} htmlFor="ageRange">
+            Tranche d'âge
+          </label>
+          <Field
+            as="select"
+            className={fieldClassName}
+            id="ageRange"
+            name="ageRange"
+          >
+            <option value="">Select</option>
+            {AGE_RANGE_OPTIONS.map((ageRange) => (
+              <option key={ageRange.value} value={ageRange.value}>
+                {ageRange.label}
+              </option>
+            ))}
+          </Field>
+        </div>
+
+        <div>
+          <label className={labelClassName} htmlFor="maxWeightKg">
+            Poids max
+          </label>
+          <Field
+            as="select"
+            className={fieldClassName}
+            id="maxWeightKg"
+            name="maxWeightKg"
+          >
+            <option value="">Select</option>
+            {WEIGHT_OPTIONS.map((weight) => (
+              <option key={weight.value} value={weight.value}>
+                {weight.label}
+              </option>
+            ))}
+          </Field>
+        </div>
+      </div>
+
+      <label className={`${labelClassName} mt-[18px]`} htmlFor="lengthCm">
+        Dimensions
+      </label>
+      <div className="grid grid-cols-2 gap-[16px]">
+        <div className="relative">
+          <Field
+            className={`${fieldClassName} pr-[44px]`}
+            id="lengthCm"
+            name="lengthCm"
+            placeholder="Longueur"
+            type="number"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#555261]">
+            cm
+          </span>
+        </div>
+
+        <div className="relative">
+          <Field
+            className={`${fieldClassName} pr-[44px]`}
+            id="widthCm"
+            name="widthCm"
+            placeholder="Largeur"
+            type="number"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#555261]">
+            cm
+          </span>
+        </div>
+      </div>
+
+      <label className={`${labelClassName} mt-[18px]`} htmlFor="city">
+        Ville
+        {values.mode === "LOCATION" && (
+          <span className="text-red-500 ml-1">*</span>
+        )}
+      </label>
+      <Field as="select" className={fieldClassName} id="city" name="city">
         <option value="">Select</option>
-        {PRODUCT_CATEGORIES.map((category) => (
-          <option key={category} value={category}>
-            {category}
+        {CITY_OPTIONS.map((city) => (
+          <option key={city} value={city}>
+            {city}
           </option>
         ))}
       </Field>
-      <FieldError name="category" />
+      {values.mode === "LOCATION" && <FieldError name="city" />}
 
-      <label
-        className="mb-2 mt-4 block text-sm font-extrabold text-[#080036]"
-        htmlFor="city"
-      >
-        Ville
+      <div>
+        <div>
+          {values.mode === "TROC" ? (
+            <TrocCard />
+          ) : values.mode === "LOCATION" ? (
+            <LocationCard />
+          ) : (
+            <SecondHandCard />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PriceInput({ id, name, placeholder = "0,00" }) {
+  return (
+    <div className="flex flex-col gap-1 w-full">
+      <div className={`flex items-center w-full ${fieldClassName}`}>
+        <Field
+          className="flex-1 min-w-0 bg-transparent outline-none"
+          id={id}
+          min="0"
+          name={name}
+          placeholder={placeholder}
+          step="0.01"
+          type="number"
+        />
+        <span className="select-none text-[22px] font-semibold text-[#2f2d3c] ml-2">
+          €
+        </span>
+      </div>
+      <FieldError name={name} />
+    </div>
+  );
+}
+
+function LocationCard() {
+  const { values, setFieldValue } = useFormikContext();
+
+  useEffect(() => {
+    const perDay = Number(values.pricePerDay);
+    if (!isNaN(perDay) && perDay >= 0) {
+      setFieldValue("pricePerMonth", Math.round(perDay * 30));
+    }
+  }, [values.pricePerDay, setFieldValue]);
+
+  return (
+    <div className="pt-2">
+      <div className="grid grid-cols-2 gap-[20px]">
+        <div>
+          <label className={labelClassName} htmlFor="pricePerDay">
+            Prix / jour <span className="text-red-500 ml-1">*</span>
+          </label>
+          <PriceInput id="pricePerDay" name="pricePerDay" placeholder="0" />
+        </div>
+
+        <div>
+          <label className={labelClassName} htmlFor="pricePerMonth">
+            Prix / mois
+          </label>
+          <div className="flex flex-col gap-1 w-full">
+            <div className={`flex items-center w-full ${fieldClassName}`}>
+              <Field
+                className="flex-1 min-w-0 bg-transparent outline-none cursor-not-allowed"
+                disabled
+                id="pricePerMonth"
+                name="pricePerMonth"
+                type="number"
+              />
+              <span className="select-none text-[22px] font-semibold text-[#2f2d3c] ml-2">
+                €
+              </span>
+            </div>
+            <p className="text-[12px] text-[#6b6b8a]">
+              Calculé automatiquement (× 30)
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrocCard() {
+  return (
+    <div className="pt-2">
+      <label className={`${labelClassName} pt-2`} htmlFor="estimatedPrice">
+        Prix estimé <span className="text-red-500 ml-1">*</span>
       </label>
-      <Field
-        className="w-full rounded-md border border-[#b8b6c7] bg-white px-3 py-2 text-sm outline-none focus:border-[#080036]"
-        id="city"
-        name="city"
-        placeholder="Ville"
-      />
-      <FieldError name="city" />
+      <PriceInput id="estimatedPrice" name="estimatedPrice" />
+    </div>
+  );
+}
+
+function SecondHandCard() {
+  return (
+    <div className="pt-2">
+      <label className={`${labelClassName} pt-2`} htmlFor="price">
+        Prix <span className="text-red-500 ml-1">*</span>
+      </label>
+      <PriceInput id="price" name="price" />
     </div>
   );
 }

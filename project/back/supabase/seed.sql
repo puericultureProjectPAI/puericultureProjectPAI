@@ -35,14 +35,103 @@ INSERT INTO auth.users (
     )
 ON CONFLICT (id) DO NOTHING;
 
+-- 1b. Utilisateur auth complet pour tester le pack arrivee
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email,
+    encrypted_password, email_confirmed_at, invited_at,
+    confirmation_token, confirmation_sent_at,
+    recovery_token, recovery_sent_at,
+    email_change_token_new, email_change, email_change_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data, raw_user_meta_data,
+    is_super_admin,
+    created_at, updated_at,
+    phone, phone_confirmed_at,
+    phone_change, phone_change_token, phone_change_sent_at,
+    email_change_token_current, email_change_confirm_status,
+    banned_until, reauthentication_token, reauthentication_sent_at
+) VALUES (
+    '00000000-0000-0000-0000-000000000269',
+    '00000000-0000-0000-0000-000000000000',
+    'authenticated',
+    'authenticated',
+    'pack@test.local',
+    extensions.crypt('Test1234!', extensions.gen_salt('bf')),
+    NOW(),
+    NULL,
+    '',
+    NULL,
+    '',
+    NULL,
+    '',
+    '',
+    NULL,
+    NULL,
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    '{"last_name":"Pack","first_name":"Maria","birth_date":"1992-06-08"}'::jsonb,
+    false,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL,
+    '',
+    '',
+    NULL,
+    '',
+    0,
+    NULL,
+    '',
+    NULL
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 1c. Identite email du compte de test pack arrivee
+INSERT INTO auth.identities (
+    id, user_id, provider_id, identity_data, provider,
+    last_sign_in_at, created_at, updated_at
+) VALUES (
+    '00000000-0000-0000-0000-000000000269',
+    '00000000-0000-0000-0000-000000000269',
+    '00000000-0000-0000-0000-000000000269',
+    '{"sub":"00000000-0000-0000-0000-000000000269","email":"pack@test.local","email_verified":true,"phone_verified":false,"provider_id":"00000000-0000-0000-0000-000000000269"}'::jsonb,
+    'email',
+    NOW(), NOW(), NOW()
+)
+ON CONFLICT (provider_id, provider) DO NOTHING;
+
+-- 1d. Profil complet + enfant pour tester le pack arrivee
+UPDATE public.person
+SET
+    first_name = 'Maria',
+    name = 'Pack',
+    city = 'Paris',
+    street = '1 rue du Pack',
+    genre = 'F',
+    date_of_birth = '1992-06-08'
+WHERE id = '00000000-0000-0000-0000-000000000269';
+
+INSERT INTO public.children (person_id, name, birthdate, gender)
+SELECT
+    '00000000-0000-0000-0000-000000000269',
+    'Lucas',
+    CURRENT_DATE - INTERVAL '10 months',
+    'M'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM public.children
+    WHERE person_id = '00000000-0000-0000-0000-000000000269'
+      AND name = 'Lucas'
+);
+
 -- 2. Produits (6 articles leasing, IDs générés par PostgreSQL)
-INSERT INTO public.products (author_id, post_title, description, category, city, condition) VALUES
-    ('00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',       'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'Poussette', 'Paris',     'Très bon état'),
-    ('00000000-0000-0000-0000-000000000001', 'Siège auto groupe 0+',         'Siège auto homologué ECE R44/04, coque rigide, harnais 5 points.',                    'Siège auto', 'Lyon',     'Bon état'),
-    ('00000000-0000-0000-0000-000000000001', 'Berceau co-dodo',              'Berceau fixable au lit parental, matelas inclus, structure bois.',                     'Couchage',  'Bordeaux',  'Excellent état'),
-    ('00000000-0000-0000-0000-000000000001', 'Transat vibrant Fisher-Price', 'Transat à vibrations douces, arche de jeux amovible, 3 positions.',                   'Transat',   'Paris',     'Bon état'),
-    ('00000000-0000-0000-0000-000000000001', 'Trotteur évolutif',            'Trotteur réglable en hauteur, plateau d''activités, roues antidérapantes.',            'Éveil',     'Marseille', 'État correct'),
-    ('00000000-0000-0000-0000-000000000001', 'Baignoire bébé ergonomique',   'Baignoire avec support antidérapant et thermomètre intégré, 0-24 mois.',              'Bain',      'Nantes',    'Excellent état');
+INSERT INTO public.products (author_id, post_title, description, category, city, condition, brand, dimensions, min_age_months, max_age_months, max_weight_kg) VALUES
+    ('00000000-0000-0000-0000-000000000001', 'Poussette Yoyo légère',       'Poussette pliable idéale pour voyager, cadre aluminium, excellent état.',              'TRANSPORT_BEBE',  'Paris',     'Très bon état',  'Babyzen',      '52x44x18 cm',  0,  48, 22),
+    ('00000000-0000-0000-0000-000000000001', 'Lit parapluie compact',        'Lit parapluie pliable avec matelas inclus, idéal pour les déplacements.',               'SOMMEIL_LITERIE', 'Paris',     'Très bon état',  'Chicco',       '97x65x78 cm',  0,  36, NULL),
+    ('00000000-0000-0000-0000-000000000001', 'Siège auto groupe 0+',         'Siège auto homologué ECE R44/04, coque rigide, harnais 5 points.',                    'TRANSPORT_BEBE',  'Lyon',      'Etat correct',   'Maxi-Cosi',    '64x43x60 cm',  0,  12, 13),
+    ('00000000-0000-0000-0000-000000000001', 'Berceau co-dodo',              'Berceau fixable au lit parental, matelas inclus, structure bois.',                     'SOMMEIL_LITERIE', 'Bordeaux',  'Très bon état',  'Chicco',       '93x43x78 cm',  0,   6, NULL),
+    ('00000000-0000-0000-0000-000000000001', 'Transat vibrant Fisher-Price', 'Transat à vibrations douces, arche de jeux amovible, 3 positions.',                   'AUTRES',          'Paris',     'Etat correct',   'Fisher-Price', '75x53x58 cm',  0,   6, 11),
+    ('00000000-0000-0000-0000-000000000001', 'Trotteur évolutif',            'Trotteur réglable en hauteur, plateau d''activités, roues antidérapantes.',            'JEUX_JOUETS',     'Marseille', 'Usé',            'Chicco',       '68x46x52 cm',  6,  15, 11),
+    ('00000000-0000-0000-0000-000000000001', 'Baignoire bébé ergonomique',   'Baignoire avec support antidérapant et thermomètre intégré, 0-24 mois.',              'BAIN_CHANGE',     'Nantes',    'Très bon état',  'Thermobaby',   '82x46x23 cm',  0,  24, NULL);
 
 -- 3. Entrées leasing (prix en euros entiers, liées par post_title)
 INSERT INTO public.product_leasing (product_id, price_per_day, price_per_month)
@@ -50,6 +139,7 @@ SELECT p.id, pl.price_per_day, pl.price_per_month
 FROM public.products p
 JOIN (VALUES
     ('Poussette Yoyo légère',       5, 90),
+    ('Lit parapluie compact',        3, 55),
     ('Siège auto groupe 0+',         4, 70),
     ('Berceau co-dodo',              3, 55),
     ('Transat vibrant Fisher-Price', 2, 35),
@@ -70,6 +160,7 @@ JOIN (VALUES
 ) AS img(post_title, image_url, image_position) ON p.post_title = img.post_title;
 
 -- 5. Commande active sur "Baignoire bébé ergonomique" → la rend indisponible dans la liste
+-- (order_id = 0 réservé pour cette commande active)
 WITH cp AS (
     INSERT INTO public.client_products (client_id, product_id, order_id)
     SELECT '00000000-0000-0000-0000-000000000002', p.id, 0
@@ -79,3 +170,129 @@ WITH cp AS (
 )
 INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
 SELECT id, '2026-05-01', '2026-05-31' FROM cp;
+
+-- 6. Utilisateurs reviewers (raw_user_meta_data->>'name' est utilisé par le trigger → public.person.name)
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email,
+    encrypted_password, email_confirmed_at,
+    created_at, updated_at,
+    raw_app_meta_data, raw_user_meta_data,
+    is_super_admin
+) VALUES
+    (
+        '00000000-0000-0000-0000-000000000003',
+        '00000000-0000-0000-0000-000000000000',
+        'authenticated', 'authenticated',
+        'reviewer1@test.local',
+        '', NOW(), NOW(), NOW(),
+        '{"provider":"email","providers":["email"]}'::jsonb,
+        '{"name":"Sophie M."}'::jsonb,
+        false
+    ),
+    (
+        '00000000-0000-0000-0000-000000000004',
+        '00000000-0000-0000-0000-000000000000',
+        'authenticated', 'authenticated',
+        'reviewer2@test.local',
+        '', NOW(), NOW(), NOW(),
+        '{"provider":"email","providers":["email"]}'::jsonb,
+        '{"name":"Thomas R."}'::jsonb,
+        false
+    ),
+    (
+        '00000000-0000-0000-0000-000000000005',
+        '00000000-0000-0000-0000-000000000000',
+        'authenticated', 'authenticated',
+        'reviewer3@test.local',
+        '', NOW(), NOW(), NOW(),
+        '{"provider":"email","providers":["email"]}'::jsonb,
+        '{"name":"Marie L."}'::jsonb,
+        false
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- 7. Commandes passées + avis (order_id >= 1 pour ne pas entrer en conflit avec la commande active)
+
+-- 7a. Sophie M. — Poussette Yoyo légère (mars 2026) — 5 étoiles
+WITH cp AS (
+    INSERT INTO public.client_products (client_id, product_id, order_id)
+    SELECT '00000000-0000-0000-0000-000000000003', p.id, 1 FROM public.products p WHERE p.post_title = 'Poussette Yoyo légère'
+    RETURNING id AS cp_id, product_id
+), lo AS (
+    INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
+    SELECT cp.cp_id, '2026-03-01', '2026-03-14' FROM cp
+    RETURNING client_product_id AS order_id
+)
+INSERT INTO public.leasing_reviews (leasing_order_id, leasing_id, rating, comment, review_date)
+SELECT lo.order_id, cp.product_id, 5, 'Super poussette, légère et pliable en quelques secondes. Parfaite pour les voyages !', '2026-03-15 10:00:00+00'
+FROM lo, cp;
+
+-- 7b. Thomas R. — Poussette Yoyo légère (janvier 2026) — 4 étoiles
+WITH cp AS (
+    INSERT INTO public.client_products (client_id, product_id, order_id)
+    SELECT '00000000-0000-0000-0000-000000000004', p.id, 2 FROM public.products p WHERE p.post_title = 'Poussette Yoyo légère'
+    RETURNING id AS cp_id, product_id
+), lo AS (
+    INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
+    SELECT cp.cp_id, '2026-01-05', '2026-01-25' FROM cp
+    RETURNING client_product_id AS order_id
+)
+INSERT INTO public.leasing_reviews (leasing_order_id, leasing_id, rating, comment, review_date)
+SELECT lo.order_id, cp.product_id, 4, 'Très bonne qualité, roues un peu rigides au début mais ça se rôde. Bon rapport qualité/prix.', '2026-01-26 14:30:00+00'
+FROM lo, cp;
+
+-- 7c. Marie L. — Poussette Yoyo légère (février 2026) — 5 étoiles
+WITH cp AS (
+    INSERT INTO public.client_products (client_id, product_id, order_id)
+    SELECT '00000000-0000-0000-0000-000000000005', p.id, 3 FROM public.products p WHERE p.post_title = 'Poussette Yoyo légère'
+    RETURNING id AS cp_id, product_id
+), lo AS (
+    INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
+    SELECT cp.cp_id, '2026-02-10', '2026-02-20' FROM cp
+    RETURNING client_product_id AS order_id
+)
+INSERT INTO public.leasing_reviews (leasing_order_id, leasing_id, rating, comment, review_date)
+SELECT lo.order_id, cp.product_id, 5, 'Impeccable pour un séjour à l''étranger, le pliage est vraiment rapide. Très satisfaite !', '2026-02-21 09:15:00+00'
+FROM lo, cp;
+
+-- 7d. Sophie M. — Siège auto groupe 0+ (décembre 2025) — 4 étoiles
+WITH cp AS (
+    INSERT INTO public.client_products (client_id, product_id, order_id)
+    SELECT '00000000-0000-0000-0000-000000000003', p.id, 4 FROM public.products p WHERE p.post_title = 'Siège auto groupe 0+'
+    RETURNING id AS cp_id, product_id
+), lo AS (
+    INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
+    SELECT cp.cp_id, '2025-12-01', '2025-12-31' FROM cp
+    RETURNING client_product_id AS order_id
+)
+INSERT INTO public.leasing_reviews (leasing_order_id, leasing_id, rating, comment, review_date)
+SELECT lo.order_id, cp.product_id, 4, 'Siège conforme à la description, installation facile. Je recommande.', '2026-01-02 11:00:00+00'
+FROM lo, cp;
+
+-- 7e. Thomas R. — Siège auto groupe 0+ (octobre 2025) — 3 étoiles
+WITH cp AS (
+    INSERT INTO public.client_products (client_id, product_id, order_id)
+    SELECT '00000000-0000-0000-0000-000000000004', p.id, 5 FROM public.products p WHERE p.post_title = 'Siège auto groupe 0+'
+    RETURNING id AS cp_id, product_id
+), lo AS (
+    INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
+    SELECT cp.cp_id, '2025-10-01', '2025-10-28' FROM cp
+    RETURNING client_product_id AS order_id
+)
+INSERT INTO public.leasing_reviews (leasing_order_id, leasing_id, rating, comment, review_date)
+SELECT lo.order_id, cp.product_id, 3, 'Correct mais la sangle d''entrejambe était un peu usée. Service client réactif.', '2025-10-29 16:45:00+00'
+FROM lo, cp;
+
+-- 7f. Marie L. — Trotteur évolutif (avril 2026) — 5 étoiles
+WITH cp AS (
+    INSERT INTO public.client_products (client_id, product_id, order_id)
+    SELECT '00000000-0000-0000-0000-000000000005', p.id, 6 FROM public.products p WHERE p.post_title = 'Trotteur évolutif'
+    RETURNING id AS cp_id, product_id
+), lo AS (
+    INSERT INTO public.leasing_orders (client_product_id, start_date, end_date)
+    SELECT cp.cp_id, '2026-04-01', '2026-04-30' FROM cp
+    RETURNING client_product_id AS order_id
+)
+INSERT INTO public.leasing_reviews (leasing_order_id, leasing_id, rating, comment, review_date)
+SELECT lo.order_id, cp.product_id, 5, 'Mon fils a adoré ! Très stable et les activités sont bien pensées.', '2026-05-01 08:30:00+00'
+FROM lo, cp;
