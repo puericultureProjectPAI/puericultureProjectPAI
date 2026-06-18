@@ -53,14 +53,21 @@ export default function TimelineFrise({ timelineId }) {
         activePeriodId={activePeriodId}
         onSelectPeriod={handleSelectPeriod}
       />
+      {/* TODO(PUE-301): temporary test data to demo the card → fiche flow. Remove once PUE-309 mock is plugged. */}
       <Dropdown
         title="Articles de seconde main"
         articles={[
-          { name: "Body manches longues x5", price: "14,99€", age: "3 mois" },
-          { name: "Body manches longues x5", price: "14,99€", age: "3 mois" },
+          {
+            nom: "Poussette Trio",
+            prix: 750,
+            duree: 36,
+            min_age_utilisation: 0,
+            max_age_utilisation: 36,
+            isValide: true,
+          },
         ]}
         defaultOpen={true}
-      />{" "}
+      />
       <Dropdown title="Articles en location" defaultOpen={true} />
       <Dropdown title="Articles KIABI" defaultOpen={true} />
       {/* CONTENU */}
