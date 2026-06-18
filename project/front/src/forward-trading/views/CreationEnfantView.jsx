@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import CreationEnfantForm from "../components/CreationEnfantForm";
 import { createChild } from "../services/childrenServices";
 
@@ -6,6 +7,7 @@ const CreationEnfantView = () => {
   const [isPending, setIsLoading] = useState(false);
   const [isError] = useState(false);
   const [error] = useState(null);
+  const navigate = useNavigate();
   const handleFormSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
     try {
@@ -34,6 +36,7 @@ const CreationEnfantView = () => {
 
       alert("Enfant ajouté avec succès !");
       resetForm();
+      navigate("/me", { replace: true });
     } catch (err) {
       console.error(err);
     }
