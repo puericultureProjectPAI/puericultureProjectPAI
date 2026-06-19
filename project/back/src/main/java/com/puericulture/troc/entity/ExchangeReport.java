@@ -1,0 +1,66 @@
+package com.puericulture.troc.entity;
+
+import com.puericulture.common.entity.Person;
+import jakarta.persistence.*;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Entity
+@Table(name = "exchange_reports", schema = "public")
+@NoArgsConstructor
+@AllArgsConstructor
+public class ExchangeReport {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "exchange_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_report_exchange"))
+    private Exchange exchange;
+
+    @ManyToOne
+    @JoinColumn(name = "reported_by_id", nullable = false)
+    private Person reportedBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private ReportType type;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ReportStatus status = ReportStatus.OPEN;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "exchange_report_attachment_urls",
+            schema = "public",
+            joinColumns = @JoinColumn(name = "exchange_report_id", nullable = false))
+    @Column(name = "attachment_url", columnDefinition = "TEXT", nullable = false)
+    private Set<String> attachmentUrls = new HashSet<>();
+
+    @Column(name = "moderation_comment", columnDefinition = "TEXT")
+    private String moderationComment;
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt = OffsetDateTime.now();
+
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt = OffsetDateTime.now();
+
+    @PreUpdate
+    void onUpdate() {
+        this.updatedAt = OffsetDateTime.now();
+    }
+}

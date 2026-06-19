@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
 import TimelinePeriod from "./TimelinePeriod";
+import Dropdown from "./dropdownArticle/DropdownArticle";
 import DropdownEnfant from "./DropDownEnfant";
 
 export default function TimelineFrise({ timelineId }) {
@@ -46,14 +47,29 @@ export default function TimelineFrise({ timelineId }) {
         </div>
       </div>
       <DropdownEnfant timelineId={timelineId} />
-
       {/* FRISE */}
       <TimelineNavigator
         periods={periods}
         activePeriodId={activePeriodId}
         onSelectPeriod={handleSelectPeriod}
       />
-
+      {/* TODO(PUE-301): temporary test data to demo the card → fiche flow. Remove once PUE-309 mock is plugged. */}
+      <Dropdown
+        title="Articles de seconde main"
+        articles={[
+          {
+            nom: "Poussette Trio",
+            prix: 750,
+            duree: 36,
+            min_age_utilisation: 0,
+            max_age_utilisation: 36,
+            isValide: true,
+          },
+        ]}
+        defaultOpen={true}
+      />
+      <Dropdown title="Articles en location" defaultOpen={true} />
+      <Dropdown title="Articles KIABI" defaultOpen={true} />
       {/* CONTENU */}
       {activePeriod && <TimelinePeriod period={activePeriod} />}
     </div>
