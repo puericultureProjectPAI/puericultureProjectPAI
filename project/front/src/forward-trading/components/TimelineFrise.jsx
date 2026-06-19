@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
-import TimelinePeriod from "./TimelinePeriod";
 import Dropdown from "./dropdownArticle/DropdownArticle";
 import DropdownEnfant from "./DropDownEnfant";
 
@@ -82,8 +81,6 @@ export default function TimelineFrise({ timelineId }) {
       />
       <Dropdown title="Articles en location" defaultOpen={true} />
       <Dropdown title="Articles KIABI" defaultOpen={true} />
-      {/* CONTENU */}
-      {activePeriod && <TimelinePeriod period={activePeriod} />}
     </div>
   );
 }
