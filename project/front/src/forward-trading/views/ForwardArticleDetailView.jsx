@@ -5,7 +5,6 @@ import photoIcon from "../../assets/photo-icon-subtle.svg";
 export default function ForwardArticleDetailView() {
   const { state } = useLocation();
   const article = state?.article;
-
   if (!article || article.isValide === false) {
     return (
       <div className="max-w-md mx-auto p-6 text-center font-figtree">
@@ -18,7 +17,6 @@ export default function ForwardArticleDetailView() {
 
   return (
     <div className="max-w-md mx-auto px-6 py-10 flex flex-col gap-4 font-figtree">
-      {/* Photo (placeholder from mockup) */}
       <div className="h-32 bg-feedback-background-neutral rounded-lg flex flex-col justify-center items-center gap-2.5">
         <img src={photoIcon} alt="" className="size-12" />
         <span className="text-feedback-text-subtle text-xl font-bold">
@@ -26,7 +24,6 @@ export default function ForwardArticleDetailView() {
         </span>
       </div>
 
-      {/* Forward Trading badge */}
       <div className="flex justify-end">
         <span className="px-3 py-2 rounded-xl outline outline-1 outline-feedback-border-brand text-feedback-text-brand text-base">
           Forward Trading
@@ -55,7 +52,6 @@ export default function ForwardArticleDetailView() {
 
       <hr className="border-feedback-border-neutral" />
 
-      {/* Buttons: actions belong to PUE-310 / PUE-311, only displayed here */}
       <div className="flex flex-col gap-2.5 py-4">
         <button
           type="button"

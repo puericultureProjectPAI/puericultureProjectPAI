@@ -16,6 +16,14 @@ export default function TimelineFrise({ timelineId }) {
     setActivePeriodId(periodId);
   };
 
+  const forwardTradingArticles = (
+    activePeriod?.forwardTradingArticles ?? []
+  ).map((a) => ({
+    name: a.nom,
+    price: `${a.prix}€`,
+    ...a,
+  }));
+  console.log("article", activePeriod?.forwardTradingArticles);
   if (isLoading) {
     return (
       <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10 flex items-center justify-center">
@@ -53,7 +61,12 @@ export default function TimelineFrise({ timelineId }) {
         activePeriodId={activePeriodId}
         onSelectPeriod={handleSelectPeriod}
       />
-      {/* TODO(PUE-301): temporary test data to demo the card → fiche flow. Remove once PUE-309 mock is plugged. */}
+
+      <Dropdown
+        title="Articles Forward Trading"
+        articles={forwardTradingArticles}
+        defaultOpen={true}
+      />
       <Dropdown
         title="Articles de seconde main"
         articles={[

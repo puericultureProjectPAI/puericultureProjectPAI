@@ -1,0 +1,649 @@
+[
+  {
+    "nom": "Poussette Trio Tout-Terrain (Châssis + Nacelle + Cosy)",
+    "prix": 320,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Lit Cododo Bedside Réglable en Bois",
+    "prix": 140,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Siège Auto Cosy Groupe 0+ Isofix",
+    "prix": 90,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Table à Langer avec Baignoire Intégrée",
+    "prix": 70,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Transat Vibrant avec Arche d'Éveil",
+    "prix": 60,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Tire-lait Électrique Double Pompe",
+    "prix": 89,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Berceau Nacelle Textile avec Bascule",
+    "prix": 110,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Baignoire Bébé Ergonomique avec Hamac",
+    "prix": 35,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Écharpe de Portage Stretch Nouveau-né",
+    "prix": 55,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+  {
+    "nom": "Coussin d'Allaitement Multi-positions",
+    "prix": 55,
+    "duree": 3,
+    "min_age_utilisation": 0,
+    "max_age_utilisation": 3,
+    "isValide": true
+  },
+
+  {
+    "nom": "Transat Ergonomique Surélevé Multipositions",
+    "prix": 75,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Porte-bébé Physiologique Structuré",
+    "prix": 65,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Balancelle Électrique avec Bluetooth",
+    "prix": 90,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Tapis d'Éveil Sensoriel avec Arche",
+    "prix": 40,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Siège de Bain Ventouse Antidérapant",
+    "prix": 25,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Chauffe-biberon Connecté avec App",
+    "prix": 45,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Aspirateur Nasal Électrique",
+    "prix": 38,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Anneau de Dentition Réfrigérant en Silicone x3",
+    "prix": 18,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Coussin de Positionnement Anti-roulis",
+    "prix": 35,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+  {
+    "nom": "Mouche-bébé Électrique avec Embouts",
+    "prix": 45,
+    "duree": 3,
+    "min_age_utilisation": 3,
+    "max_age_utilisation": 6,
+    "isValide": true
+  },
+
+  {
+    "nom": "Chaise Haute Évolutive 3-en-1",
+    "prix": 95,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Parc d'Éveil Modulable en Bois",
+    "prix": 70,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Trotteur Sécurisé Multiactivités",
+    "prix": 55,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Rehausseur de Chaise Portable",
+    "prix": 35,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Baignoire Évolutive avec Siège Intégré",
+    "prix": 50,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Youpala Trotteur Éveil Électronique",
+    "prix": 65,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Set Couverts Apprentissage Ergonomiques x4",
+    "prix": 24,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Bavoir Silicone Poche Récupératrice x2",
+    "prix": 19,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Mixeur Blender Bébé Vapeur Multifonction",
+    "prix": 79,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+  {
+    "nom": "Filet de Bain Hamac Bébé Pliable",
+    "prix": 28,
+    "duree": 3,
+    "min_age_utilisation": 6,
+    "max_age_utilisation": 9,
+    "isValide": true
+  },
+
+  {
+    "nom": "Siège Auto Pivotant Isofix Groupe 0+/1",
+    "prix": 145,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Barrière de Sécurité Extensible Métal",
+    "prix": 50,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Porteur Bébé Bois Évolutif",
+    "prix": 65,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Sauteur Éveil Porte Multiactivités",
+    "prix": 45,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Tapis de Parc XL Mousse Épaisse 4 cm",
+    "prix": 60,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Tasse Sippy Antifuite Paille Souple 300ml x2",
+    "prix": 22,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Assiette Ventouse Silicone avec Couvercle x2",
+    "prix": 26,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Harnais de Sécurité Anti-fugue Sac à Dos",
+    "prix": 32,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Brosse à Dents Silicone Bébé avec Étui x2",
+    "prix": 16,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+  {
+    "nom": "Protège-coins Meuble Silicone Pack 16",
+    "prix": 14,
+    "duree": 3,
+    "min_age_utilisation": 9,
+    "max_age_utilisation": 12,
+    "isValide": true
+  },
+
+  {
+    "nom": "Poussette Canne Ultra-Compacte Légère",
+    "prix": 85,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Siège Auto Rehausseur Évolutif Groupe 1/2/3",
+    "prix": 110,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Siège Vélo Enfant Avant avec Guidon",
+    "prix": 55,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Lit Bébé Évolutif 60x120 cm avec Barrières",
+    "prix": 130,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Pot Apprentissage Musical avec Écran",
+    "prix": 34,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Réducteur WC Enfant Confort Antidérapant",
+    "prix": 28,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Brosse à Dents Électrique Bébé Sonique",
+    "prix": 32,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Gourde Isotherme Bec Souple 200ml",
+    "prix": 24,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Veilleuse Musicale Nomade Rechargeable",
+    "prix": 38,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+  {
+    "nom": "Tablier Imperméable Repas Manches Longues x2",
+    "prix": 22,
+    "duree": 6,
+    "min_age_utilisation": 12,
+    "max_age_utilisation": 18,
+    "isValide": true
+  },
+
+  {
+    "nom": "Lit Enfant Évolutif 70x140 cm avec Barrières",
+    "prix": 120,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Siège Auto Groupe 2/3 Ceintures Latérales",
+    "prix": 95,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Barrière de Lit Enfant Pliable",
+    "prix": 40,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Réducteur WC avec Marche-pied 2 Marches",
+    "prix": 45,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Humidificateur Chambre Bébé Silencieux",
+    "prix": 55,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Harnais Antichute Lit Enfant Barrière Textile",
+    "prix": 38,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Set Vaisselle Inox Bébé Antidérapant 5 pièces",
+    "prix": 38,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Gourde Isotherme Paille Silicone 300ml",
+    "prix": 26,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Thermomètre de Bain Digital Flottant",
+    "prix": 18,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+  {
+    "nom": "Veilleuse Nomade Projection Étoiles",
+    "prix": 32,
+    "duree": 6,
+    "min_age_utilisation": 18,
+    "max_age_utilisation": 24,
+    "isValide": true
+  },
+
+  {
+    "nom": "Poussette Légère 4 Roues Réversible",
+    "prix": 110,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Siège Auto Isofix Groupe 1 9-18 kg",
+    "prix": 130,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Lit Parapluie avec Matelas Inclus",
+    "prix": 75,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Chaise Haute Bois Réglable 6 Hauteurs",
+    "prix": 85,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Humidificateur Ultrasonique Chambre Enfant",
+    "prix": 60,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Nébuliseur Aérosol Bébé Silencieux",
+    "prix": 75,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Chaise Pot 2-en-1 Réducteur WC Enfant",
+    "prix": 42,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Tapis de Bain Antidérapant Ventouses 70x40 cm",
+    "prix": 24,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Brosse à Dents Électrique Enfant 2 Ans",
+    "prix": 35,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+  {
+    "nom": "Boîte à Pharmacie Bébé Complète 20 pièces",
+    "prix": 48,
+    "duree": 12,
+    "min_age_utilisation": 24,
+    "max_age_utilisation": 36,
+    "isValide": true
+  },
+
+  {
+    "nom": "Siège Auto Rehausseur Groupe 2/3 15-36 kg",
+    "prix": 90,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Lit Enfant Évolutif 90x200 cm Montessori",
+    "prix": 150,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Barrière de Sécurité Escalier Pivotante",
+    "prix": 55,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Nébuliseur Aérosol à Piston Silencieux",
+    "prix": 80,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Humidificateur Vapeur Froide Grande Capacité",
+    "prix": 65,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Brosse à Dents Électrique Enfant 3 Ans",
+    "prix": 38,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Casque Audio Protection Auditive Enfant 85 dB",
+    "prix": 35,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Marche-pied Bois Antidérapant 2 Marches",
+    "prix": 42,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Couette Enfant 90x190 cm Hypoallergénique",
+    "prix": 55,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  },
+  {
+    "nom": "Kit Dentaire Enfant Fluor Brossette et Dentifrice x3",
+    "prix": 18,
+    "duree": 12,
+    "min_age_utilisation": 36,
+    "max_age_utilisation": 48,
+    "isValide": true
+  }
+]
