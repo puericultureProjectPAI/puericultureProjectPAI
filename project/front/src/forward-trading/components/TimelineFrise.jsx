@@ -23,7 +23,6 @@ export default function TimelineFrise({ timelineId }) {
     price: `${a.prix}€`,
     ...a,
   }));
-  console.log("article", activePeriod?.forwardTradingArticles);
   if (isLoading) {
     return (
       <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10 flex items-center justify-center">

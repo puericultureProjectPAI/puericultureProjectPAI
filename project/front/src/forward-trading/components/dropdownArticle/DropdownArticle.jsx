@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useMemo, useState } from "react";
+import { useNavigate, useLocation } from "react-router";
 import DropdownHeader from "./DropdownHeader";
 import DropdownArticleCard from "./DropdownArticleCard";
 
@@ -10,6 +10,17 @@ export default function Dropdown({
 }) {
   const [open, setOpen] = useState(defaultOpen && articles.length > 0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const reservedNoms = useMemo(() => {
+    const stored = sessionStorage.getItem("reservedArticleNoms");
+    return new Set(stored ? JSON.parse(stored) : []);
+  }, [location.key]);
+
+  const deletedNoms = useMemo(() => {
+    const stored = sessionStorage.getItem("deletedArticleNoms");
+    return new Set(stored ? JSON.parse(stored) : []);
+  }, [location.key]);
 
   return (
     <div className="self-stretch flex flex-col">
@@ -26,18 +37,23 @@ export default function Dropdown({
         }`}
       >
         <div className="p-2 flex flex-col gap-2">
-          {articles.map((article, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() =>
-                navigate("/forward/article", { state: { article } })
-              }
-              className="text-left"
-            >
-              <DropdownArticleCard {...article} />
-            </button>
-          ))}
+          {articles
+            .filter((article) => !deletedNoms.has(article.nom))
+            .map((article, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() =>
+                  navigate("/forward/article", { state: { article } })
+                }
+                className="text-left"
+              >
+                <DropdownArticleCard
+                  {...article}
+                  reserved={reservedNoms.has(article.nom)}
+                />
+              </button>
+            ))}
         </div>
       </div>
     </div>
