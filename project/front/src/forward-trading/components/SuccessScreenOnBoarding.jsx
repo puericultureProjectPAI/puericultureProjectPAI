@@ -24,7 +24,7 @@ export const SuccessScreenOnBoarding = ({ onComplete }) => {
           type="button"
           onClick={() => {
             if (onComplete) onComplete();
-            navigate("/me");
+            navigate("/home", { replace: true });
           }}
           className="w-full h-10 p-2 bg-bg-base rounded-lg flex justify-center items-center gap-3 hover:opacity-90 transition-opacity"
         >

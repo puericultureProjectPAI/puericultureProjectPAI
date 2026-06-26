@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTimelineData } from "../hooks/useTimelineData";
 import TimelineNavigator from "./TimelineNavigator";
-import TimelinePeriod from "./TimelinePeriod";
 import Dropdown from "./dropdownArticle/DropdownArticle";
 import DropdownEnfant from "./DropDownEnfant";
 
@@ -16,6 +15,13 @@ export default function TimelineFrise({ timelineId }) {
     setActivePeriodId(periodId);
   };
 
+  const forwardTradingArticles = (
+    activePeriod?.forwardTradingArticles ?? []
+  ).map((a) => ({
+    name: a.nom,
+    price: `${a.prix}€`,
+    ...a,
+  }));
   if (isLoading) {
     return (
       <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-10 flex items-center justify-center">
@@ -53,7 +59,12 @@ export default function TimelineFrise({ timelineId }) {
         activePeriodId={activePeriodId}
         onSelectPeriod={handleSelectPeriod}
       />
-      {/* TODO(PUE-301): temporary test data to demo the card → fiche flow. Remove once PUE-309 mock is plugged. */}
+
+      <Dropdown
+        title="Articles Forward Trading"
+        articles={forwardTradingArticles}
+        defaultOpen={true}
+      />
       <Dropdown
         title="Articles de seconde main"
         articles={[
@@ -70,8 +81,6 @@ export default function TimelineFrise({ timelineId }) {
       />
       <Dropdown title="Articles en location" defaultOpen={true} />
       <Dropdown title="Articles KIABI" defaultOpen={true} />
-      {/* CONTENU */}
-      {activePeriod && <TimelinePeriod period={activePeriod} />}
     </div>
   );
 }

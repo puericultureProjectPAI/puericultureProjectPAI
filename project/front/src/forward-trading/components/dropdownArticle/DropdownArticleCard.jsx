@@ -1,4 +1,12 @@
-export default function DropdownArticleCard({ name, price, age }) {
+import checkedIcon from "../../../assets/checked-icon-success-m.svg";
+import pendingIcon from "../../../assets/pending-icon-brand-m.svg";
+
+export default function DropdownArticleCard({
+  nom,
+  prix,
+  duree,
+  reserved = false,
+}) {
   return (
     <div className="w-full p-5 bg-bg-base rounded-lg shadow-[0px_2px_2px_0px_rgba(0,0,0,0.10)] outline outline-1 outline-offset-[-1px] outline-feedback-border-neutral inline-flex justify-start items-center gap-3 overflow-hidden">
       {/* Thumbnail placeholder */}
@@ -8,18 +16,23 @@ export default function DropdownArticleCard({ name, price, age }) {
 
       {/* Infos */}
       <div className="flex-1 max-w-52 flex flex-col justify-start items-start gap-2">
-        <span className="text-brand text-xl font-bold font-figtree">
-          {name}
-        </span>
+        <span className="text-brand text-xl font-bold font-figtree">{nom}</span>
         <span className="text-neutral text-base font-normal font-figtree">
-          {price}
+          {prix}€
         </span>
-        {age && (
+        {duree && (
           <span className="text-neutral text-base font-normal font-figtree">
-            {age}
+            {duree} mois
           </span>
         )}
       </div>
+
+      {/* Icône statut */}
+      <img
+        src={reserved ? checkedIcon : pendingIcon}
+        alt={reserved ? "Réservé" : "En attente"}
+        className="size-6 shrink-0 ml-auto"
+      />
     </div>
   );
 }
