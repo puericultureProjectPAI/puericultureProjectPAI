@@ -36,6 +36,19 @@ public class CustomGlobalExceptionHandler {
                 .body(ErrorResponse.builder().message(badRequestException.getMessage()).build());
     }
 
+    /** Gère les erreurs de validation des DTOs (400). */
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+            org.springframework.web.bind.MethodArgumentNotValidException ex) {
+        String message = "Validation failed";
+        if (ex.getBindingResult().getFieldError() != null) {
+            message = ex.getBindingResult().getFieldError().getDefaultMessage();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ErrorResponse.builder().message(message).build());
+    }
+
     /**
      * Gère les erreurs de type "Mauvaise Requête" (400).
      *
